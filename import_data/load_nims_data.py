@@ -38,29 +38,32 @@ nims_data = user_spreadsheets['NIMS Data']
 
 countries = {}
 states = {}
-lgas = {}
+locations = {}
 
 print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
 for row in nims_data['Nigeria LGAs ALL']:
-    country = row['isoctry']
-    state   = row['states']
-    lga     = row['lga']
+    country  = row['isoctry']
+    state    = row['states']
+    lga      = row['lga']
+    location = (country, state, lga)
     if country not in countries:
-        #print "...adding [%s]" % country
         e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
-        countries[country] = e.save()
+        locations[(country)] = e.save()
+        countries[country] = e.id
     if state not in states:
-        #print "...adding [%s, %s]" % (country, state)
         e = Entity(dbm, entity_type=["Location", "State"], location=[country, state])
-        states[state] = e.save()
-    if lga not in lgas:
-        #print "...adding [%s, %s, %s]" % (country, state, lga)
-        e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
-        lgas[lga] = e.save()
+        locations[(country, state)] = e.save()
+        states[state] = e.id
+    e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
+    locations[location] = e.save()
 
-print "Loaded countries (%d)" % len(countries)
-print "Loaded states (%d)" % len(states)
-print "Loaded lgas (%d)" % len(lgas)
+#print "Loaded countries (%d)" % len(countries)
+#print "Loaded states (%d)" % len(states)
+#print "Loaded lgas (%d)" % len(lgas)
+
+print "Countries (%d)" % len(countries)
+print "States (%d)" % len(states)
+print "LGAs (%d)" % len(locations)
 
 print "Adding data from 'Population' worksheet"
 lga_loaded = []
@@ -79,6 +82,8 @@ for row in nims_data['Population']:
     if not data_row:
         continue
     lga              = row['_cpzh4']
+    state            = row['_cn6ca']
+    location         = ("NG", state, lga)
     pop              = int(row['_ciyn3'])
     pop_male         = int(row['_cre1l'])
     pop_female       = int(row['_chk2m'])
@@ -87,7 +92,7 @@ for row in nims_data['Population']:
     pop_ratio_u4     = float(row['agegroups'])
     pop_u5_male      = int(float(row['childrenunderfive']))
     pop_u5_female    = int(float(row['_dkvya']))
-    if lga in lgas:
+    if location in locations:
         lga_loaded.append(lga)
         data = [
             ('population', pop),
@@ -97,7 +102,7 @@ for row in nims_data['Population']:
             ('population_under_5_male', pop_u5_male),
             ('population_under_5_female', pop_u5_female)
         ]
-        e = mangrove.datastore.entity.get(dbm, lgas[lga])
+        e = mangrove.datastore.entity.get(dbm, locations[location])
         e.add_data(data)
     else:
         #print "...no LGA corresponsing to: %s" % lga
@@ -120,6 +125,8 @@ for row in nims_data['Education MDG Data']:
     slug = str(slugify(unicode(row['indicator'], 'utf-8')))
     data_type = 'numeric'
     lga = row['lga']
+    state = row['state']
+    location = ("NG", state, lga)
     #if not slug in indicators:
     #    indicator = {
     #        'slug': slug,
@@ -130,9 +137,9 @@ for row in nims_data['Education MDG Data']:
     #    }
     #    indicators[slug] = indicator
     data = [(slug , row['value'])]
-    if lga in lgas:
+    if location in locations:
         lga_loaded.append(lga)
-        e = mangrove.datastore.entity.get(dbm, lgas[lga])
+        e = mangrove.datastore.entity.get(dbm, locations[location])
         e.add_data(data)
     else:
         if not lga in lga_failed:
@@ -151,6 +158,8 @@ for row in nims_data['Infrastructure MDG Data']:
     slug = str(slugify(unicode(row['indicator'], 'utf-8')))
     data_type = 'numeric'
     lga = row['lga']
+    state = row['state']
+    location = ("NG", state, lga)
     #if not slug in indicators:
     #    indicator = {
     #        'slug': slug,
@@ -161,9 +170,9 @@ for row in nims_data['Infrastructure MDG Data']:
     #    }
     #    indicators[slug] = indicator
     data = [(slug , row['value'])]
-    if lga in lgas:
+    if location in locations:
         lga_loaded.append(lga)
-        e = mangrove.datastore.entity.get(dbm, lgas[lga])
+        e = mangrove.datastore.entity.get(dbm, locations[location])
         e.add_data(data)
     else:
         if not lga in lga_failed:
@@ -182,6 +191,8 @@ for row in nims_data['Health MDG Data']:
     slug = str(slugify(unicode(row['indicator'], 'utf-8')))
     data_type = 'numeric'
     lga = row['lga']
+    state = row['state']
+    location = ("NG", state, lga)
     #if not slug in indicators:
     #    indicator = {
     #        'slug': slug,
@@ -192,9 +203,9 @@ for row in nims_data['Health MDG Data']:
     #    }
     #    indicators[slug] = indicator
     data = [(slug , row['value'])]
-    if lga in lgas:
+    if location in locations:
         lga_loaded.append(lga)
-        e = mangrove.datastore.entity.get(dbm, lgas[lga])
+        e = mangrove.datastore.entity.get(dbm, locations[location])
         e.add_data(data)
     else:
         if not lga in lga_failed:
