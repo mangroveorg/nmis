@@ -4,6 +4,9 @@ from django.conf.urls.defaults import patterns, include, url
 # from django.contrib import admin
 # admin.autodiscover()
 
+from main.views import main as main_index
+from settings import MEDIA_ROOT
+
 urlpatterns = patterns('',
     # Examples:
     # url(r'^$', 'nmis.views.home', name='home'),
@@ -14,7 +17,8 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
-
+    url(r'^/?$', main_index),
     url(r'^population/', include('nmis.population.urls')),
-    url(r'^mdgs/', include('nmis.mdgs.urls'))
+    url(r'^mdgs/', include('nmis.mdgs.urls')),
+    (r'^static/(?P<path>.+)$', 'django.views.static.serve', {'document_root' : MEDIA_ROOT}),
 )
