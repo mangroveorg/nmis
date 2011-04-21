@@ -44,7 +44,7 @@ class Command(BaseCommand):
 
         print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
         for row in nims_data['Nigeria LGAs ALL']:
-            country  = row['isoctry']
+            country  = row['country']
             state    = row['states']
             lga      = row['lga']
             location = (country, state, lga)
@@ -58,10 +58,6 @@ class Command(BaseCommand):
                 states[state] = e.id
             e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
             locations[location] = e.save()
-
-        #print "Loaded countries (%d)" % len(countries)
-        #print "Loaded states (%d)" % len(states)
-        #print "Loaded lgas (%d)" % len(lgas)
 
         print "Countries (%d)" % len(countries)
         print "States (%d)" % len(states)
@@ -86,7 +82,7 @@ class Command(BaseCommand):
                 continue
             lga              = row['_cpzh4']
             state            = row['_cn6ca']
-            location         = ("NG", state, lga)
+            location         = ("Nigeria", state, lga)
             pop              = int(row['_ciyn3'])
             pop_male         = int(row['_cre1l'])
             pop_female       = int(row['_chk2m'])
@@ -129,7 +125,7 @@ class Command(BaseCommand):
             data_type = 'numeric'
             lga = row['lga']
             state = row['state']
-            location = ("NG", state, lga)
+            location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
@@ -162,7 +158,7 @@ class Command(BaseCommand):
             data_type = 'numeric'
             lga = row['lga']
             state = row['state']
-            location = ("NG", state, lga)
+            location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
@@ -195,7 +191,7 @@ class Command(BaseCommand):
             data_type = 'numeric'
             lga = row['lga']
             state = row['state']
-            location = ("NG", state, lga)
+            location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
