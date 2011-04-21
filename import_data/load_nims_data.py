@@ -6,6 +6,10 @@ import couchdb
 import datetime
 import string
 
+import sys
+sys.path.append("..")
+import settings
+
 from mangrove.datastore.database import DatabaseManager
 from mangrove.datastore.entity import Entity
 import mangrove.datastore.entity
@@ -33,7 +37,7 @@ print "Loading 'NIMS Data'..."
 
 dbm = DatabaseManager(server='http://localhost:5984', database='nmis')
 
-user_spreadsheets = GoogleSpreadsheetsClient(GMAIL_USERNAME, GMAIL_PASSWORD)
+user_spreadsheets = GoogleSpreadsheetsClient(settings.GMAIL_USERNAME, settings.GMAIL_PASSWORD)
 nims_data = user_spreadsheets['NIMS Data']
 
 countries = {}

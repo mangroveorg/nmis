@@ -4,6 +4,10 @@ import os
 CURRENT_FILE = os.path.abspath(__file__)
 CURRENT_DIR = os.path.dirname(CURRENT_FILE)
 
+import sys
+#include the directory with mangrove in the sys path
+sys.path.append(os.path.join(CURRENT_DIR, ".."))
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -149,6 +153,6 @@ LOGGING = {
 }
 
 try:
-    import local_settings
+    from local_settings import *
 except ImportError, e:
     raise Exception("You need to create a local_settings.py from local_settings_example.py")
