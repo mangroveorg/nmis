@@ -76,3 +76,21 @@ class RegionThing(object):
         self.children = kids
         for kid in self.children:
             kid.parent = self
+
+    def export_to_dict(self):
+        dict_vals = {u'name': self.name, u'slug': self.slug}
+        if len(self.children) > 0:
+            children = [c.export_to_dict() for c in self.children]
+            dict_vals[u'children'] = children
+        return dict_vals
+    
+def import_region_thing_from_dict(dict_vals):
+    iname = dict_vals.get(u'name')
+    islug = dict_vals.get(u'slug')
+    rthing = RegionThing(name=iname, slug=islug)
+    children = dict_vals.get(u'children', None)
+    if children is not None:
+        imported_children = [import_region_thing_from_dict(c) for c in children]
+        rthing._set_subregions(imported_children)
+    
+    return rthing
