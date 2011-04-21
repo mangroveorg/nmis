@@ -6,7 +6,7 @@ from django.template import RequestContext
 from mangrove.datastore.database import DatabaseManager
 import mangrove.datastore.entity
 
-from main.region_thing import RegionThing
+from main.region_thing import RegionThing, import_region_thing_from_dict
 
 def main(request):
     return render_to_response('index.html')
@@ -36,10 +36,7 @@ def region_navigation(request, region_path):
     if region_path == "": return HttpResponseRedirect("/profiles/usa")
     
     #query country for sub sections
-    if region_path =="usa":
-        region_thing_object = usa
-    else:
-        region_thing_object = usa.find_child_by_slug_array(region_path.split("/"))
+    region_thing_object = usa.find_child_by_slug_array(region_path.split("/"))
     
     sample_dict = region_thing_object.to_dict()
     context.region_hierarchy = region_thing_object.context_dict(2)
@@ -47,35 +44,20 @@ def region_navigation(request, region_path):
 
 
 def sample_region_root_object():
-    usa = RegionThing(name="USA", slug="usa")
+    """
+    This is sample data imported from json to serve as a placeholder so we can work
+    on the views & navigation between sites in the hierarchy.
+    """
+    sample_dict = {'name' :'USA','slug' :'usa','children':[{'name' :'North West', \
+                'slug' :'north_west','children':[{'children':[{'name' :'Seattle', \
+                'slug':'seattle'},{'name' :'Tacoma','slug' :'tacoma'}],'name' :'Washington', \
+                'slug' :'wa'}]},{'name' :'North East','slug' :'north_east','children':[{ \
+                'name' :'Massachusetts','slug' :'ma','children':[{'name' :'Boston','slug' \
+                :'boston'},{'name' :'Worchester','slug' :'woostah'}]}]},{'name' :'South West', \
+                'slug' :'south_west','children':[{'name' :'Arizona','slug' :'az','children':[{ \
+                'name' :'Page','slug' :'page'},{'name' :'Tuscon','slug' :'tuscon'}]}]}, \
+                {'name' :'South East','slug' :'south_east','children':[{'name' :'Florida', \
+                'slug' :'fl','children':[{'name' :'Key West','slug' :'key_west'}, \
+                {'name' :'Orlando','slug' :'orlando'}]}]}]}
     
-    nw = RegionThing(name="North West", slug="north_west")
-    nw_state = RegionThing(name="Washington", slug="wa")
-    wa1 = RegionThing(name="Seattle", slug="seattle")
-    wa2 = RegionThing(name="Tacoma", slug="tacoma")
-    nw_state._set_subregions([wa1, wa2])
-    nw._set_subregions([nw_state])
-    
-    ne = RegionThing(name="North East", slug="north_east")
-    ne_state = RegionThing(name="Massachusetts", slug="ma")
-    ma1 = RegionThing(name="Boston", slug="boston")
-    ma2 = RegionThing(name="Worchester", slug="woostah")
-    ne_state._set_subregions([ma1, ma2])
-    ne._set_subregions([ne_state])
-
-    sw = RegionThing(name="South West", slug="south_west")
-    sw_state = RegionThing(name="Arizona", slug="az")
-    az1 = RegionThing(name="Page", slug="page")
-    az2 = RegionThing(name="Tuscon", slug="tuscon")
-    sw_state._set_subregions([az1, az2])
-    sw._set_subregions([sw_state])
-    
-    se = RegionThing(name="South East", slug="south_east")
-    se_state = RegionThing(name="Florida", slug="fl")
-    fl1 = RegionThing(name="Key West", slug="key_west")
-    fl2 = RegionThing(name="Orlando", slug="orlando")
-    se_state._set_subregions([fl1, fl2])
-    se._set_subregions([se_state])
-    
-    usa._set_subregions([nw, ne, sw, se])
-    return usa
+    return import_region_thing_from_dict(sample_dict)

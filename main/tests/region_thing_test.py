@@ -6,39 +6,94 @@ from nmis.main.region_thing import RegionThing, import_region_thing_from_dict
 
 class TestRegionThing(unittest.TestCase):
     def setUp(self):
-        self.usa = RegionThing(name="USA", slug="usa")
-
-        nw = RegionThing(name="North West", slug="north_west")
-        nw_state = RegionThing(name="Washington", slug="wa")
-        wa1 = RegionThing(name="Seattle", slug="seattle")
-        wa2 = RegionThing(name="Tacoma", slug="tacoma")
-        nw_state._set_subregions([wa1, wa2])
-        nw._set_subregions([nw_state])
-
-        ne = RegionThing(name="North East", slug="north_east")
-        ne_state = RegionThing(name="Massachusetts", slug="ma")
-        ma1 = RegionThing(name="Boston", slug="boston")
-        ma2 = RegionThing(name="Worchester", slug="woostah")
-        ne_state._set_subregions([ma1, ma2])
-        ne._set_subregions([ne_state])
+        sample_regions = {
+          u'name': u'USA',
+          u'slug': u'usa',
+          u'children': [
+            {
+              u'name': u'North West',
+              u'slug': u'north_west',
+              u'children': [
+                {
+                  u'children': [
+                    {
+                      u'name': u'Seattle',
+                      u'slug': u'seattle'
+                    },
+                    {
+                      u'name': u'Tacoma',
+                      u'slug': u'tacoma'
+                    }
+                  ],
+                  u'name': u'Washington',
+                  u'slug': u'wa'
+                }
+              ]
+            },
+            {
+              u'name': u'North East',
+              u'slug': u'north_east',
+              u'children': [
+                {
+                  u'name': u'Massachusetts',
+                  u'slug': u'ma',
+                  u'children': [
+                    {
+                      u'name': u'Boston',
+                      u'slug': u'boston'
+                    },
+                    {
+                      u'name': u'Worchester',
+                      u'slug': u'woostah'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              u'name': u'South West',
+              u'slug': u'south_west',
+              u'children': [
+                {
+                  u'name': u'Arizona',
+                  u'slug': u'az',
+                  u'children': [
+                    {
+                      u'name': u'Page',
+                      u'slug': u'page'
+                    },
+                    {
+                      u'name': u'Tuscon',
+                      u'slug': u'tuscon'
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              u'name': u'South East',
+              u'slug': u'south_east',
+              u'children': [
+                {
+                  u'name': u'Florida',
+                  u'slug': u'fl',
+                  u'children': [
+                    {
+                      u'name': u'Key West',
+                      u'slug': u'key_west'
+                    },
+                    {
+                      u'name': u'Orlando',
+                      u'slug': u'orlando'
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
         
-        self.worchester = ma2
-
-        sw = RegionThing(name="South West", slug="south_west")
-        sw_state = RegionThing(name="Arizona", slug="az")
-        az1 = RegionThing(name="Page", slug="page")
-        az2 = RegionThing(name="Tuscon", slug="tuscon")
-        sw_state._set_subregions([az1, az2])
-        sw._set_subregions([sw_state])
-
-        se = RegionThing(name="South East", slug="south_east")
-        se_state = RegionThing(name="Florida", slug="fl")
-        fl1 = RegionThing(name="Key West", slug="key_west")
-        fl2 = RegionThing(name="Orlando", slug="orlando")
-        se_state._set_subregions([fl1, fl2])
-        se._set_subregions([se_state])
-
-        self.usa._set_subregions([nw, ne, sw, se])
+        self.usa = import_region_thing_from_dict(sample_regions)
         
         exported_dict = self.usa.export_to_dict()
         self.reimported = import_region_thing_from_dict(exported_dict)
