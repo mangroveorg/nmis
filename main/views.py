@@ -6,6 +6,8 @@ from django.template import RequestContext
 from mangrove.datastore.database import DatabaseManager
 import mangrove.datastore.entity
 
+from main.region_thing import RegionThing
+
 def main(request):
     return render_to_response('index.html')
 
@@ -39,83 +41,12 @@ def region_navigation(request, region_path):
     if region_path =="usa":
         region_thing_object = usa
     else:
-        region_thing_object = usa._find_child_by_slug_array(region_path.split("/"))
+        region_thing_object = usa.find_child_by_slug_array(region_path.split("/"))
     
     sample_dict = region_thing_object.to_dict()
     context.region_hierarchy = region_thing_object.context_dict(2)
     return render_to_response("region_navigation.html", context_instance=context)
 
-class RegionThing(object):
-    def __init__(self, **kwargs):
-        self.name = kwargs.get(u"name")
-        self.slug = kwargs.get(u"slug")
-        self.children = []
-        self.parent = None
-    
-    def _find_child_by_slug_array(self, slugs):
-        """
-        This is a temporary way to find objects by their slug/path
-        """
-        
-        if slugs[0] == self.slug: slugs = slugs[1:]
-        
-        next_child = False
-        for c in self.children:
-            if c.slug == slugs[0]:
-                next_child = c
-                break
-        
-        if len(slugs) > 1: return next_child._find_child_by_slug_array(slugs[1:])
-        
-        return next_child
-    
-    def info_dict(self):
-        return {'name': self.name, 'slug': self.slug, 'path': self.path()}
-    
-    def context_dict(self, depth=2):
-        d = self.to_dict(depth)
-        ancestors = self.ancestors()
-        ancestors.reverse()
-        parent_info = [p.info_dict() for p in ancestors]
-        d['level'] = len(parent_info)
-        d['parents'] = parent_info
-        d['path'] = self.path()
-        return d
-    
-    def to_dict(self, depth=2):
-        if depth < 1:
-            return self.info_dict()
-        
-        my_data = self.info_dict()
-        child_depth = depth-1
-        my_data['children'] = [c.to_dict(child_depth) for c in self.children]
-        return my_data
-    
-    def ancestors(self):
-        _ancestors = []
-        pt = self.parent
-        while pt is not None:
-            _ancestors.append(pt)
-            pt = pt.parent
-        return _ancestors
-    
-    def path(self):
-        a = self.ancestors()
-        a.reverse()
-        slugs = [s.slug for s in a]
-        slugs.append(self.slug)
-        return "/".join(slugs)
-    
-    def _parent_data(self):
-        return [p.info_dict() for p in self.ancestors()]
-    
-    def _set_subregions(self, kids):
-        """
-        a manual way to set subregions for the sample data
-        """
-        self.children = kids
-        for kid in self.children:
-            kid.parent = self
 
 def sample_region_root_object():
     usa = RegionThing(name="USA", slug="usa")
