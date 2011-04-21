@@ -24,8 +24,6 @@ def by_lga(request):
             lga_data[lga] = data
     return render_to_response('mdgs/lga-data.html', {'lga_data': lga_data})
 
-import json
-
 def region_navigation(request, region_path):
     context = RequestContext(request)
     
