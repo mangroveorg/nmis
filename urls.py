@@ -5,7 +5,6 @@ from django.conf.urls.defaults import patterns, include, url
 # admin.autodiscover()
 
 from main.views import main as main_index
-from settings import MEDIA_ROOT
 
 urlpatterns = patterns('',
     # Examples:
@@ -19,5 +18,4 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
     url(r'^/?$', main_index),
     url(r'', include('nmis.main.urls')),
-    (r'^static/(?P<path>.+)$', 'django.views.static.serve', {'document_root' : MEDIA_ROOT}),
 )
