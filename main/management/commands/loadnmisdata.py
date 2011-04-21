@@ -1,11 +1,23 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
 class Command(BaseCommand):
     help = "Loads the NMIS dataset from the 'NIMS Data' Google Doc."
+    args = "<server> <database> | <database>"
 
     def handle(self, *args, **options):
-        self._import_data()
+        server = settings.MANGROVE_DATABASES['default']['SERVER']
+        database = settings.MANGROVE_DATABASES['default']['DATABASE']
+        if len(args) == 2:
+            server = args[0]
+            database = args[1]
+        elif len(args) == 1:
+            database = args[0]
+        elif len(args) == 0:
+            pass
+        else:
+            raise CommandError('Wrong number of arguments. Run \'python manage.py help loadnmisdata\' for usage.')
+        self._import_data(server, database)
 
     def _slugify(self, text, delim=u'_'):
         '''Generates an ASCII-only slug.'''
@@ -20,8 +32,7 @@ class Command(BaseCommand):
                 result.append(word)
         return unicode(delim.join(result))
 
-    def _import_data(self):
-        '''Script to load the NIMS dataset.'''
+    def _import_data(self, server, database):
         import couchdb
         import datetime
         import string
@@ -33,7 +44,10 @@ class Command(BaseCommand):
 
         print "Loading 'NIMS Data'..."
 
-        dbm = DatabaseManager(server='http://localhost:5984', database='nmis')
+        print "\tServer: %s" % server
+        print "\tDatabase: %s" % database
+
+        dbm = DatabaseManager(server=server, database=database)
 
         user_spreadsheets = GoogleSpreadsheetsClient(settings.GMAIL_USERNAME, settings.GMAIL_PASSWORD)
         nims_data = user_spreadsheets['NIMS Data']
