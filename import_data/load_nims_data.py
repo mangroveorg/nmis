@@ -10,7 +10,7 @@ from mangrove.datastore.database import DatabaseManager
 from mangrove.datastore.entity import Entity
 import mangrove.datastore.entity
 from mangrove.utils import GoogleSpreadsheetsClient
-from localsettings import GMAIL_USERNAME, GMAIL_PASSWORD
+from local_settings import GMAIL_USERNAME, GMAIL_PASSWORD
 
 # TODO move this function
 import re
