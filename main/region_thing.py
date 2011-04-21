@@ -15,6 +15,7 @@ class RegionThing(object):
     
     def find_child_by_slug_array(self, slugs):
         if slugs[0] == self.slug: slugs = slugs[1:]
+        if len(slugs)==0: return self
         return self._find_child_by_slug_array(slugs)
     
     def _find_child_by_slug_array(self, slugs):
