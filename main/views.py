@@ -32,16 +32,21 @@ def region_navigation(request, region_path):
     context.profile_root = "/profiles/"
     
     usa = sample_region_root_object()
-    
+    nigeria = nigeria_region_root_object()
+
     if region_path == "": return HttpResponseRedirect("/profiles/usa")
     
     #query country for sub sections
-    region_thing_object = usa.find_child_by_slug_array(region_path.split("/"))
+    if region_path == "usa":
+        region_thing_object = usa
+    elif region_path == "nigeria":
+        region_thing_object = nigeria
+    else:
+        region_thing_object = usa.find_child_by_slug_array(region_path.split("/"))
     
     sample_dict = region_thing_object.to_dict()
     context.region_hierarchy = region_thing_object.context_dict(2)
     return render_to_response("region_navigation.html", context_instance=context)
-
 
 def sample_region_root_object():
     """
@@ -61,3 +66,13 @@ def sample_region_root_object():
                 {'name' :'Orlando','slug' :'orlando'}]}]}]}
     
     return import_region_thing_from_dict(sample_dict)
+
+
+def nigeria_region_root_object():
+    dbm = DatabaseManager(
+        server=settings.MANGROVE_DATABASES['default']['SERVER'],
+        database=settings.MANGROVE_DATABASES['default']['DATABASE']
+    )
+    nigeria_entity = mangrove.datastore.entity.get_entities_by_type(dbm, 'Country')[0]
+    nigeria = RegionThing(name='Nigeria', slug='nigeria')
+    return nigeria
