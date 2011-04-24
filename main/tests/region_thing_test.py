@@ -94,6 +94,8 @@ class TestRegionThing(unittest.TestCase):
         }
         
         self.usa = import_region_thing_from_dict(sample_regions)
+        worchester_slug_array = ['usa', 'north_east', 'ma', 'woostah']
+        self.worchester = self.usa.find_child_by_slug_array(worchester_slug_array)
         
         exported_dict = self.usa.export_to_dict()
         self.reimported = import_region_thing_from_dict(exported_dict)
