@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
+from mangrove.utils.helpers import slugify
 
 class Command(BaseCommand):
     help = "Loads the NMIS dataset from the 'NIMS Data' Google Doc."
@@ -18,19 +19,6 @@ class Command(BaseCommand):
         else:
             raise CommandError('Wrong number of arguments. Run \'python manage.py help loadnmisdata\' for usage.')
         self._import_data(server, database)
-
-    def _slugify(self, text, delim=u'_'):
-        '''Generates an ASCII-only slug.'''
-        import re
-        from unicodedata import normalize
-
-        _punct_re = re.compile(r'[\t :;!"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
-        result = []
-        for word in _punct_re.split(text.lower()):
-            word = normalize('NFKD', word).encode('ascii', 'ignore')
-            if word:
-                result.append(word)
-        return unicode(delim.join(result))
 
     def _import_data(self, server, database):
         import couchdb
@@ -58,9 +46,9 @@ class Command(BaseCommand):
 
         print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
         for row in nims_data['Nigeria LGAs ALL']:
-            country  = row['country']
-            state    = row['states']
-            lga      = row['lga']
+            country  = row['country'].strip()
+            state    = row['states'].strip()
+            lga      = row['lga'].strip()
             location = (country, state, lga)
             if country not in countries:
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
@@ -94,17 +82,17 @@ class Command(BaseCommand):
                     break
             if not data_row:
                 continue
-            lga              = row['_cpzh4']
-            state            = row['_cn6ca']
+            lga              = row['_cpzh4'].strip()
+            state            = row['_cn6ca'].strip()
             location         = ("Nigeria", state, lga)
-            pop              = int(row['_ciyn3'])
-            pop_male         = int(row['_cre1l'])
-            pop_female       = int(row['_chk2m'])
+            pop              = int(row['_ciyn3'].strip())
+            pop_male         = int(row['_cre1l'].strip())
+            pop_female       = int(row['_chk2m'].strip())
             pop_ratio_male   = float(pop_male) / float(pop)
             pop_ratio_female = float(pop_female) / float(pop)
-            pop_ratio_u4     = float(row['agegroups'])
-            pop_u5_male      = int(float(row['childrenunderfive']))
-            pop_u5_female    = int(float(row['_dkvya']))
+            pop_ratio_u4     = float(row['agegroups'].strip())
+            pop_u5_male      = int(float(row['childrenunderfive'].strip()))
+            pop_u5_female    = int(float(row['_dkvya'].strip()))
             if location in locations:
                 lga_loaded.append(lga)
                 data = [
@@ -135,10 +123,10 @@ class Command(BaseCommand):
         lga_loaded = []
         lga_failed = []
         for row in nims_data['Education MDG Data']:
-            slug = str(self._slugify(unicode(row['indicator'], 'utf-8')))
+            slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
             data_type = 'numeric'
-            lga = row['lga']
-            state = row['state']
+            lga = row['lga'].strip()
+            state = row['state'].strip()
             location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
@@ -149,7 +137,10 @@ class Command(BaseCommand):
             #        'tags': ['Education']
             #    }
             #    indicators[slug] = indicator
-            data = [(slug , row['value'])]
+            if row['value'] is not None:
+                data = [(slug , row['value'].strip())]
+            else:
+                data = [(slug , row['value'])]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
@@ -168,10 +159,10 @@ class Command(BaseCommand):
         lga_loaded = []
         lga_failed = []
         for row in nims_data['Infrastructure MDG Data']:
-            slug = str(self._slugify(unicode(row['indicator'], 'utf-8')))
+            slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
             data_type = 'numeric'
-            lga = row['lga']
-            state = row['state']
+            lga = row['lga'].strip()
+            state = row['state'].strip()
             location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
@@ -182,7 +173,7 @@ class Command(BaseCommand):
             #        'tags': ['Infrastructure']
             #    }
             #    indicators[slug] = indicator
-            data = [(slug , row['value'])]
+            data = [(slug , row['value'].strip())]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
@@ -201,10 +192,10 @@ class Command(BaseCommand):
         lga_loaded = []
         lga_failed = []
         for row in nims_data['Health MDG Data']:
-            slug = str(self._slugify(unicode(row['indicator'], 'utf-8')))
+            slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
             data_type = 'numeric'
-            lga = row['lga']
-            state = row['state']
+            lga = row['lga'].strip()
+            state = row['state'].strip()
             location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
@@ -215,7 +206,7 @@ class Command(BaseCommand):
             #        'tags': ['Infrastructure']
             #    }
             #    indicators[slug] = indicator
-            data = [(slug , row['value'])]
+            data = [(slug , row['value'].strip())]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
