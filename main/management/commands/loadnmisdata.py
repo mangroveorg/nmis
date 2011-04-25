@@ -69,7 +69,7 @@ class Command(BaseCommand):
         print "Adding data from 'Population' worksheet"
         lga_loaded = []
         lga_failed = []
-        keys = {'childrenunderfive', '_ddv49', 'genderratios', '_chk2m', '_dkvya', '_db1zf', '_cre1l', '_dcgjs', '_d9ney', '_df9om', '_cokwr', '_cn6ca', 'agegroups', '_d415a', '_ciyn3', '_d5fpr', '_cpzh4', '_cx0b9'}
+        keys = ['childrenunderfive', '_ddv49', 'genderratios', '_chk2m', '_dkvya', '_db1zf', '_cre1l', '_dcgjs', '_d9ney', '_df9om', '_cokwr', '_cn6ca', 'agegroups', '_d415a', '_ciyn3', '_d5fpr', '_cpzh4', '_cx0b9']
         first_row = True
         for row in nims_data['Population']:
             if first_row:
