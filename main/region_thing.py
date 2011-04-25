@@ -24,6 +24,7 @@ class RegionThing(object):
         """
         
         next_child = False
+
         for c in self.children:
             if c.slug == slugs[0]:
                 next_child = c
@@ -74,7 +75,7 @@ class RegionThing(object):
         A manual way to set subregions for the sample data.
         Mainly used in tests.
         """
-        self.children = kids
+        self.children += kids
         for kid in self.children:
             kid.parent = self
 
