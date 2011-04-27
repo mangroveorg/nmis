@@ -1,5 +1,8 @@
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
 
+from mangrove.datastore.entity import get
+from mangrove.datastore.database import get_db_manager
+
 class RegionThing(object):
     """
     A better name will come (maybe).
@@ -10,9 +13,16 @@ class RegionThing(object):
     def __init__(self, **kwargs):
         self.name = kwargs.get(u"name")
         self.slug = kwargs.get(u"slug")
+        self.entity_id = kwargs.get(u"entity_id")
+        self.server = kwargs.get(u"server")
+        self.database = kwargs.get(u"database")
         self.children = []
         self.parent = None
-    
+
+    @property
+    def entity(self):
+        return get(get_db_manager(self.server, self.database), self.entity_id)
+
     def find_child_by_slug_array(self, slugs):
         if slugs[0] == self.slug: slugs = slugs[1:]
         if len(slugs)==0: return self
@@ -34,7 +44,11 @@ class RegionThing(object):
         return next_child
     
     def info_dict(self):
-        return {'name': self.name, 'slug': self.slug, 'path': self.path()}
+        return {
+            'name': self.name,
+            'slug': self.slug,
+            'path': self.path()
+        }
     
     def context_dict(self, depth=2):
         d = self.to_dict(depth)
@@ -80,7 +94,13 @@ class RegionThing(object):
             kid.parent = self
 
     def export_to_dict(self):
-        dict_vals = {u'name': self.name, u'slug': self.slug}
+        dict_vals = {
+            u'name': self.name,
+            u'slug': self.slug,
+            u'entity_id': self.entity_id,
+            u'server': self.server,
+            u'database': self.database
+        }
         if len(self.children) > 0:
             children = [c.export_to_dict() for c in self.children]
             dict_vals[u'children'] = children
@@ -89,7 +109,10 @@ class RegionThing(object):
 def import_region_thing_from_dict(dict_vals):
     iname = dict_vals.get(u'name')
     islug = dict_vals.get(u'slug')
-    rthing = RegionThing(name=iname, slug=islug)
+    ientity_id = dict_vals.get(u'entity_id')
+    iserver = dict_vals.get(u'server')
+    idatabase = dict_vals.get(u'database')
+    rthing = RegionThing(name=iname, slug=islug, entity=ientity_id, server=iserver, database=idatabase)
     children = dict_vals.get(u'children', None)
     if children is not None:
         imported_children = [import_region_thing_from_dict(c) for c in children]
