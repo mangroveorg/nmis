@@ -22,4 +22,24 @@
 	</ul>
 	{% endfor %}
 </ul>
+<div id="mdg-table">
+	
+</div>
+{% endblock %}
+
+
+{% block head %}
+<link rel="stylesheet" href="/static/css/mdg_table.css">
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/src_files/display_mdg_table.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+	var mdgDataUrl = "{{mdg_data_url|safe}}",
+		mdgDataQueryParams = {{mdg_data_query_params|safe}};
+	if(mdgDataUrl !== '') {
+		$.getJSON(mdgDataUrl, mdgDataQueryParams, function(mdgData){
+			$.createMdgTable(mdgData).appendTo($("#mdg-table").empty()).addClass('mdg-table');
+		});
+	}
+</script>
 {% endblock %}
