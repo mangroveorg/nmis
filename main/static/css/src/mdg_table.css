@@ -1,3 +1,14 @@
+div#mdg-table-wrap {
+    width: 680px;
+    border: 1px solid #999;
+    padding: 8px 20px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 6px;
+}
+table.mdg-table.f {
+    margin: 0 auto;
+}
 table.mdg-table {
   font-size: 16px;
   line-height: 18px; }

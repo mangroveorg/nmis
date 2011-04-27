@@ -134,3 +134,29 @@ a:hover { color: #036; }
   h2, h3{ page-break-after: avoid; }
 }
 
+header a#logo {
+    display: block;
+    line-height: 32px;
+    font-size: 16px;
+    text-decoration: none;
+    width: 100px;
+    padding-top: 5px;
+    padding-left: 12px;
+}
+#container, #container header, #container #main, #container footer {
+	border: 1px solid #888;
+	background-color: #eee;
+	padding: 6px;
+	margin-top: 5px;
+}
+#container {
+    background-color: #f6f6f6;
+	margin: 6px;
+}
+#container header {
+	height: 42px;
+	margin-top: 0;
+}
+#container footer {
+	height: 14px;
+}

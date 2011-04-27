@@ -67,7 +67,7 @@
 				tb.append(createRowForVariable(gvar))
 			})
 		});
-		return $("<table />", {'class':'mdg-table f'}).html(tb);
+		return $('<div />', {'id':'mdg-table-wrap'}).html($("<table />", {'class':'mdg-table f'}).html(tb));
 	}
 	
 	$.createMdgTable = CreateMDGTable;
