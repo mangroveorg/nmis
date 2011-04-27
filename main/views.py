@@ -17,8 +17,8 @@ def region_navigation(request, region_path):
     # profile_root is the url root for the profiles
     # probably could use django's lookup thing for this
     context.profile_root = "/profiles/"
-    country_root_object = RegionThing(name="Tahiti", slug="tahiti")
-    if region_path == "": return HttpResponseRedirect("/profiles/tahiti")
+    country_root_object = region_root_object()
+    if region_path == "": return HttpResponseRedirect("/profiles/nigeria")
     
     #query country for sub sections
     region_thing_object = country_root_object.find_child_by_slug_array(region_path.split("/"))
