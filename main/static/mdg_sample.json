@@ -1,9 +1,13 @@
 {
+  "years": [
+    2010,
+    2009
+  ],
   "variables": {
     "1": {
       "name": "Number of Mice caught by Falcons",
       "data_type": "integer",
-      "display_order": 2650,
+      "display_order": 2,
       "values": {
         "2010": 5,
         "2009": 15
@@ -15,7 +19,7 @@
     "3": {
       "name": "Number of Mice caught by Falcons",
       "data_type": "integer",
-      "display_order": 2650,
+      "display_order": 3,
       "values": {
         "2010": 9,
         "2009": 35
@@ -27,7 +31,7 @@
     "2": {
       "name": "Number of Mice caught by Falcons",
       "data_type": "integer",
-      "display_order": 2650,
+      "display_order": 1,
       "values": {
         "2010": 4,
         "2009": 20
@@ -57,12 +61,7 @@
         "2009": 4
       },
       "subgoal": "2.3",
-      "subgroup": "Male",
       "goal": "2"
     }
-  },
-  "years": [
-    2010,
-    2009
-  ]
+  }
 }
