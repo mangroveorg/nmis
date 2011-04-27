@@ -6,7 +6,7 @@
       "display_order": 2650,
       "values": {
         "2010": 5,
-        "2009.": 15
+        "2009": 15
       },
       "subgoal": "1.1",
       "subgroup": "Male Mice",
@@ -18,7 +18,7 @@
       "display_order": 2650,
       "values": {
         "2010": 9,
-        "2009.": 35
+        "2009": 35
       },
       "subgoal": "1.1",
       "subgroup": "Total",
@@ -30,7 +30,7 @@
       "display_order": 2650,
       "values": {
         "2010": 4,
-        "2009.": 20
+        "2009": 20
       },
       "subgoal": "1.1",
       "subgroup": "Female Mice",
@@ -42,7 +42,7 @@
       "display_order": 2430,
       "values": {
         "2010": 12.33,
-        "2009.": 20.94
+        "2009": 20.94
       },
       "subgoal": null,
       "subgroup": null,
@@ -54,7 +54,7 @@
       "display_order": 2540,
       "values": {
         "2010": 10,
-        "2009.": 4
+        "2009": 4
       },
       "subgoal": "2.3",
       "subgroup": "Male",
