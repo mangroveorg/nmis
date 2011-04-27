@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from mangrove.datastore.database import DatabaseManager
 from mangrove.datastore.entity import get_entities_by_type, get_entities_in
 from main.region_thing import RegionThing
+import json
 
 def main(request):
     return render_to_response('index.html')
@@ -22,6 +23,16 @@ def region_navigation(request, region_path):
 
     #query country for sub sections
     region_thing_object = country_root_object.find_child_by_slug_array(region_path.split("/"))
+    
+    # see nmis/static/mdg_sample.json for the example of how the MDG data should be
+    # structured
+    context.mdg_data_url = "/static/mdg_sample.json"
+    # if we want to specify parameters to be appended to the URL, 
+    # we can pass them here
+    mdg_data_query_params = {}
+    context.mdg_data_query_params = json.dumps(mdg_data_query_params)
+    
+    sample_dict = region_thing_object.to_dict()
     context.region_hierarchy = region_thing_object.context_dict(2)
     return render_to_response("region_navigation.html", context_instance=context)
 

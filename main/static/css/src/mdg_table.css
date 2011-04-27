@@ -1,0 +1,19 @@
+table.mdg-table {
+  font-size: 16px;
+  line-height: 18px; }
+  table.mdg-table td {
+    border: 1px solid #eeeeee;
+    padding: 8px 12px; }
+    table.mdg-table td.empty {
+      border: 0 none; }
+    table.mdg-table td.subgoal {
+      color: #666666;
+      text-align: right;
+      font-size: 14px; }
+    table.mdg-table td.mdg_header {
+      border: 1px solid #666666;
+      border-width: 0 0 2px 0;
+      font-weight: bold;
+      padding: 12px 6px 4px; }
+      table.mdg-table td.mdg_header.year {
+        text-align: center; }
