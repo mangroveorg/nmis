@@ -1,6 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
-from mangrove.utils.helpers import slugify
 
 class Command(BaseCommand):
     help = "Loads the NMIS dataset from the 'NIMS Data' Google Doc."
@@ -27,8 +26,10 @@ class Command(BaseCommand):
 
         from mangrove.datastore.database import DatabaseManager
         from mangrove.datastore.entity import Entity
+        from mangrove.datastore.datadict import DataDictType, get_datadict_type
         import mangrove.datastore.entity
         from mangrove.utils import GoogleSpreadsheetsClient
+        from mangrove.utils.helpers import slugify
 
         print "Loading 'NIMS Data'..."
 
@@ -66,6 +67,8 @@ class Command(BaseCommand):
         print "LGAs (%d)" % (len(locations) - len(countries) - len(states))
         print "Total locations (%d)" % len(locations)
 
+        datadict_types = {}
+
         print "Adding data from 'Population' worksheet"
         lga_loaded = []
         lga_failed = []
@@ -82,9 +85,27 @@ class Command(BaseCommand):
                     break
             if not data_row:
                 continue
+
             lga              = row['_cpzh4'].strip()
             state            = row['_cn6ca'].strip()
             location         = ("Nigeria", state, lga)
+            pop_types = [
+                    ('population', 'Population'),
+                    ('population_ratio_male', 'Population ratio (male)'),
+                    ('population_ratio_female', 'Population ratio (female)'),
+                    ('population_ratio_under_4', 'Population ratio (under 4)'),
+                    ('population_under_5_male', 'Population (males under 5)'),
+                    ('population_under_5_female', 'Population (females under 5)')
+            ]
+            for datadict_type in pop_types:
+                dd_type = DataDictType(
+                    dbm,
+                    slug=datadict_type[0],
+                    name=datadict_type[1],
+                    primitive_type='number'
+                )
+                datadict_types[datadict_type[0]] = dd_type.save()
+
             pop              = int(row['_ciyn3'].strip())
             pop_male         = int(row['_cre1l'].strip())
             pop_female       = int(row['_chk2m'].strip())
@@ -93,15 +114,16 @@ class Command(BaseCommand):
             pop_ratio_u4     = float(row['agegroups'].strip())
             pop_u5_male      = int(float(row['childrenunderfive'].strip()))
             pop_u5_female    = int(float(row['_dkvya'].strip()))
+            
             if location in locations:
                 lga_loaded.append(lga)
                 data = [
-                    ('population', pop),
-                    ('population_ratio_male', pop_ratio_male),
-                    ('population_ratio_female', pop_ratio_female),
-                    ('population_ratio_under_4', pop_ratio_u4),
-                    ('population_under_5_male', pop_u5_male),
-                    ('population_under_5_female', pop_u5_female)
+                    (get_datadict_type(dbm, datadict_types['population']), pop),
+                    (get_datadict_type(dbm, datadict_types['population_ratio_male']), pop_ratio_male),
+                    (get_datadict_type(dbm, datadict_types['population_ratio_female']), pop_ratio_female),
+                    (get_datadict_type(dbm, datadict_types['population_ratio_under_4']), pop_ratio_u4),
+                    (get_datadict_type(dbm, datadict_types['population_under_5_male']), pop_u5_male),
+                    (get_datadict_type(dbm, datadict_types['population_under_5_female']), pop_u5_female)
                 ]
                 e = mangrove.datastore.entity.get(dbm, locations[location])
                 e.add_data(data)
@@ -117,30 +139,28 @@ class Command(BaseCommand):
                 print "\t%s" % lga
 
         print "Adding MDG indicator data..."
-        indicators = {}
 
         print "Adding data from 'Education MDG Data' worksheet"
         lga_loaded = []
         lga_failed = []
         for row in nims_data['Education MDG Data']:
             slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
-            data_type = 'numeric'
+            name = row['indicator'].strip()
             lga = row['lga'].strip()
             state = row['state'].strip()
             location = ("Nigeria", state, lga)
-            #if not slug in indicators:
-            #    indicator = {
-            #        'slug': slug,
-            #        'name': row['indicator'],
-            #        'description': row['indicatordefinition'],
-            #        'type': data_type,
-            #        'tags': ['Education']
-            #    }
-            #    indicators[slug] = indicator
+            if not slug in datadict_types:
+                dd_type = DataDictType(
+                    dbm,
+                    slug=slug,
+                    name=name,
+                    primitive_type='number'
+                )
+                datadict_types[slug] = dd_type.save()
             if row['value'] is not None:
-                data = [(slug , row['value'].strip())]
+                data = [(get_datadict_type(dbm, datadict_types[slug]), row['value'].strip())]
             else:
-                data = [(slug , row['value'])]
+                data = [(get_datadict_type(dbm, datadict_types[slug]), row['value'])]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
@@ -160,20 +180,19 @@ class Command(BaseCommand):
         lga_failed = []
         for row in nims_data['Infrastructure MDG Data']:
             slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
-            data_type = 'numeric'
+            name = row['indicator'].strip()
             lga = row['lga'].strip()
             state = row['state'].strip()
             location = ("Nigeria", state, lga)
-            #if not slug in indicators:
-            #    indicator = {
-            #        'slug': slug,
-            #        'name': row['indicator'],
-            #        'description': row['indicatordefinition'],
-            #        'type': data_type,
-            #        'tags': ['Infrastructure']
-            #    }
-            #    indicators[slug] = indicator
-            data = [(slug , row['value'].strip())]
+            if not slug in datadict_types:
+                dd_type = DataDictType(
+                    dbm,
+                    slug=slug,
+                    name=name,
+                    primitive_type='number'
+                )
+                datadict_types[slug] = dd_type.save()
+            data = [(get_datadict_type(dbm, datadict_types[slug]), row['value'].strip())]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
@@ -193,20 +212,19 @@ class Command(BaseCommand):
         lga_failed = []
         for row in nims_data['Health MDG Data']:
             slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
-            data_type = 'numeric'
+            name = row['indicator'].strip()
             lga = row['lga'].strip()
             state = row['state'].strip()
             location = ("Nigeria", state, lga)
-            #if not slug in indicators:
-            #    indicator = {
-            #        'slug': slug,
-            #        'name': row['indicator'],
-            #        'description': row['indicatordefinition'],
-            #        'type': data_type,
-            #        'tags': ['Infrastructure']
-            #    }
-            #    indicators[slug] = indicator
-            data = [(slug , row['value'].strip())]
+            if not slug in datadict_types:
+                dd_type = DataDictType(
+                    dbm,
+                    slug=slug,
+                    name=name,
+                    primitive_type='number'
+                )
+                datadict_types[slug] = dd_type.save()
+            data = [(get_datadict_type(dbm, datadict_types[slug]), row['value'].strip())]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
