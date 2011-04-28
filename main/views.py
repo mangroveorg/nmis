@@ -35,6 +35,16 @@ def region_navigation(request, region_path):
     context.region_hierarchy = region_thing_object.context_dict(2)
     return render_to_response("region_navigation.html", context_instance=context)
 
+import spreadsheet_display
+
+def spreadsheet_json(request, sheet_name):
+    return HttpResponse(json.dumps(spreadsheet_display.for_display(sheet_name)))
+
+def spreadsheets(request):
+    context = RequestContext(request)
+    context.spreadsheet_types = spreadsheet_display.LISTS
+    return render_to_response("spreadsheets.html", context_instance=context)
+
 def region_root_object():
     dbm = DatabaseManager(
         server=settings.MANGROVE_DATABASES['default']['SERVER'],

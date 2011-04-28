@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<style type="text/css">
+	ul#doc_sheets {
+		list-style-type: none;
+	}
+	ul#doc_sheets li {
+		display: inline;
+	}
+	ul#doc_sheets li a {
+		display: inline-block;
+		padding: 5px 12px;
+	}
+</style>
+<ul id="doc_sheets">
+	{% for sstype in spreadsheet_types %}
+	<li>
+		<a href="#/{{sstype.id}}">
+			{{sstype.name}}
+		</a>
+	</li>
+	{% endfor %}
+</ul>
+<div id="hot-sauce">
+	
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/js/src/sammy-latest.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+$.sammy(function(context){
+	this.get("#/:ss_type", function(){
+		$.getJSON("/spreadsheets/"+this.params['ss_type'], function(data){
+			$('#hot-sauce').text(JSON.stringify(data))
+		});
+	});
+	this.run("#/");
+});
+</script>
+{% endblock %}
