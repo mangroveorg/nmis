@@ -15,6 +15,9 @@ class RegionThing(object):
         self.slug = kwargs.get(u"slug")
         self.entity_id = kwargs.get(u"entity_id")
         self.server = kwargs.get(u"server")
+        # the server object is not serializable.
+        # temporarily giving a direct link to the couch path...
+        self.server = "127.0.0.1:5984"
         self.database = kwargs.get(u"database")
         self.children = []
         self.parent = None
