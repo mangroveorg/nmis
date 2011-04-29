@@ -2,11 +2,11 @@ from django.http import HttpResponse
 from django.conf import settings
 from django.shortcuts import render_to_response
 from django.http import HttpResponse, HttpResponseBadRequest, HttpResponseRedirect
-from django.template import RequestContext
+from django.template import RequestContext, loader as template_loader
 from django.template.defaultfilters import slugify
 from mangrove.datastore.database import DatabaseManager
 from mangrove.datastore.entity import get_entities_by_type, get_entities_in
-from main.region_thing import RegionThing
+from main.region_thing import RegionThing, import_region_thing_from_dict
 import json
 
 def main(request):
@@ -38,18 +38,36 @@ def region_navigation(request, region_path):
 import spreadsheet_display
 
 def spreadsheet_json(request, sheet_name):
-    return HttpResponse(json.dumps(spreadsheet_display.for_display(sheet_name)))
+    "This is pulled by JSON and handled in the page."
+    display_method, output = spreadsheet_display.for_display(sheet_name)
+    # if display_method=="django_template":
+    #     context = RequestContext(request)
+    #     context.spreadsheet_name = output.get(u'name')
+    #     output[u'html'] = \
+    #         template_loader.render_to_string("spreadsheet_partial.html", context_instance=context)
+    return HttpResponse(json.dumps(output))
 
 def spreadsheets(request):
     context = RequestContext(request)
     context.spreadsheet_types = spreadsheet_display.LISTS
     return render_to_response("spreadsheets.html", context_instance=context)
 
+NIGERIA_REGION_CACHE = 'nigeria_regions.json'
+
+import os
 def region_root_object():
+    if not os.path.exists(NIGERIA_REGION_CACHE):
+        load_nigeria_regions_to_file()
+    f = open(NIGERIA_REGION_CACHE, 'r')
+    d = json.loads(f.read())
+    f.close()
+    return import_region_thing_from_dict(d)
+
+def load_nigeria_regions_to_file():
     dbm = DatabaseManager(
         server=settings.MANGROVE_DATABASES['default']['SERVER'],
         database=settings.MANGROVE_DATABASES['default']['DATABASE']
-    )
+        )
     country = get_entities_by_type(dbm, 'Country')[0]
     country_name = country.aggregation_paths['_geo'][-1]
     country_slug = slugify(country_name)
@@ -84,8 +102,11 @@ def region_root_object():
             )
             state_region_thing._set_subregions([lga_region_thing])
         country_region_thing._set_subregions([state_region_thing])
-
-    return country_region_thing
+    dict_repr = country_region_thing.export_to_dict()
+    json_val = json.dumps(dict_repr)
+    f = open(NIGERIA_REGION_CACHE, 'w')
+    f.write(json_val)
+    f.close()
 
 def data_for_entity(entity):
     pass

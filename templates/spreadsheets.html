@@ -10,29 +10,66 @@
 	ul#doc_sheets li a {
 		display: inline-block;
 		padding: 5px 12px;
+		text-decoration: none;
+		border: 1px solid #607890;
+		border-radius: 2px;
+	}
+	/*--ul#doc_sheets li a:hover {
+		background-color: #607890;
+	}--*/
+	ul#doc_sheets li a.active {
+		background-color: #607890;
+		color: #fff;
 	}
 </style>
 <ul id="doc_sheets">
 	{% for sstype in spreadsheet_types %}
 	<li>
-		<a href="#/{{sstype.id}}">
+		<a href="#/nigeria/{{sstype.id}}" class="{{sstype.id}} ssbutton">
 			{{sstype.name}}
 		</a>
 	</li>
 	{% endfor %}
 </ul>
-<div id="hot-sauce">
-	
-</div>
+<div id="widget-content"></div>
 {% endblock %}
 {% block scripts %}
+<link rel="stylesheet" href="/static/css/src/mdg_table.css" type="text/css" media="screen" title="no title" charset="utf-8">
 <script src="/static/js/src/sammy-latest.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/src/display_mdg_table.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8">
+	var jsonRenderers = {
+		mdg_stuff: function(data){
+			return $("<div />").text("JAVASCRIPT RENDERED THIS FOR "+data.name)
+		},
+		html: function(data){
+			return $("<div />").html(data.html);
+		},
+		test_json_renderer: function(data){
+			return $("<div />").text(d.name);
+		},
+		notFound: function(data){
+			alert('Widget renderer not found -- '+data.display_method);
+		}
+	};
+</script>
 <script type="text/javascript" charset="utf-8">
 $.sammy(function(context){
-	this.get("#/:ss_type", function(){
-		$.getJSON("/spreadsheets/"+this.params['ss_type'], function(data){
-			$('#hot-sauce').text(JSON.stringify(data))
-		});
+	this.get("#/:country/:ss_type", function(){
+		var country = this.params['country']
+		if(this.params['ss_type']!=='') {
+			var params = {country:this.params.country}
+			$.getJSON("/spreadsheets/"+this.params['ss_type']+'.json', params, function(data){
+				var renderer = jsonRenderers[data.display_method];
+				if(renderer == undefined) {
+					renderer = jsonRenderers.notFound;
+				}
+				$('#widget-content').html(renderer(data));
+				if(data.title) {document.title = data.title;}
+				if(data.id) { $('#doc_sheets').find('.active').removeClass('active');
+					$('#doc_sheets').find('.'+data.id).addClass('active');}
+			});
+		}
 	});
 	this.run("#/");
 });
