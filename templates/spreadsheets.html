@@ -25,7 +25,7 @@
 <ul id="doc_sheets">
 	{% for sstype in spreadsheet_types %}
 	<li>
-		<a href="#/nigeria/{{sstype.id}}" class="{{sstype.id}} ssbutton">
+		<a href="#/{{sstype.id}}" class="{{sstype.id}} ssbutton">
 			{{sstype.name}}
 		</a>
 	</li>
@@ -34,40 +34,33 @@
 <div id="widget-content"></div>
 {% endblock %}
 {% block scripts %}
+<style type="text/css" media="screen">
+	.widget {
+		border: 1px dotted black;
+		margin: 2px 4px;
+		padding: 4px 6px;
+	}
+</style>
 <link rel="stylesheet" href="/static/css/src/mdg_table.css" type="text/css" media="screen" title="no title" charset="utf-8">
 <script src="/static/js/src/sammy-latest.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="/static/js/src/jsonRenderer.jquery.js" type="text/javascript" charset="utf-8"></script>
 <script src="/static/js/src/display_mdg_table.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-	var jsonRenderers = {
-		mdg_stuff: function(data){
-			return $("<div />").text("JAVASCRIPT RENDERED THIS FOR "+data.name)
-		},
-		html: function(data){
-			return $("<div />").html(data.html);
-		},
-		test_json_renderer: function(data){
-			return $("<div />").text(d.name);
-		},
-		notFound: function(data){
-			alert('Widget renderer not found -- '+data.display_method);
-		}
-	};
 </script>
 <script type="text/javascript" charset="utf-8">
 $.sammy(function(context){
-	this.get("#/:country/:ss_type", function(){
-		var country = this.params['country']
+	this.get("#/:ss_type", function(){
 		if(this.params['ss_type']!=='') {
-			var params = {country:this.params.country}
+			var params = {};
 			$.getJSON("/spreadsheets/"+this.params['ss_type']+'.json', params, function(data){
-				var renderer = jsonRenderers[data.display_method];
-				if(renderer == undefined) {
-					renderer = jsonRenderers.notFound;
-				}
-				$('#widget-content').html(renderer(data));
+				var widgetElem = $("<div />");
+				$.each(data.widgets, $.renderJsonWidgetToElem(widgetElem));
+				$('#widget-content').html(widgetElem);
 				if(data.title) {document.title = data.title;}
-				if(data.id) { $('#doc_sheets').find('.active').removeClass('active');
-					$('#doc_sheets').find('.'+data.id).addClass('active');}
+				if(data.id) {
+					$('#doc_sheets').find('.active').removeClass('active');
+					$('#doc_sheets').find('.'+data.id).addClass('active');
+				}
 			});
 		}
 	});

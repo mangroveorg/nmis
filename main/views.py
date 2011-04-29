@@ -39,7 +39,7 @@ import spreadsheet_display
 
 def spreadsheet_json(request, sheet_name):
     "This is pulled by JSON and handled in the page."
-    display_method, output = spreadsheet_display.for_display(sheet_name)
+    output = spreadsheet_display.for_display(sheet_name)
     # if display_method=="django_template":
     #     context = RequestContext(request)
     #     context.spreadsheet_name = output.get(u'name')
