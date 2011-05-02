@@ -17,7 +17,7 @@ class RegionThing(object):
         self.server = kwargs.get(u"server")
         # the server object is not serializable.
         # temporarily giving a direct link to the couch path...
-        self.server = "127.0.0.1:5984"
+        self.server = "http://localhost:5984/"
         self.database = kwargs.get(u"database")
         self.children = []
         self.parent = None
@@ -115,7 +115,7 @@ def import_region_thing_from_dict(dict_vals):
     ientity_id = dict_vals.get(u'entity_id')
     iserver = dict_vals.get(u'server')
     idatabase = dict_vals.get(u'database')
-    rthing = RegionThing(name=iname, slug=islug, entity=ientity_id, server=iserver, database=idatabase)
+    rthing = RegionThing(name=iname, slug=islug, entity_id=ientity_id, server=iserver, database=idatabase)
     children = dict_vals.get(u'children', None)
     if children is not None:
         imported_children = [import_region_thing_from_dict(c) for c in children]
