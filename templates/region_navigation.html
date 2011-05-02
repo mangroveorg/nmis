@@ -1,10 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
+<script type="text/javascript" charset="utf-8">
+	document.getElementById('main').className="with-nav";
+</script>
 <p class="region-breadcrumbs">
 	{% for parent in region_hierarchy.parents %}
 	<a href="{{profile_root}}{{parent.path}}">{{parent.name}}</a>
 	{% endfor %}
 </p>
+<div id="region-nav">
 <h2>
 	{{region_hierarchy.name}}
 </h2>
@@ -22,7 +26,10 @@
 	</ul>
 	{% endfor %}
 </ul>
-<div id="mdg-table"></div>
+</div>
+<div id="content">
+	<div id="mdg-table"></div>
+</div>
 {% endblock %}
 
 

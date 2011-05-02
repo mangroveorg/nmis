@@ -160,3 +160,52 @@ header a#logo {
 #container footer {
 	height: 14px;
 }
+#container #main {}
+#container #main.with-nav {
+    position: relative;
+    padding-top: 2em;
+    padding-left: 240px;
+}
+#region-nav {
+    width: 240px;
+    position: absolute;
+    left:0;
+    top: 2em;
+}
+#region-nav h2 {
+    padding: 3px 8px;
+    background-color: #ccc;
+    color: #004;
+}
+#region-nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+#region-nav ul a {
+    display: block;
+    text-decoration: none;
+    padding: 3px 15px;
+}
+#region-nav ul a:hover {
+    background-color: #ccc;
+}
+#region-nav ul ul a {
+    padding-left: 35px;
+}
+#content {}
+p.region-breadcrumbs {
+    position: absolute;
+    left:0;
+    top:0;
+    line-height: 1.3em;
+    margin-top: .2em;
+}
+p.region-breadcrumbs a {
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid #aaa;
+    background-color: #eee;
+    border-radius: 3px;
+    padding: 1px 8px;
+}
