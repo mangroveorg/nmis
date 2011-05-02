@@ -118,12 +118,12 @@ class Command(BaseCommand):
             if location in locations:
                 lga_loaded.append(lga)
                 data = [
-                    (get_datadict_type(dbm, datadict_types['population']), pop, 'population'),
-                    (get_datadict_type(dbm, datadict_types['population_ratio_male']), pop_ratio_male, 'population_ratio_male'),
-                    (get_datadict_type(dbm, datadict_types['population_ratio_female']), pop_ratio_female, 'population_ratio_female'),
-                    (get_datadict_type(dbm, datadict_types['population_ratio_under_4']), pop_ratio_u4, 'population_ratio_under_4'),
-                    (get_datadict_type(dbm, datadict_types['population_under_5_male']), pop_u5_male, 'population_under_5_male'),
-                    (get_datadict_type(dbm, datadict_types['population_under_5_female']), pop_u5_female, 'population_under_5_female')
+                    ('population', pop, get_datadict_type(dbm, datadict_types['population'])),
+                    ('population_ratio_male', pop_ratio_male, get_datadict_type(dbm, datadict_types['population_ratio_male'])),
+                    ('population_ratio_female', pop_ratio_female, get_datadict_type(dbm, datadict_types['population_ratio_female'])),
+                    ('population_ratio_under_4', pop_ratio_u4, get_datadict_type(dbm, datadict_types['population_ratio_under_4'])),
+                    ('population_under_5_male', pop_u5_male, get_datadict_type(dbm, datadict_types['population_under_5_male'])),
+                    ('population_under_5_female', pop_u5_female, get_datadict_type(dbm, datadict_types['population_under_5_female']))
                 ]
                 e = mangrove.datastore.entity.get(dbm, locations[location])
                 e.add_data(data)
@@ -160,9 +160,9 @@ class Command(BaseCommand):
                 )
                 datadict_types[slug] = dd_type.save()
             if row['value'] is not None:
-                data = [(get_datadict_type(dbm, datadict_types[slug]), row['value'].strip(), slug)]
+                data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             else:
-                data = [(get_datadict_type(dbm, datadict_types[slug]), row['value'], slug)]
+                data = [(slug, row['value'], get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
@@ -196,7 +196,7 @@ class Command(BaseCommand):
                     mdg=mdg
                 )
                 datadict_types[slug] = dd_type.save()
-            data = [(get_datadict_type(dbm, datadict_types[slug]), row['value'].strip(), slug)]
+            data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
@@ -230,7 +230,7 @@ class Command(BaseCommand):
                     mdg=mdg
                 )
                 datadict_types[slug] = dd_type.save()
-            data = [(get_datadict_type(dbm, datadict_types[slug]), row['value'].strip(), slug)]
+            data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
