@@ -32,14 +32,9 @@
 	{% for widget in widgets %}
 	{% include widget %}
 	{% endfor %}
-	<div id="mdg-table"></div>
 </div>
 {% endblock %}
 
-
-{% block head %}
-<link rel="stylesheet" href="/static/css/src/mdg_table.css">
-{% endblock %}
 {% block scripts %}
 <script src="/static/js/src/display_mdg_table.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
