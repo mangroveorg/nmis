@@ -11,6 +11,8 @@ import json
 
 def main(request):
     return render_to_response('index.html')
+    
+import widgets
 
 def region_navigation(request, region_path):
     context = RequestContext(request)
@@ -30,6 +32,8 @@ def region_navigation(request, region_path):
     # we can pass them here
     mdg_data_query_params = {}
     context.mdg_data_query_params = json.dumps(mdg_data_query_params)
+    
+    context.widgets = widgets.widget_includes_by_region_level(len(region_thing_object.ancestors()))
     
     sample_dict = region_thing_object.to_dict()
     context.region_hierarchy = region_thing_object.context_dict(2)

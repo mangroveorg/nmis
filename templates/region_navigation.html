@@ -19,15 +19,19 @@
 	</li>
 	<ul>
 		{% for subregion in region.children %}
-		<li>
-			<a href="{{profile_root}}{{subregion.path}}" data-slug="{{subregion.slug}}">{{subregion.name}}</a>
-		</li>
+		<li><a href="{{profile_root}}{{subregion.path}}" data-slug="{{subregion.slug}}">{{subregion.name}}</a></li>
 		{% endfor %}
 	</ul>
 	{% endfor %}
 </ul>
 </div>
 <div id="content">
+	<script type="text/javascript" charset="utf-8">
+		var widgetActivators = {};
+	</script>
+	{% for widget in widgets %}
+	{% include widget %}
+	{% endfor %}
 	<div id="mdg-table"></div>
 </div>
 {% endblock %}
@@ -39,12 +43,6 @@
 {% block scripts %}
 <script src="/static/js/src/display_mdg_table.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
-	var mdgDataUrl = "{{mdg_data_url|safe}}",
-		mdgDataQueryParams = {{mdg_data_query_params|safe}};
-	if(mdgDataUrl !== '') {
-		$.getJSON(mdgDataUrl, mdgDataQueryParams, function(mdgData){
-			$.createMdgTable(mdgData).appendTo($("#mdg-table").empty()).addClass('mdg-table');
-		});
-	}
+	$.each(widgetActivators, function(i,x){x()});
 </script>
 {% endblock %}
