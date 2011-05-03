@@ -1,4 +1,6 @@
 #stuff specific to this install should be used in this file.
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
 #this should be unique
 SECRET_KEY = 'tHiSiSnOtUnIqUew0)_d6az7=^vhffs9sn0zq!g(aopz(x&mzl'
