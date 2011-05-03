@@ -41,6 +41,7 @@ class Command(BaseCommand):
         nims_data = user_spreadsheets['NIMS Data']
 
         countries = {}
+        zones = {}
         states = {}
         locations = {}
 
@@ -48,17 +49,22 @@ class Command(BaseCommand):
         for row in nims_data['Nigeria LGAs ALL']:
             country  = row['country'].strip()
             state    = row['states'].strip()
+            zone     = row['zone'].strip()
             lga      = row['lga'].strip()
-            location = (country, state, lga)
+            location = (country, zone, state, lga)
             if country not in countries:
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
                 locations[(country)] = e.save()
                 countries[country] = e.id
+            if zone not in zones:
+                e = Entity(dbm, entity_type=["Location", "Zone"], location=[country, zone])
+                locations[(country, zone)] = e.save()
+                zones[zone] = e.id
             if state not in states:
-                e = Entity(dbm, entity_type=["Location", "State"], location=[country, state])
-                locations[(country, state)] = e.save()
+                e = Entity(dbm, entity_type=["Location", "State"], location=[country, zone, state])
+                locations[(country, zone, state)] = e.save()
                 states[state] = e.id
-            e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
+            e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, zone, state, lga])
             locations[location] = e.save()
 
         print "Countries (%d)" % len(countries)
