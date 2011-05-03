@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block page_title %} Register {% endblock %}
+{% block content %}
+<fieldset><legend>Register</legend>
+<form id="registration_form" action="" method="POST">
+{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="Register" />
+<p>Already registered? <a href="{% url django.contrib.auth.views.login %}">Login here!</a></p>
+</form>
+</fieldset>
+{% endblock %}

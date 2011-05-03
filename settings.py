@@ -20,7 +20,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'nmis',                      # Or path to database file if using sqlite3.
+        'NAME': 'nmis.db',                      # Or path to database file if using sqlite3.
     }
 }
 
@@ -120,9 +120,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'nmis.main'
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
+    'nmis.main',
+    'registration',
+    'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )

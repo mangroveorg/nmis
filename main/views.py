@@ -7,8 +7,10 @@ from django.template.defaultfilters import slugify
 from mangrove.datastore.database import DatabaseManager
 from mangrove.datastore.entity import get_entities_by_type, get_entities_in
 from main.region_thing import RegionThing, import_region_thing_from_dict
+from helpers import read_required
 import json
 
+@read_required()
 def main(request):
     return render_to_response('index.html')
     

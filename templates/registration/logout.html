@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<p>You have successfully logged out <a href="{% url django.contrib.auth.views.login %}">Login again</a></p>
+{% endblock %}
