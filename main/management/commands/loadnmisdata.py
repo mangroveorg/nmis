@@ -41,34 +41,24 @@ class Command(BaseCommand):
         nims_data = user_spreadsheets['NIMS Data']
 
         countries = {}
-        zones = {}
-        zone_by_state = {}
         states = {}
         locations = {}
-        
+
         print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
         for row in nims_data['Nigeria LGAs ALL']:
             country  = row['country'].strip()
             state    = row['states'].strip()
-            zone     = row['zone'].strip()
             lga      = row['lga'].strip()
-            location = (country, zone, state, lga)
-            if state not in zone_by_state:
-                zone_by_state[state] = zone
+            location = (country, state, lga)
             if country not in countries:
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
                 locations[(country)] = e.save()
                 countries[country] = e.id
-            if zone not in zones:
-                print "ZONE IS %s" % zone
-                e = Entity(dbm, entity_type=["Location", "Zone"], location=[country, zone])
-                locations[(country, zone)] = e.save()
-                zones[zone] = e.id
             if state not in states:
-                e = Entity(dbm, entity_type=["Location", "State"], location=[country, zone, state])
-                locations[(country, zone, state)] = e.save()
+                e = Entity(dbm, entity_type=["Location", "State"], location=[country, state])
+                locations[(country, state)] = e.save()
                 states[state] = e.id
-            e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, zone, state, lga])
+            e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
             locations[location] = e.save()
 
         print "Countries (%d)" % len(countries)
@@ -94,8 +84,7 @@ class Command(BaseCommand):
                 continue
             lga              = row['_cpzh4'].strip()
             state            = row['_cn6ca'].strip()
-            zone             = zone_by_state[state]
-            location         = ("Nigeria", zone, state, lga)
+            location         = ("Nigeria", state, lga)
             pop              = int(row['_ciyn3'].strip())
             pop_male         = int(row['_cre1l'].strip())
             pop_female       = int(row['_chk2m'].strip())
@@ -137,9 +126,8 @@ class Command(BaseCommand):
             slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
             data_type = 'numeric'
             lga = row['lga'].strip()
-            zone = zone_by_state[state]
             state = row['state'].strip()
-            location = ("Nigeria", zone, state, lga)
+            location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
@@ -175,8 +163,7 @@ class Command(BaseCommand):
             data_type = 'numeric'
             lga = row['lga'].strip()
             state = row['state'].strip()
-            zone = zone_by_state[state]
-            location = ("Nigeria", zone, state, lga)
+            location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
@@ -209,8 +196,7 @@ class Command(BaseCommand):
             data_type = 'numeric'
             lga = row['lga'].strip()
             state = row['state'].strip()
-            zone = zone_by_state[state]
-            location = ("Nigeria", zone, state, lga)
+            location = ("Nigeria", state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
