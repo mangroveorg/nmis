@@ -32,7 +32,7 @@ def region_navigation(request, region_path):
     
     for widget_id in widget_ids:
         try:
-            context.__dict__[widget_id] = getattr(widget_data, widget_id)(context.entity)
+            context.__dict__[widget_id] = getattr(widget_data, widget_id)(entity=context.entity, region_thing=region_thing_object)
         except:
             context.__dict__[widget_id] = False
     
