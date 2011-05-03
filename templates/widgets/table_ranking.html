@@ -1,0 +1,28 @@
+<div class="widget" data-entity-id="{{table_ranking.entity_id}}">
+	<h2>
+		Table Ranking for {{ table_ranking.name }}
+	</h2>
+	<table border="0" cellspacing="5" cellpadding="5" style="width:100%">
+		<tr>
+			<th>Rank</th>
+			<th>LGA Name</th>
+			<th>Value</th>
+		</tr>
+		{% for l in table_ranking.list %}
+		<tr data-row-bgcolor="{{l.color}}" class="color-me">
+			<td>{{l.rank}}</td>
+			<td>{{l.name}}</td>
+			<td>{{l.value}}</td>
+		</tr>
+		{% endfor %}
+	</table>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+	widgetActivators['table_ranking'] = (function(){
+		$('table tr.color-me').each(function(){
+			var bgColor = $(this).data('row-bgcolor');
+			$(this).find('td').css({'background-color':bgColor})
+		})
+	});
+</script>
