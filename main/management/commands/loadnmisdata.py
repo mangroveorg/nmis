@@ -42,9 +42,10 @@ class Command(BaseCommand):
 
         countries = {}
         zones = {}
+        zone_by_state = {}
         states = {}
         locations = {}
-
+        
         print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
         for row in nims_data['Nigeria LGAs ALL']:
             country  = row['country'].strip()
@@ -52,11 +53,14 @@ class Command(BaseCommand):
             zone     = row['zone'].strip()
             lga      = row['lga'].strip()
             location = (country, zone, state, lga)
+            if state not in zone_by_state:
+                zone_by_state[state] = zone
             if country not in countries:
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
                 locations[(country)] = e.save()
                 countries[country] = e.id
             if zone not in zones:
+                print "ZONE IS %s" % zone
                 e = Entity(dbm, entity_type=["Location", "Zone"], location=[country, zone])
                 locations[(country, zone)] = e.save()
                 zones[zone] = e.id
@@ -90,7 +94,8 @@ class Command(BaseCommand):
                 continue
             lga              = row['_cpzh4'].strip()
             state            = row['_cn6ca'].strip()
-            location         = ("Nigeria", state, lga)
+            zone             = zone_by_state[state]
+            location         = ("Nigeria", zone, state, lga)
             pop              = int(row['_ciyn3'].strip())
             pop_male         = int(row['_cre1l'].strip())
             pop_female       = int(row['_chk2m'].strip())
@@ -132,8 +137,9 @@ class Command(BaseCommand):
             slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
             data_type = 'numeric'
             lga = row['lga'].strip()
+            zone = zone_by_state[state]
             state = row['state'].strip()
-            location = ("Nigeria", state, lga)
+            location = ("Nigeria", zone, state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
@@ -169,7 +175,8 @@ class Command(BaseCommand):
             data_type = 'numeric'
             lga = row['lga'].strip()
             state = row['state'].strip()
-            location = ("Nigeria", state, lga)
+            zone = zone_by_state[state]
+            location = ("Nigeria", zone, state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
@@ -202,7 +209,8 @@ class Command(BaseCommand):
             data_type = 'numeric'
             lga = row['lga'].strip()
             state = row['state'].strip()
-            location = ("Nigeria", state, lga)
+            zone = zone_by_state[state]
+            location = ("Nigeria", zone, state, lga)
             #if not slug in indicators:
             #    indicator = {
             #        'slug': slug,
