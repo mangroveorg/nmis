@@ -32,9 +32,10 @@ def region_navigation(request, region_path):
     context.widgets = include_templates
     context.entity = region_thing_object.entity
     
+    #what goes on behind the scenes that you don't need to edit--
     for widget_id in widget_ids:
         try:
-            context.__dict__[widget_id] = getattr(widget_data, widget_id)(entity=context.entity, region_thing=region_thing_object)
+            context.__dict__[widget_id] = getattr(widget_data, widget_id)(region_thing=region_thing_object)
         except:
             context.__dict__[widget_id] = False
     
