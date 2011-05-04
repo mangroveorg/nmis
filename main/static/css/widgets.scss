@@ -1,6 +1,7 @@
-/* Widgets need to be added individually to this file.
- * See SASS documentation for more on how to use this 
- * awesome tool:
- *   http://sass-lang.com/docs.html
+/* SASS allows variables, includes, and other awesome stuff.
+ *   See SASS docs for more awesomeness: http://sass-lang.com/docs/yardoc/file.SASS_REFERENCE.html
+ *
+ *    widgets must be added to this file to be included.
  */
-@import 'widgets/mdg_table.scss'
+
+@import 'widgets/mdg_table.scss';
