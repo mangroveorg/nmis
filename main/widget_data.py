@@ -25,6 +25,8 @@ def state_view(region_thing):
     d = _packaged_dict_for_entity(region_thing)
     return d
 
+import json
+
 def mdg_table(region_thing):
     d = _packaged_dict_for_entity(region_thing)
     mdg_data = {}
@@ -51,7 +53,7 @@ def mdg_table(region_thing):
             'goal': goal
         }
         if subgoal is not None: mdg_data['variables'][slug]['subgoal'] = subgoal
-    d['mdg_data'] = mdg_data
+    d['mdg_data'] = json.dumps(mdg_data)
     return d
 
 def table_ranking(region_thing):
