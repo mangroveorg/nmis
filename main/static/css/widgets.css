@@ -5,25 +5,24 @@ div#mdg-table-wrap {
   margin: 0 auto;
   background-color: #fff;
   border-radius: 6px; }
-
-table.mdg-table {
-  font-size: 16px;
-  line-height: 18px; }
-  table.mdg-table.f {
-    margin: 0 auto; }
-  table.mdg-table td {
-    border: 1px solid #eeeeee;
-    padding: 8px 12px; }
-    table.mdg-table td.empty {
-      border: 0 none; }
-    table.mdg-table td.subgoal {
-      color: #666666;
-      text-align: right;
-      font-size: 14px; }
-    table.mdg-table td.mdg_header {
-      border: 1px solid #666666;
-      border-width: 0 0 2px 0;
-      font-weight: bold;
-      padding: 12px 6px 4px; }
-      table.mdg-table td.mdg_header.year {
-        text-align: center; }
+  div#mdg-table-wrap table {
+    font-size: 16px;
+    line-height: 18px; }
+    div#mdg-table-wrap table.f {
+      margin: 0 auto; }
+    div#mdg-table-wrap table td {
+      border: 1px solid #eeeeee;
+      padding: 8px 12px; }
+      div#mdg-table-wrap table td.empty {
+        border: 0 none; }
+      div#mdg-table-wrap table td.subgoal {
+        color: #666666;
+        text-align: right;
+        font-size: 14px; }
+      div#mdg-table-wrap table td.mdg_header {
+        border: 1px solid #666666;
+        border-width: 0 0 2px 0;
+        font-weight: bold;
+        padding: 12px 6px 4px; }
+        div#mdg-table-wrap table td.mdg_header.year {
+          text-align: center; }

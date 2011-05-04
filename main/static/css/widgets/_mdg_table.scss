@@ -1,13 +1,16 @@
+$mdg_table_width: 680px;
+
 div#mdg-table-wrap {
-  width: 680px;
+  width: $mdg_table_width;
   border: 1px solid #999;
   padding: 8px 20px;
   margin: 0 auto;
   background-color: #fff;
   border-radius: 6px;
-}
 
-table.mdg-table {
+
+
+table {
   &.f {
     margin: 0 auto;
   }
@@ -34,4 +37,5 @@ table.mdg-table {
       }
     }
   }
+}
 }
