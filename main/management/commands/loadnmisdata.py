@@ -30,6 +30,8 @@ class Command(BaseCommand):
         import mangrove.datastore.entity
         from mangrove.utils import GoogleSpreadsheetsClient
         from mangrove.utils.helpers import slugify
+        import datetime
+        from pytz import UTC
 
         print "Loading 'NIMS Data'..."
 
@@ -102,7 +104,8 @@ class Command(BaseCommand):
                     dbm,
                     slug=datadict_type[0],
                     name=datadict_type[1],
-                    primitive_type='number'
+                    primitive_type='number',
+                    tags=['Population', 'General']
                 )
                 datadict_types[datadict_type[0]] = dd_type.save()
 
@@ -156,7 +159,8 @@ class Command(BaseCommand):
                     slug=slug,
                     name=name,
                     primitive_type='number',
-                    mdg=mdg
+                    mdg=mdg,
+                    tags=['Education', 'MDG']
                 )
                 datadict_types[slug] = dd_type.save()
             if row['value'] is not None:
@@ -166,7 +170,7 @@ class Command(BaseCommand):
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
-                e.add_data(data)
+                e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
                     lga_failed.append(lga)
@@ -193,14 +197,15 @@ class Command(BaseCommand):
                     slug=slug,
                     name=name,
                     primitive_type='number',
-                    mdg=mdg
+                    mdg=mdg,
+                    tags=['Infrastructure', 'MDG']
                 )
                 datadict_types[slug] = dd_type.save()
             data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
-                e.add_data(data)
+                e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
                     lga_failed.append(lga)
@@ -227,14 +232,15 @@ class Command(BaseCommand):
                     slug=slug,
                     name=name,
                     primitive_type='number',
-                    mdg=mdg
+                    mdg=mdg,
+                    tags=['Health', 'MDG']
                 )
                 datadict_types[slug] = dd_type.save()
             data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
                 e = mangrove.datastore.entity.get(dbm, locations[location])
-                e.add_data(data)
+                e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
                     lga_failed.append(lga)

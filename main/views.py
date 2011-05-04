@@ -115,6 +115,3 @@ def load_nigeria_regions_to_file():
     f = open(NIGERIA_REGION_CACHE, 'w')
     f.write(json_val)
     f.close()
-
-def data_for_entity(entity):
-    pass
