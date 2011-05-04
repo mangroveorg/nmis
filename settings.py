@@ -31,6 +31,17 @@ MANGROVE_DATABASES = {
     }
 }
 
+COMPILER_FORMATS = {
+    '.sass': {
+        'binary_path':'sass',
+        'arguments': '*.sass *.css'
+    },
+    '.scss': {
+        'binary_path':'sass',
+        'arguments': '*.scss *.css'
+    }
+}
+
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
@@ -79,7 +90,9 @@ STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Additional locations of static files
-#STATICFILES_DIRS = ('/other/static/files',)
+STATICFILES_DIRS = (
+    ('cache', os.path.join(CURRENT_DIR, 'cache')),
+)
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -123,6 +136,7 @@ INSTALLED_APPS = (
     'nmis.main',
     'registration',
     'django.contrib.admin',
+    'compressor',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
 )
