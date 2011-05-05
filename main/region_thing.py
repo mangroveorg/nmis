@@ -3,12 +3,11 @@
 from mangrove.datastore.entity import get
 from mangrove.datastore.database import get_db_manager
 
+
 class RegionThing(object):
     """
     A better name will come (maybe).
-    
     This "RegionThing" class is used to cache the hierarchy of region & subregions for passing to the view.
-    
     """
     def __init__(self, **kwargs):
         self.name = kwargs.get(u"name")
@@ -27,32 +26,33 @@ class RegionThing(object):
         return get(get_db_manager(self.server, self.database), self.entity_id)
 
     def find_child_by_slug_array(self, slugs):
-        if slugs[0] == self.slug: slugs = slugs[1:]
-        if len(slugs)==0: return self
+        if slugs[0] == self.slug:
+            slugs = slugs[1:]
+        if len(slugs) == 0:
+            return self
         return self._find_child_by_slug_array(slugs)
-    
+
     def _find_child_by_slug_array(self, slugs):
         """
         This is a temporary way to find objects by their slug/path
         """
-        
         next_child = False
 
         for c in self.children:
             if c.slug == slugs[0]:
                 next_child = c
                 break
-        
-        if len(slugs) > 1: return next_child._find_child_by_slug_array(slugs[1:])
+        if len(slugs) > 1:
+            return next_child._find_child_by_slug_array(slugs[1:])
         return next_child
-    
+
     def info_dict(self):
         return {
             'name': self.name,
             'slug': self.slug,
             'path': self.path()
         }
-    
+
     def context_dict(self, depth=2):
         d = self.to_dict(depth)
         ancestors = self.ancestors()
@@ -62,16 +62,15 @@ class RegionThing(object):
         d['parents'] = parent_info
         d['path'] = self.path()
         return d
-    
+
     def to_dict(self, depth=2):
         if depth < 1:
             return self.info_dict()
-        
         my_data = self.info_dict()
-        child_depth = depth-1
+        child_depth = depth - 1
         my_data['children'] = [c.to_dict(child_depth) for c in self.children]
         return my_data
-    
+
     def ancestors(self):
         _ancestors = []
         pt = self.parent
@@ -79,14 +78,14 @@ class RegionThing(object):
             _ancestors.append(pt)
             pt = pt.parent
         return _ancestors
-    
+
     def path(self):
         a = self.ancestors()
         a.reverse()
         slugs = [s.slug for s in a]
         slugs.append(self.slug)
         return "/".join(slugs)
-    
+
     def _set_subregions(self, kids):
         """
         A manual way to set subregions for the sample data.
@@ -108,7 +107,8 @@ class RegionThing(object):
             children = [c.export_to_dict() for c in self.children]
             dict_vals[u'children'] = children
         return dict_vals
-    
+
+
 def import_region_thing_from_dict(dict_vals):
     iname = dict_vals.get(u'name')
     islug = dict_vals.get(u'slug')
@@ -120,5 +120,4 @@ def import_region_thing_from_dict(dict_vals):
     if children is not None:
         imported_children = [import_region_thing_from_dict(c) for c in children]
         rthing._set_subregions(imported_children)
-    
     return rthing

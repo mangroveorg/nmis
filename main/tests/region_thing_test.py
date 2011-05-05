@@ -4,6 +4,7 @@ import unittest
 
 from nmis.main.region_thing import RegionThing, import_region_thing_from_dict
 
+
 class TestRegionThing(unittest.TestCase):
     def setUp(self):
         sample_regions = {
@@ -92,14 +93,12 @@ class TestRegionThing(unittest.TestCase):
             }
           ]
         }
-        
         self.usa = import_region_thing_from_dict(sample_regions)
         worchester_slug_array = ['usa', 'north_east', 'ma', 'woostah']
         self.worchester = self.usa.find_child_by_slug_array(worchester_slug_array)
-        
         exported_dict = self.usa.export_to_dict()
         self.reimported = import_region_thing_from_dict(exported_dict)
-    
+
     def test_dict_output_of_context_dict(self):
         expected_dict = {
           "name": "USA",
@@ -158,21 +157,21 @@ class TestRegionThing(unittest.TestCase):
             }
           ]
         }
-        self.assertEqual(self.usa.context_dict(2),expected_dict)
-    
+        self.assertEqual(self.usa.context_dict(2), expected_dict)
+
     def test_search_by_slug_array(self):
         worchester_slug_array = ['usa', 'north_east', 'ma', 'woostah']
         w = self.usa.find_child_by_slug_array(worchester_slug_array)
         self.assertEqual(w.name, "Worchester")
-    
+
     def test_usa_info_dict(self):
         expected_info = {'name': 'USA', 'slug': 'usa', 'path': 'usa'}
         self.assertEqual(self.usa.info_dict(), expected_info)
-    
+
     def test_path_is_built(self):
         worchester_expected_path = "usa/north_east/ma/woostah"
         self.assertEqual(worchester_expected_path, self.worchester.path())
-    
+
     def test_export_and_import(self):
         #one of the tests from before to test the hierarchy was implemented correctly
         worchester_slug_array = ['usa', 'north_east', 'ma', 'woostah']

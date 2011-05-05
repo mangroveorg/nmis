@@ -19,8 +19,8 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'nmis.db',                      # Or path to database file if using sqlite3.
+        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'nmis.db',                       # Or path to database file if using sqlite3.
     }
 }
 
@@ -33,11 +33,11 @@ MANGROVE_DATABASES = {
 
 COMPILER_FORMATS = {
     '.sass': {
-        'binary_path':'sass',
+        'binary_path': 'sass',
         'arguments': '*.sass *.css'
     },
     '.scss': {
-        'binary_path':'sass',
+        'binary_path': 'sass',
         'arguments': '*.scss *.css'
     }
 }
