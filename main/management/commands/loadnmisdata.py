@@ -20,15 +20,12 @@ class Command(BaseCommand):
         self._import_data(server, database)
 
     def _import_data(self, server, database):
-        import couchdb
-        import datetime
-        import string
-
         from mangrove.datastore.database import DatabaseManager
         from mangrove.datastore.entity import Entity
         from mangrove.datastore.datadict import DataDictType, get_datadict_type
         import mangrove.datastore.entity
         from mangrove.utils import GoogleSpreadsheetsClient
+        from mangrove.utils.google_spreadsheets import get_string, get_number, get_percent, get_boolean, get_list
         from mangrove.utils.helpers import slugify
         import datetime
         from pytz import UTC
@@ -58,12 +55,10 @@ class Command(BaseCommand):
 
         print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
         for row in nims_data['Nigeria LGAs ALL']:
-            country = row['country'].strip()
-            state = row['state'].strip()
-            lga = row['lga'].strip()
-            cgs = ''
-            if row['cgs'] is not None:
-                cgs = row['cgs'].strip()
+            country = get_string('country', row)
+            state = get_string('state', row)
+            lga = get_string('lga', row)
+            cgs = get_boolean('cgs', row)
             location = (country, state, lga)
             if country not in countries:
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
@@ -75,77 +70,50 @@ class Command(BaseCommand):
                 states[state] = e.id
             e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
             locations[location] = e.save()
-            if cgs == 'TRUE':
+            if cgs:
                 num_cgs += 1
-                e.add_data(data=[(cgs_type.slug, True, cgs_type)])
+                e.add_data(data=[(cgs_type.slug, cgs, cgs_type)])
         print "%s CGS LGAs" % num_cgs
 
         print "Countries (%d)" % len(countries)
         print "States (%d)" % len(states)
-        print "LGAs (%d/%d CGS)" % ((len(locations) - len(countries) - len(states)), num_cgs)
+        print "LGAs (%d) (%d as CGS)" % ((len(locations) - len(countries) - len(states)), num_cgs)
         print "Total locations (%d)" % len(locations)
 
-        print "Adding data from 'Population' worksheet"
+        print "Adding data from 'Population Data' worksheet"
         lga_loaded = []
         lga_failed = []
-        keys = ['childrenunderfive', '_ddv49', 'genderratios', '_chk2m', '_dkvya', '_db1zf', '_cre1l', '_dcgjs', '_d9ney', '_df9om', '_cokwr', '_cn6ca', 'agegroups', '_d415a', '_ciyn3', '_d5fpr', '_cpzh4', '_cx0b9']
-        first_row = True
-        for row in nims_data['Population']:
-            if first_row:
-                first_row = False
-                continue
-            data_row = True
-            for key in keys:
-                if not key in row:
-                    data_row = False
-                    break
-            if not data_row:
-                continue
 
-            lga = row['_cpzh4'].strip()
-            state = row['_cn6ca'].strip()
-            location = ("Nigeria", state, lga)
-            pop_types = [
-                    ('population', 'Population'),
-                    ('population_ratio_male', 'Population ratio (male)'),
-                    ('population_ratio_female', 'Population ratio (female)'),
-                    ('population_ratio_under_4', 'Population ratio (under 4)'),
-                    ('population_under_5_male', 'Population (males under 5)'),
-                    ('population_under_5_female', 'Population (females under 5)')
-            ]
-            for datadict_type in pop_types:
+        for row in nims_data['Population Variables']:
+            slug = get_string('slug', row)
+            name = get_string('name', row)
+            primitive_type = get_string('primitivetype', row)
+            tags = get_list('tags', row)
+            if not slug in datadict_types:
                 dd_type = DataDictType(
                     dbm,
-                    slug=datadict_type[0],
-                    name=datadict_type[1],
-                    primitive_type='number',
-                    tags=['Population', 'General']
+                    slug=slug,
+                    name=name,
+                    primitive_type=primitive_type,
+                    tags=tags
                 )
-                datadict_types[datadict_type[0]] = dd_type.save()
+                datadict_types[slug] = dd_type.save()
 
-            pop              = int(row['_ciyn3'].strip())
-            pop_male         = int(row['_cre1l'].strip())
-            pop_female       = int(row['_chk2m'].strip())
-            pop_ratio_male   = float(pop_male) / float(pop)
-            pop_ratio_female = float(pop_female) / float(pop)
-            pop_ratio_u4     = float(row['agegroups'].strip())
-            pop_u5_male      = int(float(row['childrenunderfive'].strip()))
-            pop_u5_female    = int(float(row['_dkvya'].strip()))
-            
+        for row in nims_data['Population Data']:
+            state = get_string('state', row)
+            lga = get_string('lga', row)
+            location = ("Nigeria", state, lga)
+            data = []
+            if not state or not lga: continue
+            for dd_key in datadict_types.keys():
+                ss_key = dd_key.replace('_', '')
+                point = (dd_key, get_number(ss_key, row), get_datadict_type(dbm, datadict_types[dd_key]))
+                data.append(point)
             if location in locations:
                 lga_loaded.append(lga)
-                data = [
-                    ('population', pop, get_datadict_type(dbm, datadict_types['population'])),
-                    ('population_ratio_male', pop_ratio_male, get_datadict_type(dbm, datadict_types['population_ratio_male'])),
-                    ('population_ratio_female', pop_ratio_female, get_datadict_type(dbm, datadict_types['population_ratio_female'])),
-                    ('population_ratio_under_4', pop_ratio_u4, get_datadict_type(dbm, datadict_types['population_ratio_under_4'])),
-                    ('population_under_5_male', pop_u5_male, get_datadict_type(dbm, datadict_types['population_under_5_male'])),
-                    ('population_under_5_female', pop_u5_female, get_datadict_type(dbm, datadict_types['population_under_5_female']))
-                ]
                 e = mangrove.datastore.entity.get(dbm, locations[location])
-                e.add_data(data)
+                e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
-                #print "...no LGA corresponsing to: %s" % lga
                 if not lga in lga_failed:
                     lga_failed.append(lga)
 
@@ -154,7 +122,6 @@ class Command(BaseCommand):
             print "%d LGAs failed to load:" % len(lga_failed)
             for lga in lga_failed:
                 print "\t%s" % lga
-
         print "Adding MDG indicator data..."
 
         print "Adding data from 'Education MDG Data' worksheet"
