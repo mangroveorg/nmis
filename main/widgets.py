@@ -5,9 +5,9 @@ WIDGETS_BY_REGION_LEVEL = [
 #country:
     ["country_map", "country_key_indicators", "country_state_nav"],
 #state:
-    ["regnav_state", "state_view", "mdg_table", "table_ranking", "some_metadata"],
+    ["regnav_state", "state_map", "state_mdg_performance"],
 #lga:
-    ["regnav_lga", "lga_view", "mdg_table", "some_metadata"],
+    ["regnav_lga", "lga_map", "lga_mdg_table"],
 ]
 
 

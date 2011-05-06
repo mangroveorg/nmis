@@ -136,12 +136,13 @@ a:hover { color: #036; }
 
 header a#logo {
     display: block;
-    line-height: 32px;
-    font-size: 16px;
+    line-height: 27px;
+    font-size: 26px;
     text-decoration: none;
-    width: 100px;
+    width: 200px;
     padding-top: 5px;
     padding-left: 12px;
+    color: #444;
 }
 #container, #container header, #container #main, #container footer {
 	border: 1px solid #888;
@@ -152,6 +153,8 @@ header a#logo {
 #container {
     background-color: #f6f6f6;
 	margin: 6px;
+	width: 1100px;
+	margin: 0 auto;
 }
 #container header {
 	height: 42px;
@@ -162,7 +165,6 @@ header a#logo {
 }
 #container #main {}
 #container #main.with-nav {
-    min-height: 600px;
     position: relative;
     padding-top: 2em;
     padding-left: 240px;
@@ -217,4 +219,47 @@ p.region-breadcrumbs a {
     padding: 5px 8px;
     -moz-border-radius: 5px;
     border-radius: 5px;
+}
+
+
+.map-h {
+	height: 300px;
+}
+.map-bar {
+	float: left;
+	border: 1px solid black;
+	margin-left: 10px;
+}
+.map-mr {
+	width: 422px;
+}
+.map-ml {
+	width: 400px;
+}
+.map-l {
+	width: 700px;
+}
+.map-r {
+	width: 353px;
+}
+
+#lga-mdg-table {
+	border: 1px solid black;
+	margin: 3px 6px 3px 10px;
+	padding: 6px 10px;
+}
+ul.state-list {
+	list-style-type: none;
+	padding: 0;
+}
+ul.state-list li {
+	width: 25%;
+	margin: 0;
+	padding: 0;
+	float: left;
+}
+#lga-mdg-performance {
+	border: 1px solid black;
+	margin: 3px 6px 3px 10px;
+	padding: 6px 10px;
 }

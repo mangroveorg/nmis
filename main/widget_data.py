@@ -20,9 +20,12 @@ def lga_view(region_thing, context):
     return d
 
 
-def state_view(region_thing, context):
-    d = _packaged_dict_for_entity(region_thing)
-    return d
+def state_map(region_thing, context):
+    pass
+
+
+def state_mdg_performance(region_thing, context):
+    pass
 
 
 def mdg_table(region_thing, context):
