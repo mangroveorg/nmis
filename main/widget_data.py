@@ -15,11 +15,6 @@ def _packaged_dict_for_entity(rt):
             u'name': entity.aggregation_paths['_geo'][-1]}
 
 
-def country_view(region_thing, context):
-    d = _packaged_dict_for_entity(region_thing)
-    return d
-
-
 def lga_view(region_thing, context):
     d = _packaged_dict_for_entity(region_thing)
     return d
@@ -62,6 +57,9 @@ def mdg_table(region_thing, context):
 
 def country_map(region_thing, context):
     pass
+
+def country_state_nav(region_thing, context):
+    context.region_hierarchy = region_thing.context_dict(2)
 
 def table_ranking(region_thing, context):
     return {'variable': 'Child Mortality', 'list': [\
