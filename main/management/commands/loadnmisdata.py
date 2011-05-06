@@ -88,9 +88,9 @@ class Command(BaseCommand):
             if not data_row:
                 continue
 
-            lga              = row['_cpzh4'].strip()
-            state            = row['_cn6ca'].strip()
-            location         = ("Nigeria", state, lga)
+            lga = row['_cpzh4'].strip()
+            state = row['_cn6ca'].strip()
+            location = ("Nigeria", state, lga)
             pop_types = [
                     ('population', 'Population'),
                     ('population_ratio_male', 'Population ratio (male)'),
