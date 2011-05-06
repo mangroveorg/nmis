@@ -82,3 +82,6 @@ def regnav_lga(region_thing, context):
 
 def some_metadata(region_thing, context):
     return {}
+
+def lga_facilities_table(region_thing, context):
+    context.facilities_list = [region_thing.name]
