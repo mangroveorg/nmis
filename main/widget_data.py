@@ -67,6 +67,14 @@ def table_ranking(region_thing, context):
                 {'name': 'First', 'color': '#A0EFA0', 'rank': '#1', 'value': '0'}, \
                 {'name': 'Second', 'color': 'red', 'rank': '#2', 'value': '50'}]}
 
+def regnav_country(region_thing, context):
+    context.region_hierarchy = region_thing.context_dict(2)
+
+def regnav_state(region_thing, context):
+    context.region_hierarchy = region_thing.context_dict(2)
+
+def regnav_lga(region_thing, context):
+    context.region_hierarchy = region_thing.context_dict(2)
 
 def some_metadata(region_thing, context):
     return {}

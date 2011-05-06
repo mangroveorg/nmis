@@ -40,8 +40,6 @@ def region_navigation(request, region_path):
             context.__dict__[widget_id] = getattr(widget_data, widget_id)(region_thing=region_thing_object, context=context)
         except:
             context.__dict__[widget_id] = False
-    sample_dict = region_thing_object.to_dict()
-    context.region_hierarchy = region_thing_object.context_dict(2)
     return render_to_response("region_navigation.html", context_instance=context)
 
 

@@ -8,23 +8,6 @@
 	<a href="{{profile_root}}{{parent.path}}">{{parent.name}}</a>
 	{% endfor %}
 </p>
-<div id="region-nav">
-<h2>
-	{{region_hierarchy.name}}
-</h2>
-<ul>
-	{% for region in region_hierarchy.children %}
-	<li>
-		<a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}">{{region.name}}</a>
-	</li>
-	<ul>
-		{% for subregion in region.children %}
-		<li><a href="{{profile_root}}{{subregion.path}}" data-slug="{{subregion.slug}}">{{subregion.name}}</a></li>
-		{% endfor %}
-	</ul>
-	{% endfor %}
-</ul>
-</div>
 <div id="content">
 	<script type="text/javascript" charset="utf-8">
 		var widgetActivators = {};

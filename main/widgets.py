@@ -3,11 +3,11 @@
 #the index is determined by the number of parent entities exist for an entity.
 WIDGETS_BY_REGION_LEVEL = [
 #country:
-    ["country_view", "mdg_table", "some_metadata"],
+    ["regnav_country", "country_view", "mdg_table", "some_metadata"],
 #state:
-    ["state_view", "mdg_table", "table_ranking", "some_metadata"],
+    ["regnav_state", "state_view", "mdg_table", "table_ranking", "some_metadata"],
 #lga:
-    ["lga_view", "mdg_table", "some_metadata"],
+    ["regnav_lga", "lga_view", "mdg_table", "some_metadata"],
 ]
 
 
