@@ -1,0 +1,25 @@
+<style type="text/css" media="screen">
+	ul.state-list {
+		list-style-type: none;
+		padding: 0;
+	}
+	ul.state-list li {
+		width: 25%;
+		margin: 0;
+		padding: 0;
+		float: left;
+	}
+</style>
+<div id="country-state-nav">
+	<h3 class="mock-up">
+		States
+	</div>
+	<ul class="state-list">
+		{% for region in region_hierarchy.children %}
+		<li>
+			<a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}">{{region.name}}</a>
+		</li>
+		{% endfor %}
+	</ul>
+	<div class="clearfix"></div>
+</div>
