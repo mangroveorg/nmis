@@ -1,0 +1,13 @@
+<div id="country-state-nav">
+	<h3 class="mock-up">
+		States
+	</h3>
+	<ul class="state-list">
+		{% for region in region_hierarchy.children %}
+		<li>
+			<a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}">{{region.name}}</a>
+		</li>
+		{% endfor %}
+	</ul>
+	<div class="clearfix"></div>
+</div>

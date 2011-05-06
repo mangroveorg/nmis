@@ -37,11 +37,9 @@ def region_navigation(request, region_path):
     #what goes on behind the scenes that you don't need to edit--
     for widget_id in widget_ids:
         try:
-            context.__dict__[widget_id] = getattr(widget_data, widget_id)(region_thing=region_thing_object)
+            context.__dict__[widget_id] = getattr(widget_data, widget_id)(region_thing=region_thing_object, context=context)
         except:
             context.__dict__[widget_id] = False
-    sample_dict = region_thing_object.to_dict()
-    context.region_hierarchy = region_thing_object.context_dict(2)
     return render_to_response("region_navigation.html", context_instance=context)
 
 
@@ -65,9 +63,8 @@ def spreadsheets(request):
 def region_root_object():
     if not os.path.exists(NIGERIA_REGION_CACHE):
         load_nigeria_regions_to_file()
-    f = open(NIGERIA_REGION_CACHE, 'r')
-    d = json.loads(f.read())
-    f.close()
+    with open(NIGERIA_REGION_CACHE, 'r') as f:
+        d = json.loads(f.read())
     return import_region_thing_from_dict(d)
 
 

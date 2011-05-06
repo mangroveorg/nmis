@@ -15,23 +15,20 @@ def _packaged_dict_for_entity(rt):
             u'name': entity.aggregation_paths['_geo'][-1]}
 
 
-def country_view(region_thing):
-    d = _packaged_dict_for_entity(region_thing)
-    d['marks_favorite_movie'] = "Top Gun"
-    return d
-
-
-def lga_view(region_thing):
+def lga_view(region_thing, context):
     d = _packaged_dict_for_entity(region_thing)
     return d
 
 
-def state_view(region_thing):
-    d = _packaged_dict_for_entity(region_thing)
-    return d
+def state_map(region_thing, context):
+    pass
 
 
-def mdg_table(region_thing):
+def state_mdg_performance(region_thing, context):
+    pass
+
+
+def mdg_table(region_thing, context):
     d = _packaged_dict_for_entity(region_thing)
     mdg_data = {}
     mdg_data['years'] = [2011]
@@ -61,12 +58,27 @@ def mdg_table(region_thing):
     d['mdg_data'] = json.dumps(mdg_data)
     return d
 
+def country_map(region_thing, context):
+    pass
 
-def table_ranking(region_thing):
+def country_state_nav(region_thing, context):
+    context.region_hierarchy = region_thing.context_dict(2)
+
+def table_ranking(region_thing, context):
     return {'variable': 'Child Mortality', 'list': [\
                 {'name': 'First', 'color': '#A0EFA0', 'rank': '#1', 'value': '0'}, \
                 {'name': 'Second', 'color': 'red', 'rank': '#2', 'value': '50'}]}
 
+def regnav_country(region_thing, context):
+    context.region_hierarchy = region_thing.context_dict(2)
 
-def some_metadata(region_thing):
+def regnav_state(region_thing, context):
+    context.region_hierarchy = region_thing.context_dict(2)
+
+def regnav_lga(region_thing, context):
+    context.region_hierarchy = region_thing.context_dict(2)
+    context.state_ro = region_thing.parent
+    context.lga_siblings = region_thing.parent.children
+
+def some_metadata(region_thing, context):
     return {}

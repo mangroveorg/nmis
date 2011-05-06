@@ -1,0 +1,25 @@
+<script type="text/javascript" charset="utf-8">
+	document.getElementById('main').className="with-nav";
+</script>
+
+<p class="region-breadcrumbs">
+	{% for parent in region_hierarchy.parents %}
+	<a href="{{profile_root}}{{parent.path}}">{{parent.name}}</a> <span>&gt;</span>
+	{% endfor %}
+	<a href="{{profile_root}}{{region_hierarchy.path}}">{{region_hierarchy.name}}</a>
+</p>
+
+<div id="region-nav">
+<ul>
+	<li>
+		<a href="{{profile_root}}{{region_hierarchy.path}}" class="selected" data-slug="{{region_hierarchy.slug}}">{{region_hierarchy.name}}</a>
+	</li>
+	<ul>
+		{% for region in region_hierarchy.children %}
+		<li>
+			<a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}">{{region.name}}</a>
+		</li>
+		{% endfor %}
+	</ul>
+</ul>
+</div>
