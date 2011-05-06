@@ -147,13 +147,13 @@ header a#logo {
 }
 #container, #container header, #container #main, #container footer {
     font-family: 'Comic Sans MS';
-	background-color: #f7f7f7;
+	background-color: #eee;
 	margin-top: 5px;
 	position: relative;
 }
 #container {
     background-color: #f6f6f6;
-	margin: 6px;
+	margin: 4px;
 	width: 1100px;
 	margin: 0 auto;
 }
@@ -221,13 +221,14 @@ p.region-breadcrumbs {
     border: 1px solid #000;
     width: 100%;
     border-width: 1px 0;
-    padding: 1px 0px 2px;
-    background-color: #fff;
+    padding: 1px 3px 2px;
 }
 p.region-breadcrumbs a {
     display: inline-block;
     text-decoration: none;
     border: 1px solid transparent;
+    background-color: #eee;
+    border-radius: 3px;
     padding: 1px 8px;
 }
 p.region-breadcrumbs a.mode-link {
@@ -276,12 +277,13 @@ p.region-breadcrumbs a.mode-link span.c {
     border-radius: 5px;
 }
 .map-h {
-	height: 300px;
+	height: 345px;
 }
 .map-bar {
 	float: left;
 	border: 1px solid black;
 	margin-left: 10px;
+	overflow: hidden;
 }
 .map-mr {
 	width: 422px;
@@ -300,18 +302,75 @@ p.region-breadcrumbs a.mode-link span.c {
 	margin: 3px 6px 3px 10px;
 	padding: 6px 10px;
 }
-ul.state-list {
+#lga-mdg-performance {
+	border: 1px solid black;
+	margin: 3px 15px 3px 10px;
+	overflow: hidden;
+}
+#key-indicators {
+    line-height: 40px;
+}
+#key-indicators h3.mock-up {
+    border: 0 none;
+}
+#country-state-nav ul.state-list {
 	list-style-type: none;
 	padding: 0;
+	margin: 0;
 }
-ul.state-list li {
+#country-state-nav ul.state-list li {
 	width: 25%;
 	margin: 0;
 	padding: 0;
 	float: left;
 }
-#lga-mdg-performance {
-	border: 1px solid black;
-	margin: 3px 6px 3px 10px;
-	padding: 6px 10px;
+#country-state-nav ul li a {
+    padding: 3px 6px 8px 15px;
+    display: block;
+    text-decoration: none;
 }
+#country-state-nav ul li a:hover {
+    background-color: #bbb;
+}
+#key-indicators, #country-state-nav {
+	border: 1px solid black;
+
+	margin: 3px 15px 3px 10px;
+}
+h3.mock-up {
+    padding: 2px 15px;
+    line-height: 30px;
+    border-bottom: 1px solid #888;
+}
+div.search-box {
+    position: absolute;
+    top: 9px;
+    right: 20px;
+    border: 1px solid black;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    padding-left: 18px;
+    height: 21px;
+    background-color: #fff;
+}
+div.search-box span.magnifying-glass {
+    position: absolute;
+    top: 4px;
+    left: 5px;;
+    background-image: url('/static/sample_imgs/search_img.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    display: block;
+    width: 11px;
+    height: 14px;
+}
+div.search-box input {
+    font-family: 'Comic Sans MS';
+    background-color: transparent;
+    border: 0 none;
+}
+/*--
+<div class="search-box">
+	<input type="text" value="search">
+</div>
+--*/

@@ -77,6 +77,8 @@ def regnav_state(region_thing, context):
 
 def regnav_lga(region_thing, context):
     context.region_hierarchy = region_thing.context_dict(2)
+    context.state_ro = region_thing.parent
+    context.lga_siblings = region_thing.parent.children
 
 def some_metadata(region_thing, context):
     return {}
