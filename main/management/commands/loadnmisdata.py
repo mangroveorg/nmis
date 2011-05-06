@@ -46,12 +46,24 @@ class Command(BaseCommand):
         countries = {}
         states = {}
         locations = {}
+        num_cgs = 0
+        datadict_types = {}
+        cgs_type = DataDictType(
+            dbm,
+            slug='cgs',
+            name='CGS',
+            primitive_type='boolean'
+        )
+        datadict_types['cgs'] = cgs_type.save()
 
         print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
         for row in nims_data['Nigeria LGAs ALL']:
             country = row['country'].strip()
-            state = row['states'].strip()
+            state = row['state'].strip()
             lga = row['lga'].strip()
+            cgs = ''
+            if row['cgs'] is not None:
+                cgs = row['cgs'].strip()
             location = (country, state, lga)
             if country not in countries:
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
@@ -63,13 +75,15 @@ class Command(BaseCommand):
                 states[state] = e.id
             e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
             locations[location] = e.save()
+            if cgs == 'TRUE':
+                num_cgs += 1
+                e.add_data(data=[(cgs_type.slug, True, cgs_type)])
+        print "%s CGS LGAs" % num_cgs
 
         print "Countries (%d)" % len(countries)
         print "States (%d)" % len(states)
-        print "LGAs (%d)" % (len(locations) - len(countries) - len(states))
+        print "LGAs (%d/%d CGS)" % ((len(locations) - len(countries) - len(states)), num_cgs)
         print "Total locations (%d)" % len(locations)
-
-        datadict_types = {}
 
         print "Adding data from 'Population' worksheet"
         lga_loaded = []
