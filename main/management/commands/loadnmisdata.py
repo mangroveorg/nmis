@@ -55,12 +55,10 @@ class Command(BaseCommand):
 
         print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
         for row in nims_data['Nigeria LGAs ALL']:
-            country = row['country'].strip()
-            state = row['state'].strip()
-            lga = row['lga'].strip()
-            cgs = ''
-            if row['cgs'] is not None:
-                cgs = row['cgs'].strip()
+            country = get_string('country', row)
+            state = get_string('state', row)
+            lga = get_string('lga', row)
+            cgs = get_boolean('cgs', row)
             location = (country, state, lga)
             if country not in countries:
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
@@ -72,17 +70,16 @@ class Command(BaseCommand):
                 states[state] = e.id
             e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
             locations[location] = e.save()
-            if cgs == 'TRUE':
+            if cgs:
                 num_cgs += 1
-                e.add_data(data=[(cgs_type.slug, True, cgs_type)])
+                e.add_data(data=[(cgs_type.slug, cgs, cgs_type)])
         print "%s CGS LGAs" % num_cgs
 
         print "Countries (%d)" % len(countries)
         print "States (%d)" % len(states)
-        print "LGAs (%d/%d CGS)" % ((len(locations) - len(countries) - len(states)), num_cgs)
+        print "LGAs (%d) (%d as CGS)" % ((len(locations) - len(countries) - len(states)), num_cgs)
         print "Total locations (%d)" % len(locations)
-        print "Adding data from 'Population' worksheet"
-        
+        print "Adding data from 'Population Data' worksheet"
         lga_loaded = []
         lga_failed = []
 
