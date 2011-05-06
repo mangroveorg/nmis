@@ -15,17 +15,19 @@ def _packaged_dict_for_entity(rt):
             u'name': entity.aggregation_paths['_geo'][-1]}
 
 
+def country_view(region_thing, context):
+    d = _packaged_dict_for_entity(region_thing)
+    return d
+
+
 def lga_view(region_thing, context):
     d = _packaged_dict_for_entity(region_thing)
     return d
 
 
-def state_map(region_thing, context):
-    pass
-
-
-def state_mdg_performance(region_thing, context):
-    pass
+def state_view(region_thing, context):
+    d = _packaged_dict_for_entity(region_thing)
+    return d
 
 
 def mdg_table(region_thing, context):
@@ -61,9 +63,12 @@ def mdg_table(region_thing, context):
 def country_map(region_thing, context):
     pass
 
+<<<<<<< HEAD
 def country_state_nav(region_thing, context):
     context.region_hierarchy = region_thing.context_dict(2)
 
+=======
+>>>>>>> adding "context" as a parameter to the widget_data
 def table_ranking(region_thing, context):
     return {'variable': 'Child Mortality', 'list': [\
                 {'name': 'First', 'color': '#A0EFA0', 'rank': '#1', 'value': '0'}, \
@@ -75,11 +80,14 @@ def regnav_country(region_thing, context):
 def regnav_state(region_thing, context):
     context.region_hierarchy = region_thing.context_dict(2)
 
+<<<<<<< HEAD
 def regnav_lga(region_thing, context):
     context.region_hierarchy = region_thing.context_dict(2)
     context.state_ro = region_thing.parent
     context.lga_siblings = region_thing.parent.children
 
+=======
+>>>>>>> adding "context" as a parameter to the widget_data
 def some_metadata(region_thing, context):
     return {}
 
