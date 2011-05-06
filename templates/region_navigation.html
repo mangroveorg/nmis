@@ -36,23 +36,24 @@
 	coolButt(facilitiesLink);
 	
 	function clickCoolLink(evt) {
-		if(!$(this).hasClass('selected')) {
-			$(this).siblings('.selected').removeClass('selected');
-			$(this).addClass('selected');
-			var ll = $(this).data('link-dest');
-			$('#content').trigger('modeChange', {'mode':ll});
+		var modeDest = $(this).data('link-dest'),
+			content = $("#content");
+		
+		if(content.data('mode')!==modeDest) {
+			$('#content').trigger('modeChange', {'mode':modeDest});
 		}
 		$(this).blur();
 		evt.preventDefault();
 	}
-
 	$(mdgLink).click(clickCoolLink);
 	$(facilitiesLink).click(clickCoolLink);
+	
 	(function($){
 		var content = $("#content");
 		$('#content').bind('modeChange', function(evt, md){
-			var mode = md.mode;
-			$('#content').data('mode', mode);
+			var mode = md.mode,
+				content = $('#content');
+			content.data('mode', mode);
 			$.each(linkDests, function(i, cln){
 				if(cln==mode) {content.addClass(cln);} else {content.removeClass(cln);}
 			});
