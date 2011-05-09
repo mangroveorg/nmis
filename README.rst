@@ -15,8 +15,8 @@ Install POSTGRES if you are using it.
 
 Install prerequisites
 ::
-    sudo apt-get install git-core build-essental python2.6-dev python-setuptools
-    sudo easy_install pip
+    sudo apt-get install git-core build-essental python2.6-dev python-setuptools python-pip rubygems libhaml-ruby
+    sudo gem install haml
 
 Install the NMIS Code base
 ::
