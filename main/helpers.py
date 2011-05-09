@@ -16,15 +16,18 @@ def group_required(group, login_url=None):
                                             [g.name for g in u.groups.all()], \
                             login_url=login_url)
 
+
 def read_required(login_url=None):
     return user_passes_test(lambda u: 'read' in \
                                             [g.name for g in u.groups.all()], \
                             login_url=login_url)
 
+
 def write_required(login_url=None):
     return user_passes_test(lambda u: 'write' in \
                                             [g.name for g in u.groups.all()], \
                             login_url=login_url)
+
 
 def add_read_group_to_new_user(sender, **kwargs):
     from django.contrib.auth.models import Group

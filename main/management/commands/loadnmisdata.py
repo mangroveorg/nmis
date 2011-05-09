@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
+
 class Command(BaseCommand):
     help = "Loads the NMIS dataset from the 'NIMS Data' Google Doc."
     args = "<server> <database> | <database>"
@@ -103,7 +104,8 @@ class Command(BaseCommand):
             lga = get_string('lga', row)
             location = ("Nigeria", state, lga)
             data = []
-            if not state or not lga: continue
+            if not state or not lga:
+                continue
             for dd_key in datadict_types.keys():
                 ss_key = dd_key.replace('_', '')
                 point = (dd_key, get_number(ss_key, row), get_datadict_type(dbm, datadict_types[dd_key]))

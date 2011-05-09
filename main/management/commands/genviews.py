@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
+
 class Command(BaseCommand):
     help = "Generates most Mangrove views to save some time later"
     args = "<server> <database> | <database>"

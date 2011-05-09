@@ -58,30 +58,38 @@ def mdg_table(region_thing, context):
     d['mdg_data'] = json.dumps(mdg_data)
     return d
 
+
 def country_map(region_thing, context):
     pass
 
+
 def country_state_nav(region_thing, context):
     context.region_hierarchy = region_thing.context_dict(2)
+
 
 def table_ranking(region_thing, context):
     return {'variable': 'Child Mortality', 'list': [\
                 {'name': 'First', 'color': '#A0EFA0', 'rank': '#1', 'value': '0'}, \
                 {'name': 'Second', 'color': 'red', 'rank': '#2', 'value': '50'}]}
 
+
 def regnav_country(region_thing, context):
     context.region_hierarchy = region_thing.context_dict(2)
 
+
 def regnav_state(region_thing, context):
     context.region_hierarchy = region_thing.context_dict(2)
+
 
 def regnav_lga(region_thing, context):
     context.region_hierarchy = region_thing.context_dict(2)
     context.state_ro = region_thing.parent
     context.lga_siblings = region_thing.parent.children
 
+
 def some_metadata(region_thing, context):
     return {}
+
 
 def lga_facilities_table(region_thing, context):
     context.facilities_list = [region_thing.name]
