@@ -1,8 +1,9 @@
-var LaunchRoysMap = (function() {
+var LaunchRoysMap = (function(_wrap) {
+    var wrap = $(_wrap);
     tags = ['Afghanistan'];
 
     // Prepare page
-    $('a').hover(
+    $('a', wrap).hover(
         function () {this.className = this.className.replace('OFF', 'ON');}, 
         function () {this.className = this.className.replace('ON', 'OFF');}
     );
@@ -22,20 +23,20 @@ var LaunchRoysMap = (function() {
     }
     function loadTags() {
         $.get('/xss/tags.json', {
-            key: $('#key').val()
+            key: $('#key', wrap).val()
         }, function(data) {
-            var targetDiv = $('#tags');
+            var targetDiv = $('#tags', wrap);
             $(data.split('\n')).each(function() {
                 var tag = $.trim(this);
                 if (!tag) return;
                 targetDiv.append('<input type=checkbox class=tag value="' + tag + '">' + tag + '<br>');
             });
-            $('.tag').change(renderMaps);
+            $('.tag', wrap).change(renderMaps);
         });
     }
     function getSelectedTags() {
         
-        $('.tag:checked').each(function() {
+        $('.tag:checked', wrap).each(function() {
             tags.push(this.value);
         });
         return tags.join('\n');
@@ -48,7 +49,7 @@ var LaunchRoysMap = (function() {
         // Clean
         if (layer) map.remove(layer);
         if (!tagString) return;
-        layer = po.geoJson().url('/xss/maps.json?key=' + $('#key').val() + '&srid=4326&tags=' + escape(tagString) + "&bboxFormat=xyxy&bbox={B}&simplified=1").id('features').on('load', function(e) {
+        layer = po.geoJson().url('/xss/maps.json?key=' + $('#key', wrap).val() + '&srid=4326&tags=' + escape(tagString) + "&bboxFormat=xyxy&bbox={B}&simplified=1").id('features').on('load', function(e) {
             // For each feature,
             $(e.features).each(function() {
                 // Load
@@ -76,7 +77,7 @@ var LaunchRoysMap = (function() {
             // For each stored feature,
             for (featureID in propertyByNameByID) {
                 // If the feature is visible,
-                if ($('#e' + featureID).length) {
+                if ($('#e' + featureID, wrap).length) {
                     propertyByName = propertyByNameByID[featureID];
                     items.push({
                         featureID: featureID,
@@ -95,8 +96,8 @@ var LaunchRoysMap = (function() {
             $(items).each(function() {
                 listLines.push('<div class="fN feature" id=d' + this.featureID + '>' + this.name + '</div>');
             });
-            $('#list').html(listLines.join('\n'));
-            $('#list .feature').hover(
+            $('#list', wrap).html(listLines.join('\n'));
+            $('#list .feature', wrap).hover(
                 function () {
                     scrollList = 0;
                     getHoverFeature(getID(this))();
@@ -119,12 +120,12 @@ var LaunchRoysMap = (function() {
     function getHoverFeature(featureID) {
         return function(e) {
             // Highlight list entry
-            var listHover = $('#d' + featureID);
+            var listHover = $('#d' + featureID, wrap);
             if (listHover) {
                 listHover.removeClass('bN bS').addClass('bH');
                 if (scrollList) {
                     // Scroll list
-                    var list = $('#list');
+                    var list = $('#list', wrap);
                     list.scrollTop(list.scrollTop() + listHover.position().top - list.height() / 2);
                 }
             }
@@ -135,7 +136,7 @@ var LaunchRoysMap = (function() {
     function getUnhoverFeature(featureID) {
         return function(e) {
             // Restore list entry
-            var listHover = $('#d' + featureID);
+            var listHover = $('#d' + featureID, wrap);
             listHover.removeClass('bH bS').addClass('bN');
             // Restore map entry
             setFeatureColor(featureID, getColorClass(featureID));
@@ -145,7 +146,7 @@ var LaunchRoysMap = (function() {
         return function(e) {
             if (selectedID && selectedID != featureID) {
                 // Restore list entry
-                var listSelect = $('#d' + selectedID);
+                var listSelect = $('#d' + selectedID, wrap);
                 if (listSelect) listSelect.removeClass('bH bS').addClass('bN');
                 // Restore map entry
                 setFeatureColor(selectedID, getColorClass(selectedID));
@@ -153,7 +154,7 @@ var LaunchRoysMap = (function() {
             // Load
             selectedID = featureID;
             // Highlight list entry
-            var listSelect = $('#d' + selectedID);
+            var listSelect = $('#d' + selectedID, wrap);
             listSelect.removeClass('bN bH').addClass('bS');
             // Highlight map entry
             setFeatureColor(selectedID, 'fS');
@@ -163,14 +164,14 @@ var LaunchRoysMap = (function() {
                 propertyLines.push(key + ' = ' + propertyByName[key]);
             }
             propertyLines.sort();
-            $('#detail').html('<div id=detailHeader>' + propertyByName['Name'] + '</div><br>' + propertyLines.join('<br>'));
+            $('#detail', wrap).html('<div id=detailHeader>' + propertyByName['Name'] + '</div><br>' + propertyLines.join('<br>'));
         };
     }
     function getColorClass(featureID) {
         return 'q' + (8 - (featureID % 9)) + '-' + 9;
     }
     function setFeatureColor(featureID, colorClass) {
-        $(elementsByID[featureID]).each(function() {
+        $(elementsByID[featureID], wrap).each(function() {
             this.setAttribute('class', colorClass);
         });
     }
@@ -186,7 +187,7 @@ var LaunchRoysMap = (function() {
         .add(po.compass().pan('none'));
     map.container().setAttribute('class', 'Blues');
     var selectedID;
-    $('#detail').hover(
+    $('#detail', wrap).hover(
         function() {
             if (selectedID) {
                 $(this).css('background-color', '#b2b2b2');
@@ -237,6 +238,6 @@ var LaunchRoysMap = (function() {
 
     // Prepare page
     refreshInterface();
-    $('#refresh').click(refreshInterface);
-    $('#key').click(function() {this.select()}).focus();
+    $('#refresh', wrap).click(refreshInterface);
+    $('#key', wrap).click(function() {this.select()}).focus();
 });

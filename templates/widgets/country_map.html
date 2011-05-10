@@ -12,18 +12,19 @@ widgetActivators.country_map = (function(){
 			dataType: 'script',
 		});
 		$.when(polyMaps, launchScript).done(function(unk, status){
-			LaunchRoysMap();
+			LaunchRoysMap("#map-bar");
 		});
 	});
 });
 </script> 
 
-
-<div class="map-h map-bar map-l">
-    <div id="map"></div> 
-</div>
-<div class="map-h map-bar map-r">
-    <div id="tags"></div>
-    <img src="/static/sample_imgs/country_featured_maps.png">
+<div id="map-bar">
+	<div class="map-h map-bar map-l">
+    	<div id="map"></div> 
+	</div>
+	<div class="map-h map-bar map-r">
+    	<div id="tags"></div>
+    	<img src="/static/sample_imgs/country_featured_maps.png">
+	</div>
 </div>
 <div class="clearfix"></div>
