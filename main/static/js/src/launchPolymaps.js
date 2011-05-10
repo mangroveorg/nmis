@@ -49,7 +49,7 @@ var LaunchRoysMap = (function(_wrap) {
         // Clean
         if (layer) map.remove(layer);
         if (!tagString) return;
-        layer = po.geoJson().url('/xss/maps.json?key=' + $('#key', wrap).val() + '&srid=4326&tags=' + escape(tagString) + "&bboxFormat=xyxy&bbox={B}&simplified=1").id('features').on('load', function(e) {
+        layer = po.geoJson().url('/xss/maps.json?key=' + window.csrf + '&srid=4326&tags=' + escape(tagString) + "&bboxFormat=xyxy&bbox={B}&simplified=1").id('features').on('load', function(e) {
             // For each feature,
             $(e.features).each(function() {
                 // Load

@@ -18,6 +18,9 @@
   <link rel="stylesheet" href="/static/css/style.css">
   <link rel="stylesheet" href="/static/ui-theme/jquery-ui-1.8.12.custom.css">
   <script src="/static/js/libs/modernizr-1.7.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+	window.csrf = "{{csrf_token}}";
+</script>
   {% block head %}{% endblock %}
   {% load compress %}
 <!--
