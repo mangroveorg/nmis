@@ -5,7 +5,7 @@
 	<ul class="state-list">
 		{% for region in region_hierarchy.children %}
 		<li>
-			<a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}">{{region.name}}</a>
+			<a href="{{profile_root}}{{region.path}}" class="region-nav" data-slug="{{region.slug}}" data-activity-status="{{region.activity_status_json}}">{{region.name}}</a>
 		</li>
 		{% endfor %}
 	</ul>

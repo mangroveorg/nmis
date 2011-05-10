@@ -21,6 +21,15 @@ class RegionThing(object):
         self.children = []
         self.parent = None
 
+    def activity_status(self):
+        import random
+        ii = random.randint(0,2)
+        return {'scaleupStatus':ii}
+
+    def activity_status_json(self):
+        import json
+        return json.dumps(self.activity_status())
+
     @property
     def entity(self):
         return get(get_db_manager(self.server, self.database), self.entity_id)
@@ -50,7 +59,8 @@ class RegionThing(object):
         return {
             'name': self.name,
             'slug': self.slug,
-            'path': self.path()
+            'path': self.path(),
+            'activity_status_json': self.activity_status_json()
         }
 
     def context_dict(self, depth=2):

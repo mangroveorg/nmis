@@ -10,7 +10,6 @@ from main.region_thing import RegionThing, import_region_thing_from_dict
 from helpers import read_required
 import json
 import widgets
-import widget_data
 import spreadsheet_display
 import os
 NIGERIA_REGION_CACHE = 'nigeria_regions.json'
@@ -34,10 +33,11 @@ def region_navigation(request, region_path):
     widget_ids, include_templates = widgets.widget_includes_by_region_level(len(region_thing_object.ancestors()))
     context.widgets = include_templates
     context.entity = region_thing_object.entity
+    context.title = "NMIS Profiles: %s" % region_thing_object.name
     #what goes on behind the scenes that you don't need to edit--
     for widget_id in widget_ids:
         try:
-            context.__dict__[widget_id] = getattr(widget_data, widget_id)(region_thing=region_thing_object, context=context)
+            context.__dict__[widget_id] = getattr(widgets, widget_id)(region_thing=region_thing_object, context=context)
         except:
             context.__dict__[widget_id] = False
     return render_to_response("region_navigation.html", context_instance=context)
