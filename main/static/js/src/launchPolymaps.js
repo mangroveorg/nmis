@@ -1,6 +1,6 @@
 var LaunchRoysMap = (function(_wrap) {
     var wrap = $(_wrap);
-    tags = ['Afghanistan'];
+    tags = [];
 
     // Prepare page
     $('a', wrap).hover(
