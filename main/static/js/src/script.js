@@ -71,4 +71,24 @@ $(function(){
             $(this).addClass('scaleup-'+statii[scaleupStatus]);
         }
     });
-})
+});
+
+(function(sInput){
+    var searchText = "search";
+    if(sInput.val()=='') {
+        sInput.val(searchText);
+        sInput.addClass('inactive');
+    }
+    sInput.focus(function(){
+        if($(this).val()==searchText) {
+            $(this).val('');
+            $(this).removeClass('inactive');
+        }
+    });
+    sInput.blur(function(){
+        if($(this).val()==='') {
+            $(this).val(searchText);
+            $(this).addClass('inactive');
+        }
+    })
+})($('.search-box input'))

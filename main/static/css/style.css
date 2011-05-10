@@ -305,10 +305,8 @@ p.region-breadcrumbs a.mode-link span.c {
 .map-r {
 	width: 353px;
 }
-#lga-mdg-table {
-	border: 1px solid black;
-	margin: 3px 6px 3px 10px;
-	padding: 6px 10px;
+#lga-mdg-table, #lga-facilities-table {
+	padding: 6px 15px 6px 12px;
 }
 #lga-mdg-performance {
 	border: 1px solid black;
@@ -377,14 +375,10 @@ div.search-box input {
     background-color: transparent;
     border: 0 none;
 }
-/*--
-<div class="search-box">
-	<input type="text" value="search">
-</div>
---*/
-#content.facilities .mdg-indicators-only {
+
+#content.facilities .mdg-indicators-only, #content.mdg-indicators .facilities-only {
     display: none;
 }
-#content.mdg-indicators .facilities-only {
-    display: none;
-}
+
+.js .display-block-when-ready {display: none;}
+.js .display-block-when-ready.ready {display: block;}

@@ -16,6 +16,7 @@
   <link rel="apple-touch-icon" href="/static/browser-images/apple-touch-icon.png">
 
   <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="stylesheet" href="/static/ui-theme/jquery-ui-1.8.12.custom.css">
   <script src="/static/js/libs/modernizr-1.7.min.js"></script>
   {% block head %}{% endblock %}
   {% load compress %}
@@ -33,7 +34,7 @@
 		<a href="/" id="logo">NMIS Logo</a>
 		<div class="search-box">
 			<span class="magnifying-glass">&nbsp;</span>
-			<input type="text" value="search">
+			<input type="text" value="">
 		</div>
     </header>
     <div id="main" role="main">
@@ -45,6 +46,9 @@
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.js"></script>
   <script>window.jQuery || document.write("<script src='/static/js/libs/jquery-1.6.min.js'>\x3C/script>")</script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js"></script>
+  <script>window.jQuery.ui || document.write("<script src='/static/js/libs/jquery-ui.1.8.12.js'>\x3C/script>")</script>
+
   <script src="/static/js/src/jquery.cookie.js" type="text/javascript" charset="utf-8"></script>
   <!--[if lt IE 7 ]>
     <script src="/static/js/libs/dd_belatedpng.js"></script>

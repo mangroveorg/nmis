@@ -1,11 +1,42 @@
-<div id="lga-mdg-table" class="facilities-only">
-	<img src="/static/sample_imgs/so_simple.png" style="width:100%">
-	<!--
-	<table border="0" cellspacing="5" cellpadding="5">
-		<tr><th>Facility</th></tr>
-		{% for f in facilities_list %}
-		<tr><td>{{f}}</td></tr>
-		{% endfor %}
-	</table>
-	-->
+<div id="lga-facilities-table" class="facilities-only display-block-when-ready">
+	<div id="facility-tabs">
+		<ul>
+			<li>
+				<a href="#health">
+					Health
+				</a>
+			</li>
+			<li>
+				<a href="#education">
+					Education
+				</a>
+			</li>
+			<li>
+				<a href="#water">
+					Water
+				</a>
+			</li>
+		</ul>
+		<div id="health">
+			Health
+			<table border="0" cellspacing="5" cellpadding="5">
+				<tr><th>Facility</th></tr>
+				<tr><td>Facility</td></tr>
+			</table>
+		</div>
+		<div id="education">
+			Education
+		</div>
+		<div id="water">
+			Water
+		</div>
+	</div>
 </div>
+<script type="text/javascript" charset="utf-8">
+widgetActivators['lga_facilities_table'] = function(){
+	$(function(){
+		$('#facility-tabs').tabs();
+		$('#lga-facilities-table').addClass('ready');
+	});
+}
+</script>
