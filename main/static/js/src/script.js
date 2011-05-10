@@ -58,4 +58,17 @@
 })($('#content'), [
             ["MDG Indicators", "mdg-indicators"],
             ["Facilities", "facilities"]
-        ])
+        ]);
+
+/*-- Mark "activity status" on region nav objects...
+--*/
+$(function(){
+    var statii = ["inactive", "phase-one", "phase-two"];
+    $('a.region-nav').each(function(){
+        var activityStatus = $(this).data('activityStatus');
+        if(activityStatus!==undefined && activityStatus.scaleupStatus!==undefined) {
+            var scaleupStatus = activityStatus.scaleupStatus;
+            $(this).addClass('scaleup-'+statii[scaleupStatus]);
+        }
+    });
+})

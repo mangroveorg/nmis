@@ -192,6 +192,15 @@ header a#logo {
     text-decoration: none;
     padding: 3px 15px;
 }
+#region-nav a.scaleup-phase-one {
+    color: #1B4B99;
+}
+#region-nav a.scaleup-phase-two {
+    color: #1B4B99;
+}
+#region-nav a.scaleup-inactive {
+    color: #89A0BC;
+}
 #region-nav ul a:hover {
     background-color: #ccc;
 }
