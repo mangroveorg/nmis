@@ -11,13 +11,13 @@
 
 <div id="region-nav">
 <ul>
-	<li><a href="{{profile_root}}{{state_ro.path}}" data-slug="{{state_ro.slug}}">{{state_ro.name}}</a></li>
+	<li><a href="{{profile_root}}{{state_ro.path}}" data-slug="{{state_ro.slug}}" class="region-nav" data-activity-status="{{region.activity_status_json}}">{{state_ro.name}}</a></li>
 	<ul>
 	{% for region in lga_siblings %}
 		{% ifequal region.slug region_hierarchy.slug %}
-		<li><a href="{{profile_root}}{{region.path}}" class="selected" data-slug="{{region.slug}}">{{region.name}}</a></li>
+		<li><a href="{{profile_root}}{{region.path}}" class="selected" class="region-nav" data-slug="{{region.slug}}" data-activity-status="{{region.activity_status_json}}">{{region.name}}</a></li>
 		{% else %}
-		<li><a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}">{{region.name}}</a></li>
+		<li><a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}" class="region-nav" data-activity-status="{{region.activity_status_json}}">{{region.name}}</a></li>
 		{% endifequal %}
 	{% endfor %}
 	</ul>

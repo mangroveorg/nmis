@@ -12,12 +12,12 @@
 <div id="region-nav">
 <ul>
 	<li>
-		<a href="{{profile_root}}{{region_hierarchy.path}}" class="selected" data-slug="{{region_hierarchy.slug}}">{{region_hierarchy.name}}</a>
+		<a href="{{profile_root}}{{region_hierarchy.path}}" class="selected region-nav" data-slug="{{region_hierarchy.slug}}" data-activity-status="{{region.activity_status_json}}">{{region_hierarchy.name}}</a>
 	</li>
 	<ul>
 		{% for region in region_hierarchy.children %}
 		<li>
-			<a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}">{{region.name}}</a>
+			<a href="{{profile_root}}{{region.path}}" data-slug="{{region.slug}}" class="region-nav" data-activity-status="{{region.activity_status_json}}">{{region.name}}</a>
 		</li>
 		{% endfor %}
 	</ul>
