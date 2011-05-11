@@ -1,4 +1,3 @@
-import sys
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
@@ -22,89 +21,6 @@ class Command(BaseCommand):
         self._import_data(server, database)
 
     def _import_data(self, server, database):
-        import sys
-        import json
-        from mangrove.datastore.database import DatabaseManager
-        from mangrove.datastore.entity import Entity
-        from mangrove.georegistry.api import get_locations_tree, get_feature_by_id
-
-        print "Loading NIMS Data..."
-        print "\tServer: %s" % server
-        print "\tDatabase: %s" % database
-
-        dbm = DatabaseManager(server=server, database=database)
-
-        data = get_locations_tree(country_code='NG', limit=1000)
-
-        countries, states, lgas = [], [], []
-
-        for country in data:
-            slug = country
-            name = data[country]['name']
-            gr_id = data[country]['feature_id']
-            feature_data = get_feature_by_id(gr_id)
-            if not feature_data:
-                print 'Could not import data... Exiting'
-                sys.exit(1)
-            geometry = feature_data['geometry']
-            centroid = json.loads(feature_data['properties']['geometry_centroid'])
-            location = [country]
-            e = Entity(dbm,
-                       entity_type=["Location", "Country"],
-                       location=location,
-                       geometry=geometry,
-                       centroid=centroid,
-                       gr_id=gr_id)
-            e.save()
-            countries.append(data[country]['name'])
-            print '%s (%s/%s)' % (data[country]['name'], country, data[country]['feature_id'])
-            for state in data[country]['children']:
-                slug = state['slug']
-                name = state['name']
-                gr_id = state['feature_id']
-                feature_data = get_feature_by_id(gr_id)
-                if not feature_data:
-                    print 'Could not import data... Exiting'
-                    sys.exit(1)
-                geometry = feature_data['geometry']
-                centroid = json.loads(feature_data['properties']['geometry_centroid'])
-                location = [country, state['slug']]
-                e = Entity(dbm,
-                           entity_type=["Location", "State"],
-                           location=location,
-                           geometry=geometry,
-                           centroid=centroid,
-                           gr_id=gr_id)
-                e.save()
-                states.append(state['name'])
-                print '\t%s (%s/%s)' % (state['name'], state['slug'], state['feature_id'])
-                for lga in state['children']:
-                    feature_data = get_feature_by_id(gr_id)
-                    if not feature_data:
-                        print 'Could not import data... Exiting'
-                        sys.exit(1)
-                    slug = lga['slug']
-                    name = lga['name']
-                    gr_id = lga['feature_id']
-                    if not feature_data:
-                        print 'Could not import data... Exiting'
-                        sys.exit(1)
-                    geometry = feature_data['geometry']
-                    centroid = json.loads(feature_data['properties']['geometry_centroid'])
-                    location = [country, state['slug'], lga['slug']]
-                    e = Entity(dbm,
-                               entity_type=["Location", "LGA"],
-                               location=location,
-                               geometry=geometry,
-                               centroid=centroid,
-                               gr_id=gr_id)
-                    e.save()
-                    lgas.append(lga['name'])
-                    print '\t\t%s (%s/%s)' % (lga['name'], lga['slug'], lga['feature_id'])
-
-        print 'Entities created: countries (%d), states (%d), lgas (%d)' % (len(countries), len(states), len(lgas))
-
-    def _import_data_OLD(self, server, database):
         from mangrove.datastore.database import DatabaseManager
         from mangrove.datastore.entity import Entity
         from mangrove.datastore.datadict import DataDictType, get_datadict_type
