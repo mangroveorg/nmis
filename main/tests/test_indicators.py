@@ -6,7 +6,8 @@ from pytz import UTC
 from mangrove.datastore.database import get_db_manager
 from mangrove.datastore.entity import Entity
 from mangrove.datastore.datadict import DataDictType
-from nmis.main.indicators import data_dict_type_tuples, CalculatedDataDictType, ScoreBuilder
+from nmis.main.indicators import CalculatedDataDictType
+
 
 class TestIndicators(unittest.TestCase):
 
@@ -15,7 +16,7 @@ class TestIndicators(unittest.TestCase):
         self.create_data_dictionary_entries()
         self.create_entities()
         self.create_data_records()
-        self.create_access_indicator()
+        self.create_indicators()
 
     def tearDown(self):
         for e in self.entities:
@@ -23,9 +24,9 @@ class TestIndicators(unittest.TestCase):
             pass
 
     def create_data_dictionary_entries(self):
+        from nmis.main.health import data_dict_types
         self.data_dict_types = {}
-        for data_dict_type_tuple in data_dict_type_tuples:
-            kwargs = dict(zip(('name', 'slug', 'primitive_type', 'description'), data_dict_type_tuple))
+        for kwargs in data_dict_types:
             slug = kwargs['slug']
             data_dict_type = DataDictType(self.dbm, **kwargs)
             self.data_dict_types[slug] = data_dict_type
@@ -42,16 +43,11 @@ class TestIndicators(unittest.TestCase):
     def create_data_records(self):
         data = [
             {
-                'open_247': True,
-                'all_weather_road': True,
-                'sufficient_beds_past_month': True,
-                'no_user_fees': False,
-                },
-            {
-                'open_247': False,
-                'all_weather_road': False,
-                'sufficient_beds_past_month': True,
-                'no_user_fees': True,
+                "facility_open_247_yn": "yes",
+                "all_weather_road_yn": "no",
+                "km_to_referral_facility": 15,
+                "transport_to_referral_facility_ambulance": 1,
+                "inpatient_care_enough_beds_yn": "no",
                 },
             ]
         self.february = datetime.datetime(2011, 02, 01, tzinfo=UTC)
@@ -59,31 +55,19 @@ class TestIndicators(unittest.TestCase):
             for slug, value in d.items():
                 data_dict_type = self.data_dict_types[slug]
                 e.add_data(
-                    data=[(slug, value, data_dict_type),],
+                    data=[(slug, value, data_dict_type)],
                     event_time=self.february
                     )
 
-    def create_access_indicator(self):
-        score_builder = ScoreBuilder()
-        slugs = [
-            'open_247',
-            'all_weather_road',
-            'sufficient_beds_past_month',
-            'no_user_fees',
-            ]
-        for slug in slugs:
-            score_builder.add_true_component(slug)
-
-        self.access_indicator = CalculatedDataDictType(
-            dbm=self.dbm,
-            name='Access',
-            slug='access',
-            primitive_type='formula',
-            description='Access score for health facility.'
-            )
-        self.access_indicator.set_formula(score_builder.get_formula())
+    def create_indicators(self):
+        from nmis.main.health import scores
+        self.indicators = {}
+        for score in scores:
+            slug = score["slug"]
+            self.indicators[slug] = CalculatedDataDictType(self.dbm, **score)
 
     def test_access_score_indicator(self):
-        self.access_indicator.add_data_records(self.entities[0])
+        access_indicator = self.indicators["access"]
+        access_indicator.add_data_records(self.entities[0])
         all_data = self.entities[0].get_all_data()
-        self.assertEquals(all_data[self.february][u'access'][u'value'], 0.75)
+        self.assertEquals(all_data[self.february][u'access'], 0.5)
