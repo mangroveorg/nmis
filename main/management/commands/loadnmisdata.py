@@ -39,7 +39,7 @@ class Command(BaseCommand):
         dbm = DatabaseManager(server=server, database=database)
 
         user_spreadsheets = GoogleSpreadsheetsClient(settings.GMAIL_USERNAME, settings.GMAIL_PASSWORD)
-        nims_data = user_spreadsheets['NIMS Data']
+        nims_data = user_spreadsheets['NIMS Data Deux']
 
         countries = {}
         states = {}
@@ -65,16 +65,18 @@ class Command(BaseCommand):
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
                 locations[(country)] = e.save()
                 countries[country] = e.id
+                print "...(%s)" % country
             if state not in states:
                 e = Entity(dbm, entity_type=["Location", "State"], location=[country, state])
                 locations[(country, state)] = e.save()
                 states[state] = e.id
+                print "...(%s, %s)" % (country, state)
             e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
             locations[location] = e.save()
+            print "...(%s, %s, %s)" % location
             if cgs:
                 num_cgs += 1
                 e.add_data(data=[(cgs_type.slug, cgs, cgs_type)])
-        print "%s CGS LGAs" % num_cgs
 
         print "Countries (%d)" % len(countries)
         print "States (%d)" % len(states)
@@ -118,7 +120,7 @@ class Command(BaseCommand):
                 if not lga in lga_failed:
                     lga_failed.append(lga)
 
-        print "Loaded data for %d out of %d LGAs" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
+        print "Loaded %d out of %d records" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
         if lga_failed:
             print "%d LGAs failed to load:" % len(lga_failed)
             for lga in lga_failed:
@@ -157,7 +159,7 @@ class Command(BaseCommand):
                 if not lga in lga_failed:
                     lga_failed.append(lga)
 
-        print "Loaded data for %d out of %d LGAs" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
+        print "Loaded %d out of %d records" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
         if lga_failed:
             print "%d LGAs failed to load:" % len(lga_failed)
             for lga in lga_failed:
@@ -192,7 +194,7 @@ class Command(BaseCommand):
                 if not lga in lga_failed:
                     lga_failed.append(lga)
 
-        print "Loaded data for %d out of %d LGAs" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
+        print "Loaded %d out of %d records" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
         if lga_failed:
             print "%d LGAs failed to load:" % len(lga_failed)
             for lga in lga_failed:
@@ -227,7 +229,7 @@ class Command(BaseCommand):
                 if not lga in lga_failed:
                     lga_failed.append(lga)
 
-        print "Loaded data for %d out of %d LGAs" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
+        print "Loaded %d out of %d records" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
         if lga_failed:
             print "%d LGAs failed to load:" % len(lga_failed)
             for lga in lga_failed:
