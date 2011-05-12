@@ -11,7 +11,7 @@ from django.conf import settings
 
 CSV_SEP = ','
 RAW_FOLDER_NAME = 'raw'
-RAW_FILE_PREFIX = 'raw_'
+RAW_FILE_PREFIX = 'raw'
 
 
 def smakedirs(folder):
@@ -30,7 +30,8 @@ class Command(BaseCommand):
             photos_folder = args[1]
         else:
             raise CommandError("Wrong number of arguments. Run " \
-                               "'python manage.py help genviews' for usage.")
+                               "'python manage.py help import_pictures' " \
+                               "for usage.")
         self._import_pictures(csv_folder, photos_folder, dst_folder)
 
     def _import_pictures(self, csv_folder, photos_folder, \
@@ -55,7 +56,7 @@ class Command(BaseCommand):
                 canon_path, file_ext = attachment.rsplit('.', 1)
                 dst_path = os.path.join(dst_folder, canon_path)
                 raw_folder = os.path.join(dst_path, RAW_FOLDER_NAME)
-                raw_file = os.path.join(raw_folder, '%s%s' \
+                raw_file = os.path.join(raw_folder, '%s_%s' \
                                                % (RAW_FILE_PREFIX, attachment))
 
                 # original file exist

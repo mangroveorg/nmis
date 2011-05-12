@@ -17,6 +17,7 @@ urlpatterns = patterns('',
 
     url(r'^/?$', main_index),
     url(r'', include('nmis.main.urls')),
+    url(r'^indicators/', include('nmis.indicator_management.urls')),
     url(r'^accounts/', include('registration.backends.simple.urls')),
     url(r'^pictures/', include('nmis.nmis_files.urls')),
 )

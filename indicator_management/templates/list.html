@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block content %}
+<style type="text/css" media="screen">
+	td {
+		padding: 2px 4px;
+	}
+</style>
+<div id="content">
+	<table>
+		<thead>
+			<tr>
+				<th colspan="2">
+					Dislplay Level
+				</th>
+				<th>
+					Sector
+				</th>
+				<th>
+					Sub-sector
+				</th>
+				<th>
+					Goal Number
+				</th>
+				<th>
+					Name
+				</th>
+				<th>
+					Data Source
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for indicator in ilist %}
+			<tr>
+				{% if indicator.country_display %}
+				<td class="country-display true">
+					Country
+				</td>
+				{% else %}
+				<td class="country-display false"></td>
+				{% endif %}
+				{% if indicator.lga_display %}
+				<td class="lga-display true">
+				State/LGA
+				</td>
+				{% else %}
+				<td class="lga-display false"></td>
+				{% endif %}
+				<td>
+					{{indicator.sector}}
+				</td>
+				<td>
+					{{indicator.subsector}}
+				</td>
+				<td style="text-align: center;">
+					{{indicator.goal_number}}
+				</td>
+				<td>
+					{{indicator.name}}
+				</td>
+				<td>
+					{{indicator.data_source}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% endblock %}

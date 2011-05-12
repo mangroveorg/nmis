@@ -1,0 +1,23 @@
+<script type="text/javascript" charset="utf-8">
+	var facilitySectors = {{facility_sectors|safe}};
+	
+	widgets.push(function(){
+		window.facilityData = (function(rawData){
+			var uidCounter = 0;
+			var list = {};
+			var groupedList = {};
+			var sectorNames = [];
+			$.each(rawData, function(i, pt){
+				if(pt.uid===undefined) { pt.uid = "uid" + uidCounter++; }
+				if(!~sectorNames.indexOf(pt.sector)) {
+					sectorNames.push(pt.sector);
+					groupedList[pt.sector] = [];
+				}
+				groupedList[pt.sector].push(pt.uid);
+				list[pt.uid]=pt;
+			});
+			return {bySector: groupedList,
+					list: list};
+		})({{facility_data|safe}})
+	})
+</script>

@@ -10,7 +10,6 @@ from main.region_thing import RegionThing, import_region_thing_from_dict
 from helpers import read_required
 import json
 import widgets
-import spreadsheet_display
 import os
 NIGERIA_REGION_CACHE = 'nigeria_regions.json'
 
@@ -41,23 +40,6 @@ def region_navigation(request, region_path):
         except:
             context.__dict__[widget_id] = False
     return render_to_response("region_navigation.html", context_instance=context)
-
-
-def spreadsheet_json(request, sheet_name):
-    "This is pulled by JSON and handled in the page."
-    output = spreadsheet_display.for_display(sheet_name)
-    # if display_method=="django_template":
-    #     context = RequestContext(request)
-    #     context.spreadsheet_name = output.get(u'name')
-    #     output[u'html'] = \
-    #         template_loader.render_to_string("spreadsheet_partial.html", context_instance=context)
-    return HttpResponse(json.dumps(output))
-
-
-def spreadsheets(request):
-    context = RequestContext(request)
-    context.spreadsheet_types = spreadsheet_display.LISTS
-    return render_to_response("spreadsheets.html", context_instance=context)
 
 
 def region_root_object():
@@ -112,3 +94,14 @@ def load_nigeria_regions_to_file():
     f = open(NIGERIA_REGION_CACHE, 'w')
     f.write(json_val)
     f.close()
+
+def lgas_json(request):
+    dbm = DatabaseManager(
+                server=settings.MANGROVE_DATABASES['default']['SERVER'],
+                database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+    lgas = [{'label': lga.aggregation_paths['_geo'][-1], \
+             'path': "/".join([slugify(part) \
+                               for part \
+                               in lga.aggregation_paths['_geo'][-2:]])} \
+            for lga in get_entities_by_type(dbm, 'LGA')]
+    return HttpResponse(json.dumps(lgas), mimetype='application/json')
