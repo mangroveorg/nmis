@@ -61,7 +61,7 @@
 
 <script>
 
-$.getJSON('/LGAs.json', function(data) {
+$.getJSON('{% url lgas-list %}', function(data) {
   var items = [];
 
   $.each(data, function(key, val) {

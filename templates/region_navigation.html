@@ -17,4 +17,9 @@
 <script type="text/javascript" charset="utf-8">
 	$.each(widgetActivators, function(i,x){x()});
 </script>
+<script type="text/javascript" charset="utf-8">
+	$(function(){
+		$('div#region-nav ul ul').height($('div#region-nav').parents().eq(0).height()-20).css({overflow:'auto'})
+	});
+</script>
 {% endblock %}

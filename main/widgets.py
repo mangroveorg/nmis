@@ -105,6 +105,10 @@ def regnav_lga(region_thing, context):
 def some_metadata(region_thing, context):
     return {}
 
+from main.raw_mdg_indicator_list import INDICATORS as indicator_list
+
+def lga_mdg_table(region_thing, context):
+    context.indicator_list = {'sectors': [{'slug':'a', 'name':'A'}, {'slug':'b', 'name':'B'}], 'list':indicator_list}
 
 def lga_facilities_table(region_thing, context):
     context.facilities_list = [region_thing.name]

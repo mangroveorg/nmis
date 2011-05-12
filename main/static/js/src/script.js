@@ -1,7 +1,7 @@
 (function(content, linkDests, _opts){
-    var defaultOpts = {defaultMode: 'mdg-indicators'};
+    var modeSlugs = $.map(linkDests, function(i, b){return i[1];});
+    var defaultOpts = {defaultMode: modeSlugs[0]};
     var opts = $.extend({}, _opts, defaultOpts);
-    
     content.bind('modeChange', function(evt, md){
     	var mode = md.mode;
     	$.cookie('mode', mode);
@@ -50,7 +50,7 @@
     
     /* Add mode breadcrumbs if the breadcrumb wrap exists
     */
-    if($.cookie('mode')!==undefined) {
+    if(~modeSlugs.indexOf($.cookie('mode'))) {
     	content.trigger('modeChange', {mode:$.cookie('mode')});
     } else if(content.data('mode')==undefined) {
     	content.trigger('modeChange', {mode:opts.defaultMode});
@@ -91,4 +91,4 @@ $(function(){
             $(this).addClass('inactive');
         }
     })
-})($('.search-box input'))
+})($('.search-box input'));
