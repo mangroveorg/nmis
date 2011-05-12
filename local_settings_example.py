@@ -26,3 +26,9 @@ LOGIN_REDIRECT_URL = '/'
 
 # where massive pictures are stored
 PICTURES_FOLDER = '%s/pictures/' % CURRENT_DIR
+
+# URL you client access your pictures
+PICTURES_URL = 'http://nmis.openmangrove.org/medias/pictures/'
+
+# sized of pictures for convertion script
+PICTURES_FORMATS = ['140x140']
