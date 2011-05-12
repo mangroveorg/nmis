@@ -1,42 +1,115 @@
 <div id="lga-facilities-table" class="facilities-only display-block-when-ready">
-	<div id="facility-tabs">
-		<ul>
-			<li>
-				<a href="#health">
-					Health
-				</a>
-			</li>
-			<li>
-				<a href="#education">
-					Education
-				</a>
-			</li>
-			<li>
-				<a href="#water">
-					Water
-				</a>
-			</li>
-		</ul>
-		<div id="health">
-			Health
-			<table border="0" cellspacing="5" cellpadding="5">
-				<tr><th>Facility</th></tr>
-				<tr><td>Facility</td></tr>
-			</table>
-		</div>
-		<div id="education">
-			Education
-		</div>
-		<div id="water">
-			Water
-		</div>
-	</div>
 </div>
+<style type="text/css" media="screen">
+	table.facility-list {
+		width: 100%;
+	}
+	tr.selected-facility td {
+		background-color: #eee;
+	}
+</style>
 <script type="text/javascript" charset="utf-8">
-widgetActivators['lga_facilities_table'] = function(){
-	$(function(){
-		$('#facility-tabs').tabs();
-		$('#lga-facilities-table').addClass('ready');
+var defaultSectorSlug = 'health';
+widgets.push(function(){
+	
+	$('body').bind('facility-click', function(evt, edata){
+		var facility = facilityData.list[edata.uid];
+		$('.ui-dialog').remove();
+		$('<div />').text("Clicked on point with data: " + JSON.stringify(facility)).dialog();
 	});
-}
+	$('body').bind('facility-mouseover', function(evt, edata){
+		var facility = facilityData.list[edata.uid];
+//		console.log("Mouseover: ", facility);
+	});
+	$('body').bind('facility-mouseout', function(evt, edata){
+		var facility = facilityData.list[edata.uid];
+//		console.log("Mouseout: ", facility);
+	});
+	
+	$('body').bind('sector-change', function(evt, edata){
+		var sector = edata.sector;
+		console.log("Changing to sector: "+ sector)
+	});
+	
+	
+	/* actions to be taken for the facility navigation table and image stuff.
+	*/
+	$('body').bind('facility-click', function(evt, edata){
+		$('.selected-facility').removeClass('selected-facility');
+		$(evt.target).addClass('selected-facility');
+	});
+	$('body').bind('sector-change', function(evt, edata){
+		var sector = edata.sector;
+		populateImageDivForSector(sector);
+	});
+	
+	function createTableForSectorWithData(sector, data){
+		var div = $("<div />", {id: sector.slug}).text(sector.name);
+		var table = $('<table />', {'class':'facility-list'});
+		var thRow = $("<tr />");
+		table.append($("<thead />").html(thRow));
+		$.each(sector.columns, function(i, col){thRow.append($("<th />", {'class':'col-'+col[0]}).text(col[1]))});
+		
+		var tbod = $("<tbody />");
+		$.each(data.bySector[sector.name], function(i, fUid){
+			tbod.append(createRowForFacilityWithColumns(data.list[fUid], sector.columns))
+		})
+		table.append(tbod);
+		return div.html(table);
+	}
+	function createRowForFacilityWithColumns(fpoint, cols){
+		var tr = $("<tr />");
+		$.each(cols, function(i, col){
+			var colSlug = col[0];
+			tr.append($("<td />", {'class':'col-'+colSlug}).text(fpoint[colSlug] || '–'));
+			tr.data('facility-uid', fpoint.uid);
+		});
+		tr.click(function(){$(this).trigger('facility-click', {'uid': fpoint.uid})});
+		tr.mouseover(function(){$(this).trigger('facility-mouseover', {uid: fpoint.uid})})
+		tr.mouseout(function(){$(this).trigger('facility-mouseout', {uid: fpoint.uid})})
+		return tr;
+	}
+	function populateImageDivForSector(s) {
+		var sector = $(facilitySectors).filter(function(){
+			if(this.slug===s) {return true;
+			} else {return false;
+			}
+		}).get(0);
+		var tt = $("<h4 />").text("Photos for "+sector.name);
+		var ulList = $("<ul />");
+		
+		var facilities = $.map(facilityData.bySector[sector.name], function(uid, i){return facilityData.list[uid];})
+		
+		$(facilities).each(function(i, facility){
+			var li = $("<li />").text(facility.uid).data('facilityUid', facility.uid);
+			li.click(function(){
+				$(this).trigger('facility-click', {uid:facility.uid})
+			})
+			ulList.append(li)
+		})
+		
+		imageNavigation.empty();
+		imageNavigation.append(tt);
+		imageNavigation.append(ulList);
+	}
+	
+	var facilityTableWrap = $('#lga-facilities-table').html($('<div />', {'id': 'facility-tabs'}).html($('<ul />'))).append($('<div />', {'id':'image-nav'}));
+	var ftabs = $('div#facility-tabs', facilityTableWrap);
+	var ftabUl = $('ul', ftabs);
+	var imageNavigation = $('div#image-nav', facilityTableWrap);
+	
+	$.each(facilitySectors, function(i, sector){
+		var li = $("<li />");
+		li.append($("<a />", {'href':'#'+sector.slug}).text(sector.name))
+		ftabUl.append(li);
+		ftabs.append(createTableForSectorWithData(sector, facilityData));
+	});
+	
+	$(facilityTableWrap).trigger('sector-change', {sector: defaultSectorSlug});
+	
+	ftabs.tabs({select: function(evt, ui){
+		$(evt.target).trigger('sector-change', {sector: ui.panel.id})
+	}});
+	facilityTableWrap.addClass('ready');
+})
 </script>
