@@ -6,7 +6,7 @@ from pytz import UTC
 from mangrove.datastore.database import get_db_manager
 from mangrove.datastore.entity import Entity
 from mangrove.datastore.datadict import DataDictType
-from nmis.main.indicators import ScoreDataDictType
+from nmis.main.indicators import ScoreDataDictType, LgaIndicator
 
 
 class TestScoreDataDictType(unittest.TestCase):
@@ -73,11 +73,12 @@ class TestScoreDataDictType(unittest.TestCase):
         self.assertEquals(all_data[self.february][u'access'], 0.5)
 
 
-class LgaIndicator(unittest.TestCase):
+class TestLgaIndicator(unittest.TestCase):
 
     def setUp(self):
         self.manager = get_db_manager(database='mangrove-test')
         self._create_datadict_types()
+        self._create_entities_and_data_records()
 
     def tearDown(self):
         # _delete_db_and_remove_db_manager(self.manager)
@@ -97,6 +98,7 @@ class LgaIndicator(unittest.TestCase):
 
     def _create_entities_and_data_records(self):
         ENTITY_TYPE = ["Health_Facility", "Clinic"]
+        self.entity_type = ENTITY_TYPE
         FEB = datetime.datetime(2011, 02, 01, tzinfo=UTC)
         MARCH = datetime.datetime(2011, 03, 01, tzinfo=UTC)
 
@@ -153,9 +155,22 @@ class LgaIndicator(unittest.TestCase):
                          ("director", "Dr. C", self.dd_types['director']), ("patients", 12, self.dd_types['patients'])],
                    event_time=MARCH)
 
-    # def test_lga_indicator(self):
-    #     values = 
-    #     self.assertEqual(len(values), 3)
-    #     self.assertEqual(values[("India", "MH")], {"patients": 200})
-    #     self.assertEqual(values[("India", "Karnataka")], {"patients": 140})
-    #     self.assertEqual(values[("India", "Kerala")], {"patients": 12})
+    def test_lga_indicator(self):
+        kwargs = {
+            "name": 'Number of patients',
+            "slug": 'num_patients',
+            "primitive_type": 'formula',
+            "description": 'Number of patients (Aggregate)',
+
+            "dbm": self.manager,
+            "entity_type": self.entity_type,
+            "data_type_slug": "patients",
+            "function_name": "sum",
+            }
+
+        lga_indicator = LgaIndicator(**kwargs)
+        values = lga_indicator.get_values(level=2)
+        self.assertEqual(len(values), 3)
+        self.assertEqual(values[("India", "MH")], {"patients": 200})
+        self.assertEqual(values[("India", "Karnataka")], {"patients": 140})
+        self.assertEqual(values[("India", "Kerala")], {"patients": 12})
