@@ -6,7 +6,8 @@ from pytz import UTC
 from mangrove.datastore.database import get_db_manager
 from mangrove.datastore.entity import Entity
 from mangrove.datastore.datadict import DataDictType
-from nmis.main.indicators import ScoreDataDictType
+from nmis.main.indicators import ScoreDataDictType, LgaIndicator
+from nmis.main.health import HealthScores
 
 
 class TestScoreDataDictType(unittest.TestCase):
@@ -24,7 +25,39 @@ class TestScoreDataDictType(unittest.TestCase):
             pass
 
     def create_data_dictionary_entries(self):
-        from nmis.main.health import data_dict_types
+        data_dict_types = [
+            {
+                "name": 'open 24/7',
+                "slug": "facility_open_247_yn",
+                "primitive_type": "string",
+                "description": 'Open twenty-four hours a day, seven days a week',
+                },
+            {
+                "name": 'All weather road',
+                "slug": "all_weather_road_yn",
+                "primitive_type": "string",
+                "description": 'All weather road access to the facility.',
+                },
+            {
+                "name": 'Distance to referral facility (km).',
+                "slug": "km_to_referral_facility",
+                "primitive_type": "decimal",
+                "description": 'Distance to referral facility (km).',
+                },
+            {
+                "name": "Ambulance transport availabel to referral facility.",
+                "slug": "transport_to_referral_facility_ambulance",
+                "primitive_type": "string",
+                "description": "Ambulance transport availabel to referral facility.",
+                },
+            {
+                "name": 'Sufficient beds',
+                "slug": "inpatient_care_enough_beds_yn",
+                "primitive_type": "integer",
+                "description": "Sufficient beds for inpatient care.",
+                },
+            ]
+
         self.data_dict_types = {}
         for kwargs in data_dict_types:
             slug = kwargs['slug']
@@ -60,24 +93,24 @@ class TestScoreDataDictType(unittest.TestCase):
                     )
 
     def create_indicators(self):
-        from nmis.main.health import scores
-        self.indicators = {}
-        for score in scores:
-            slug = score["slug"]
-            self.indicators[slug] = ScoreDataDictType(self.dbm, **score)
+        HealthScores.create_health_scores(self.dbm)
 
     def test_access_score_indicator(self):
-        access_indicator = self.indicators["access"]
+        access_indicator = HealthScores.get_health_score("access")
+        all_data = self.entities[0].get_all_data()
+        print all_data
         access_indicator.add_data_records(self.entities[0])
         all_data = self.entities[0].get_all_data()
+        print all_data
         self.assertEquals(all_data[self.february][u'access'], 0.5)
 
 
-class LgaIndicator(unittest.TestCase):
+class TestLgaIndicator(unittest.TestCase):
 
     def setUp(self):
         self.manager = get_db_manager(database='mangrove-test')
         self._create_datadict_types()
+        self._create_entities_and_data_records()
 
     def tearDown(self):
         # _delete_db_and_remove_db_manager(self.manager)
@@ -97,6 +130,7 @@ class LgaIndicator(unittest.TestCase):
 
     def _create_entities_and_data_records(self):
         ENTITY_TYPE = ["Health_Facility", "Clinic"]
+        self.entity_type = ENTITY_TYPE
         FEB = datetime.datetime(2011, 02, 01, tzinfo=UTC)
         MARCH = datetime.datetime(2011, 03, 01, tzinfo=UTC)
 
@@ -153,9 +187,22 @@ class LgaIndicator(unittest.TestCase):
                          ("director", "Dr. C", self.dd_types['director']), ("patients", 12, self.dd_types['patients'])],
                    event_time=MARCH)
 
-    # def test_lga_indicator(self):
-    #     values = 
-    #     self.assertEqual(len(values), 3)
-    #     self.assertEqual(values[("India", "MH")], {"patients": 200})
-    #     self.assertEqual(values[("India", "Karnataka")], {"patients": 140})
-    #     self.assertEqual(values[("India", "Kerala")], {"patients": 12})
+    def test_lga_indicator(self):
+        kwargs = {
+            "name": 'Number of patients',
+            "slug": 'num_patients',
+            "primitive_type": 'formula',
+            "description": 'Number of patients (Aggregate)',
+
+            "dbm": self.manager,
+            "entity_type": self.entity_type,
+            "data_type_slug": "patients",
+            "function_name": "sum",
+            }
+
+        lga_indicator = LgaIndicator(**kwargs)
+        values = lga_indicator.get_values(level=2)
+        # self.assertEqual(len(values), 3)
+        # self.assertEqual(values[("India", "MH")], {"patients": 200})
+        # self.assertEqual(values[("India", "Karnataka")], {"patients": 140})
+        # self.assertEqual(values[("India", "Kerala")], {"patients": 12})

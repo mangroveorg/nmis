@@ -2,7 +2,6 @@
 
 import operator
 from mangrove.datastore.datadict import DataDictType
-from mangrove.datastore import data
 
 
 class ScoreDataDictType(DataDictType):
@@ -85,14 +84,42 @@ class ScoreBuilder(object):
                 if value is not None:
                     denominator += 1
                     numerator += value
+            if denominator == 0:
+                return None
             return numerator / denominator
         return formula
 
 
-# class LgaIndicator(DataDictType):
+class LgaIndicator(DataDictType):
 
-#     def get_values(self):
-#         reurn data.fetch(self.manager, entity_type=ENTITY_TYPE,
-#                             aggregates={"patients": data.reduce_functions.SUM},
-#                             aggregate_on={'type': 'location', "level": 2},
-#                             )
+    from mangrove.datastore import data
+    FIELDS = ["entity_type", "data_type_slug", "function_name"]
+
+    def __init__(self, *args, **kwargs):
+        for field in self.FIELDS:
+            private_field_name = "_" + field
+            setattr(self, private_field_name, kwargs.pop(field, None))
+        super(LgaIndicator, self).__init__(*args, **kwargs)
+
+    def set_entity_type(self, entity_type):
+        self._entity_type = entity_type
+
+    def set_data_type_slug(self, data_type_slug):
+        self._data_type_slug = data_type_slug
+
+    def set_function_name(self, function_name):
+        assert function_name in self.data.reduce_functions.SUPPORTED_FUNCTIONS
+        self._function_name = function_name
+
+    def get_values(self, level):
+        # Note: the database manager is inherited from DataDictType
+        # which inherits it from DataObject. Is it possible that this
+        # type would be stored in one database and the data would be
+        # in another!?
+        kwargs = {
+            "dbm": self._dbm,
+            "entity_type": self._entity_type,
+            "aggregates": {self._data_type_slug: self._function_name},
+            "aggregate_on": {'type': 'location', "level": level},
+            }
+        return self.data.fetch(**kwargs)

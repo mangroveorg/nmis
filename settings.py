@@ -127,6 +127,8 @@ TEMPLATE_DIRS = (
     os.path.join(CURRENT_DIR, 'indicator_management', 'templates'),
 )
 
+DATA_DIRECTORY = os.path.join(CURRENT_DIR, 'data')
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
