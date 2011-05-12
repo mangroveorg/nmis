@@ -46,7 +46,7 @@ widgets.push(function(){
 	});
 	
 	function createTableForSectorWithData(sector, data){
-		var div = $("<div />", {id: sector.slug}).text(sector.name);
+		var div = $("<div />", {id: 'facilities-'+sector.slug}).text(sector.name).data('sector-slug', sector.slug);
 		var table = $('<table />', {'class':'facility-list'});
 		var thRow = $("<tr />");
 		table.append($("<thead />").html(thRow));
@@ -78,7 +78,7 @@ widgets.push(function(){
 			} else {return false;
 			}
 		}).get(0);
-		var tt = $("<h4 />").text("Photos for "+sector.name);
+		var tt = $("<h4 />").text("Photos for " + sector.name);
 		var ulList = $("<ul />");
 		
 		var facilities = $.map(facilityData.bySector[sector.slug], function(uid, i){return facilityData.list[uid];})
@@ -103,7 +103,7 @@ widgets.push(function(){
 	
 	$.each(facilitySectors, function(i, sector){
 		var li = $("<li />");
-		li.append($("<a />", {'href':'#'+sector.slug}).text(sector.name));
+		li.append($("<a />", {'href':'#facilities-'+sector.slug}).text(sector.name));
 		ftabUl.append(li);
 		ftabs.append(createTableForSectorWithData(sector, facilityData));
 	});
@@ -111,7 +111,7 @@ widgets.push(function(){
 	$(facilityTableWrap).trigger('sector-change', {sector: defaultSectorSlug});
 	
 	ftabs.tabs({select: function(evt, ui){
-		$(evt.target).trigger('sector-change', {sector: ui.panel.id})
+		$(evt.target).trigger('sector-change', {sector: $(ui.panel).data('sector-slug')})
 	}});
 	facilityTableWrap.addClass('ready');
 })

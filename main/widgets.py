@@ -103,9 +103,33 @@ def regnav_lga(region_thing, context):
 
 
 from main.raw_mdg_indicator_list import INDICATORS as indicator_list
+from collections import defaultdict
+
+def get_variable_values_for_region_thing(variable_slug, region_thing, data_set={}):
+    return "3.142%"
 
 def lga_mdg_table(region_thing, context):
-    context.indicator_list = {'sectors': [{'slug':'a', 'name':'A'}, {'slug':'b', 'name':'B'}], 'list':indicator_list}
+    context.stylesheets.append('/static/css/src/mdg_table.css')
+    sector_names = []
+    sector_grouped_data = {}
+    for i in indicator_list:
+        sname = i['sector']
+        sslug = sname.lower()
+        if sname not in sector_names:
+            sector_names.append(sname)
+            sector_grouped_data[sslug] = []
+        tt = {'value': get_variable_values_for_region_thing(sslug, region_thing), \
+                'goal_number': i['goal_number'], \
+                'sector': i['sector'], \
+                'subsector': i['subsector'], \
+                'name': i['name'], \
+                'data_source': i['data_source']}
+        if i['lga_display']:
+            sector_grouped_data[sslug].append(tt)
+    sectors = []
+    for s in sector_names:
+        sectors.append({'name':s, 'slug':s.lower()})
+    context.indicator_list = {'sectors': sectors, 'grouped_list': sector_grouped_data, 'grouped_list_json': json.dumps(sector_grouped_data)}
 
 def lga_facilities_data(region_thing, context):
     f1 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': '11223342'}

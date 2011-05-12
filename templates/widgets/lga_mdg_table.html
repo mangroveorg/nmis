@@ -3,18 +3,60 @@
 		<ul>
 			{% for sector in indicator_list.sectors %}
 			<li>
-				<a href="#{{sector.slug}}">
+				<a href="#mdg-{{sector.slug}}">
 					{{sector.name}}
 				</a>
 			</li>
 			{% endfor %}
 		</ul>
 		{% for sector in indicator_list.sectors %}
-		<div id="{{sector.slug}}">
-			<p>{{sector.name}}</p>
+		<div id="mdg-{{sector.slug}}">
 		</div>
 		{% endfor %}
 	</div>
+	<script type="text/javascript" charset="utf-8">
+		var mdgData = {{indicator_list.grouped_list_json|safe}};
+		function mdgDescription(gn){
+			return "Description";
+		}
+		function createMdgTableFromArray(ldata) {
+			var goals = [];
+			var dataByGoal = {};
+			var table = $("<table />", {'class': 'mdg-table'}).css({'width': '100%'});
+			var tbody = $("<tbody />");
+			
+			$.each(ldata, function(i, d){
+				if(!~goals.indexOf(d.goal_number)) {
+					goals.push(d.goal_number);
+					dataByGoal[d.goal_number] = [];
+				}
+				dataByGoal[d.goal_number].push(d);
+			});
+			$(goals.sort()).each(function(i, gn){
+				var goalHeaderRow = $("<tr />").html($("<td />", {'class':'mdg_header', 'colspan':2}).text("MDG "+gn+": "+mdgDescription(gn)));
+				goalHeaderRow.append($("<td />", {'class':'mdg_header'}).text("2011"));
+				tbody.append(goalHeaderRow);
+				$.each(dataByGoal[gn], function(i, dr){
+					var thisRow = $("<tr />");
+					var sectorAndSubsector = dr.sector;
+					if(dr.subsector!==undefined) {
+						sectorAndSubsector += ":<br>" + dr.subsector;
+					}
+					thisRow.append($('<td />', {'class':'subgoal'}).html(sectorAndSubsector));
+					thisRow.append($('<td />').text(dr.name));
+					thisRow.append($('<td />').text(dr.value));
+					tbody.append(thisRow);
+				});
+			})
+			table.html(tbody)
+			return table;
+		}
+		widgets.push(function(){
+			$.each(mdgData, function(sectorSlug, dataList){
+				$('div#mdg-'+sectorSlug).append(createMdgTableFromArray(dataList))
+			})
+		});
+	</script>
 </div>
 <script type="text/javascript" charset="utf-8">
 	widgetActivators.lga_mdg_table = function(){
