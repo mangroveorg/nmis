@@ -28,15 +28,17 @@ widgets.push(function(){
 	
 	$('body').bind('sector-change', function(evt, edata){
 		var sector = edata.sector;
-		console.log("Changing to sector: "+ sector)
+//		console.log("Changing to sector: "+ sector)
 	});
 	
 	
 	/* actions to be taken for the facility navigation table and image stuff.
 	*/
 	$('body').bind('facility-click', function(evt, edata){
+		var facility = facilityData.list[edata.uid];
+		
 		$('.selected-facility').removeClass('selected-facility');
-		$(evt.target).addClass('selected-facility');
+		$(facility.tr).addClass('selected-facility');
 	});
 	$('body').bind('sector-change', function(evt, edata){
 		var sector = edata.sector;
@@ -51,7 +53,7 @@ widgets.push(function(){
 		$.each(sector.columns, function(i, col){thRow.append($("<th />", {'class':'col-'+col[0]}).text(col[1]))});
 		
 		var tbod = $("<tbody />");
-		$.each(data.bySector[sector.name], function(i, fUid){
+		$.each(data.bySector[sector.slug], function(i, fUid){
 			tbod.append(createRowForFacilityWithColumns(data.list[fUid], sector.columns))
 		})
 		table.append(tbod);
@@ -67,6 +69,7 @@ widgets.push(function(){
 		tr.click(function(){$(this).trigger('facility-click', {'uid': fpoint.uid})});
 		tr.mouseover(function(){$(this).trigger('facility-mouseover', {uid: fpoint.uid})})
 		tr.mouseout(function(){$(this).trigger('facility-mouseout', {uid: fpoint.uid})})
+		fpoint.tr = tr.get(0);
 		return tr;
 	}
 	function populateImageDivForSector(s) {
@@ -78,7 +81,7 @@ widgets.push(function(){
 		var tt = $("<h4 />").text("Photos for "+sector.name);
 		var ulList = $("<ul />");
 		
-		var facilities = $.map(facilityData.bySector[sector.name], function(uid, i){return facilityData.list[uid];})
+		var facilities = $.map(facilityData.bySector[sector.slug], function(uid, i){return facilityData.list[uid];})
 		
 		$(facilities).each(function(i, facility){
 			var li = $("<li />").text(facility.uid).data('facilityUid', facility.uid);
@@ -100,7 +103,7 @@ widgets.push(function(){
 	
 	$.each(facilitySectors, function(i, sector){
 		var li = $("<li />");
-		li.append($("<a />", {'href':'#'+sector.slug}).text(sector.name))
+		li.append($("<a />", {'href':'#'+sector.slug}).text(sector.name));
 		ftabUl.append(li);
 		ftabs.append(createTableForSectorWithData(sector, facilityData));
 	});
