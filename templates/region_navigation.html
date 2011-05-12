@@ -2,6 +2,10 @@
 {% block content %}
 <div id="content">
 	<script type="text/javascript" charset="utf-8">
+		//"activator" methods for widgets. called after jquery has loaded.
+		var widgets = [];
+		
+		//to be deprecated, since {}'s don't necessarily preserve order...
 		var widgetActivators = {};
 	</script>
 	{% for widget in widgets %}
@@ -15,6 +19,9 @@
 {% block scripts %}
 <script src="/static/js/src/display_mdg_table.js" type="text/javascript" charset="utf-8"></script>
 <script type="text/javascript" charset="utf-8">
+	for(var wi=0, wl=widgets.length; wi < wl; wi++) {
+		typeof(widgets[wi])==='function' && widgets[wi]();
+	}
 	$.each(widgetActivators, function(i,x){x()});
 </script>
 <script type="text/javascript" charset="utf-8">
