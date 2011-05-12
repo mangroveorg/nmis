@@ -1,4 +1,5 @@
 
+
 var LaunchOpenLayers = (function (_wrap) { 
   $("#map").height(475);
 
@@ -35,24 +36,7 @@ var LaunchOpenLayers = (function (_wrap) {
     {'layername': 'nigeria_health_anc', 'type': 'png'}
   )
 
-
-
-  // var features = new OpenLayers.Layer.Vector('Features', {
-  //   projection: new OpenLayers.Projection('EPSG:4326'),
-  //   strategies: [new OpenLayers.Strategy.BBOX()],
-  //   protocol: new OpenLayers.Protocol.HTTP({
-  //     url: 'http://georegistry.invisibleroads.com/maps.json',
-  //     params: {
-  //       key: '${personKey}',
-  //       srid: 4326,
-  //       tags: tagString,
-  //       bboxFormat: 'yxyx',
-  //       simplified: 1
-  //     },
-  //       format: new OpenLayers.Format.GeoJSON()
-  //   })
-  // });
-  var gsat = new OpenLayers.Layer.Google(
+ var gsat = new OpenLayers.Layer.Google(
     "Google Satellite",
     {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
   );
@@ -66,6 +50,6 @@ var LaunchOpenLayers = (function (_wrap) {
 
   map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.setCenter(new OpenLayers.LonLat(851310.77702182, 1044435.5543009), 6);
-
+  
 
 })
