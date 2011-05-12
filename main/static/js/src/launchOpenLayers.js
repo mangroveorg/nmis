@@ -9,7 +9,7 @@ var LaunchOpenLayers = (function (_wrap) {
     projection: new OpenLayers.Projection("EPSG:900913"),
     displayProjection: new OpenLayers.Projection("EPSG:4326"),
     units: "m",
-    numZoomLevels: 10,
+    numZoomLevels: 11,
     maxResolution: 156543.0339,
     restrictedExtent: new OpenLayers.Bounds(
         -4783.9396188051, 463514.13943762, 1707405.4936624, 1625356.9691642
@@ -30,11 +30,16 @@ var LaunchOpenLayers = (function (_wrap) {
     [ mapserver],
     { 'layername': 'nigeria_base', 'type': 'png' }
   );
-  var nigeria_health_anc = new OpenLayers.Layer.TMS(
-    "Nigeria Health ANC",
+  var nigeria_child_health = new OpenLayers.Layer.TMS(
+    "Nigeria Child Health",
     [mapserver],
-    {'layername': 'nigeria_health_anc', 'type': 'png'}
-  )
+    {'layername': 'nigeria_child_health', 'type': 'png'}
+  );
+  var nigeria_child_nutrition = new OpenLayers.Layer.TMS(
+    "Nigeria Child Nutrition",
+    [mapserver],
+    {'layername': 'nigeria_child_nutrition', 'type': 'png'}
+  );
 
  var gsat = new OpenLayers.Layer.Google(
     "Google Satellite",
@@ -46,7 +51,7 @@ var LaunchOpenLayers = (function (_wrap) {
     {type: google.maps.MapTypeId.TERRAIN}
   );
 
-  map.addLayers([nigeria, nigeria_health_anc, gphy, gsat]);
+  map.addLayers([nigeria, nigeria_child_health, nigeria_child_nutrition, gphy, gsat]);
 
   map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.setCenter(new OpenLayers.LonLat(851310.77702182, 1044435.5543009), 6);
