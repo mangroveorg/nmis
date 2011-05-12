@@ -14,6 +14,7 @@ WIDGETS_BY_REGION_LEVEL = [
     ["regnav_lga", "lga_map", "lga_mdg_table", "lga_facilities_table"]
 ]
 
+
 def widget_includes_by_region_level(rl=0):
     widgets = WIDGETS_BY_REGION_LEVEL[rl]
     include_templates = ["widgets/%s.html" % w for w in widgets]
