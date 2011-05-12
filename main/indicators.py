@@ -1,14 +1,25 @@
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
 
+import operator
 from mangrove.datastore.datadict import DataDictType
+from mangrove.datastore import data
 
-class CalculatedDataDictType(DataDictType):
+
+class ScoreDataDictType(DataDictType):
+
+    def __init__(self, *args, **kwargs):
+        self._score_builder = ScoreBuilder()
+        components = kwargs.pop("components")
+        self._score_builder.add_components(components)
+        f = self._score_builder.get_formula()
+        self.set_formula(f)
+        super(ScoreDataDictType, self).__init__(*args, **kwargs)
 
     def set_formula(self, f):
         """
         This formula will be applied to each dictionary of data for
         each event time. This dictionary of data looks like:
-        {slug : {type, value, label}}        
+        {slug : {type, value, label}}
         """
         self._formula = f
 
@@ -26,6 +37,7 @@ class CalculatedDataDictType(DataDictType):
                 event_time=event_time
                 )
 
+
 class ScoreBuilder(object):
     """
     Helper object for score indicators, build formulas piece by piece
@@ -38,97 +50,49 @@ class ScoreBuilder(object):
     def reset(self):
         self._components = []
 
-    def add_component(self, numerator, denominator):
-        component = {
-            'numerator': numerator,
-            'denominator': denominator,
-            }
-        self._components.append(component)
+    def _add_function(self, f):
+        self._components.append(f)
+
+    def _add_operator(self, slug, op, value):
+        def result(data):
+            if slug not in data:
+                return None
+            return 1 if op(data[slug], value) else 0
+        self._components.append(result)
+
+    OPERATORS = {
+        "equals": operator.eq,
+        "less than": operator.lt,
+        }
+
+    def _add_readable_operator(self, slug, op_string, value):
+        op = self.OPERATORS[op_string]
+        self._add_operator(slug, op, value)
+
+    def add_components(self, components):
+        for component in components:
+            if type(component) == tuple:
+                self._add_readable_operator(*component)
+            else:
+                self._add_function(component)
 
     def get_formula(self):
         def formula(data):
             numerator = 0.0
             denominator = 0.0
             for component in self._components:
-                numerator += component['numerator'](data)
-                denominator += component['denominator'](data)
+                value = component(data)
+                if value is not None:
+                    denominator += 1
+                    numerator += value
             return numerator / denominator
         return formula
 
-    def add_equals_component(self, slug, value):
-        def denominator(data):
-            return 1 if slug in data else 0
-        def numerator(data):
-            if slug not in data: return 0
-            return 1 if data[slug][u'value']==value else 0
-        self.add_component(numerator, denominator)
 
-    def add_true_component(self, slug):
-        self.add_equals_component(slug, True)
+# class LgaIndicator(DataDictType):
 
-# name, slug, primitive type, description
-data_dict_type_tuples = [
-    ('open 24/7', 'open_247', 'boolean', 'Open twenty-four hours a day, seven days a week',),
-    ('All weather road', 'all_weather_road', 'boolean', 'All weather road access to the facility.',),
-    ('Sufficient beds in past month', 'sufficient_beds_past_month', 'boolean', '',),
-    ('No user fees', 'no_user_fees', 'boolean', '',),
-    ]
-
-scores = {
-    ('Access', 'access', 'formula', 'Access score for health facility.'): [
-        'open_247',
-        'all_weather_road',
-        'sufficient_beds_past_month',
-        'no_user_fees',
-        ],
-    'Infrastructure': [
-        'Power',
-        'Not without power >1 wk in past month',
-        'Potable water',
-        'Not without  water >1 wk in past month',
-        'Sanitation',
-        'Not without sanitation >1 wk in past month',
-        'condition of physical structure',
-        ],
-    'Staffing': [
-        '>1 Doctor/nurse/midwife',
-        '>1 CHEW',
-        'Lab technician (for facililties with labs)',
-        'Living quarters',
-        'Not understaffed >1 wk in past month',
-        'Staff paid in past month',
-        ],
-    'Services Provided (Child Health)': [
-        'Immunization',
-        'Growth monitoring',
-        'Malaria treatment',
-        'Deworming',
-        'No user fees for child health services',
-        ],
-    'Services Provided (Maternal Health)': [
-        'Antenatal care',
-        'Family planning',
-        'PMTCT program',
-        'Comprehensive emergency obstetric care',
-        'Ambulance',
-        'No user fees for maternal health services',
-        ],
-    'Services Provided (HIV/TB)': [
-        'VCT, PMTCT, HIV treatment, TB treatment',
-        'VCT',
-        'PMTCT',
-        'HIV TREATMENT',
-        'TB testing',
-        'TB treatment',
-        ],
-    'Equipment / Supplies': [
-        'Xray machine',
-        'Ultrasound',
-        'Refrigerator',
-        'Ambulance',
-        'Operating theatre',
-        'Laboratory',
-        'No stockouts >1 week in past 3 months',
-        ],
-    }
-
+#     def get_values(self):
+#         reurn data.fetch(self.manager, entity_type=ENTITY_TYPE,
+#                             aggregates={"patients": data.reduce_functions.SUM},
+#                             aggregate_on={'type': 'location', "level": 2},
+#                             )
