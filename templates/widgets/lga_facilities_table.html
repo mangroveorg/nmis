@@ -86,7 +86,8 @@ widgets.push(function(){
 		$(facilities).each(function(i, facility){
 			var li = $("<li />").text(facility.uid).data('facilityUid', facility.uid);
 			li.click(function(){
-				$(this).trigger('facility-click', {uid:facility.uid})
+				window.location = facility.uid;
+				//$(this).trigger('facility-click', {uid:facility.uid})
 			})
 			ulList.append(li)
 		})

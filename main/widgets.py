@@ -5,6 +5,10 @@ The widget_ids for each level are set in widgets.py.
 """
 import json
 
+from django.conf import settings
+from mangrove.datastore.database import DatabaseManager
+from mangrove.datastore.entity import get_entities_by_type, get_entities_in
+
 WIDGETS_BY_REGION_LEVEL = [
 #country:
     ["country_map", "country_key_indicators", "country_state_nav"],
@@ -74,8 +78,8 @@ def mdg_table(region_thing, context):
     return d
 
 
-def country_map(region_thing, context):
-    pass
+    def country_map(region_thing, context):
+        pass
 
 
 def country_state_nav(region_thing, context):
@@ -132,12 +136,26 @@ def lga_mdg_table(region_thing, context):
     context.indicator_list = {'sectors': sectors, 'grouped_list': sector_grouped_data, 'grouped_list_json': json.dumps(sector_grouped_data)}
 
 def lga_facilities_data(region_thing, context):
+
+    dbm = DatabaseManager(
+         server=settings.MANGROVE_DATABASES['default']['SERVER'],
+         database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+
+    try:
+        entities_list = get_entities_in(dbm, region_thing.entity.location_path, 'Health Clinic')
+        print(entities_list)
+        #facility_list = [hc.values({'facility_type': 'latest'})['facility_type'] for hc in entities_list]        
+        facility_list = [{'sector': 'health', 'facility_type': hc.values({'facility_name': 'latest'})['facility_name'].title(), 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': hc.values({'photo': 'latest'})['photo'][:-4]} for hc in entities_list]
+    except Exception as e:
+        print("ERROR: %s" % e)
+
+    print(facility_list)
     f1 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': '11223342'}
     f2 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "20%", 'hiv_pct': "10%", 'maternal_pct': "59%", 'supplies_pct': "43%", 'latlng': '7.531101,8.539607', 'image_id': '11223343'}
     f3 = {'sector': 'education', 'facility_type': 'School', 'latlng': '7.631101,8.639607', 'image_id': '11223344'}
     f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
     
-    facility_list = [f1, f2, f3, f4]
+    #facility_list = [f1, f2, f3, f4]
     
     health_columns = [['facility_type', 'Facility Type'],
                     ['access_pct', 'Access'],
@@ -150,8 +168,9 @@ def lga_facilities_data(region_thing, context):
     water_columns = [['facility_type', 'Facility Type']]
     
     sector_list = [{'slug': 'health', 'name': 'Health', 'columns': health_columns},
-                    {'slug': 'education', 'name': 'Education', 'columns': edu_columns},
-                    {'slug': 'water', 'name': 'Water', 'columns': water_columns}]
+              #      {'slug': 'education', 'name': 'Education', 'columns': edu_columns},
+              #      {'slug': 'water', 'name': 'Water', 'columns': water_columns}
+                ]
     
     context.facility_data = json.dumps(facility_list)
     context.facility_sectors = json.dumps(sector_list)
