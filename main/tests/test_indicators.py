@@ -6,7 +6,7 @@ from pytz import UTC
 from mangrove.datastore.database import get_db_manager
 from mangrove.datastore.entity import Entity
 from mangrove.datastore.datadict import DataDictType
-from nmis.main.indicators import CalculatedDataDictType
+from nmis.main.indicators import ScoreDataDictType
 
 
 class TestIndicators(unittest.TestCase):
@@ -64,7 +64,7 @@ class TestIndicators(unittest.TestCase):
         self.indicators = {}
         for score in scores:
             slug = score["slug"]
-            self.indicators[slug] = CalculatedDataDictType(self.dbm, **score)
+            self.indicators[slug] = ScoreDataDictType(self.dbm, **score)
 
     def test_access_score_indicator(self):
         access_indicator = self.indicators["access"]
