@@ -37,7 +37,7 @@
 		<a href="/" id="logo">NMIS Logo</a>
 		<div class="search-box">
 			<span class="magnifying-glass">&nbsp;</span>
-			<input type="text" value="">
+			<input type="text" id="lgas" value="">
 		</div>
     </header>
     <div id="main" role="main">
@@ -58,6 +58,35 @@
     <script>DD_belatedPNG.fix("img, .png_bg");</script>
   <![endif]-->
   <script src="/static/js/src/script.js" type="text/javascript" charset="utf-8"></script>
+
+<script>
+
+$.getJSON('/LGAs.json', function(data) {
+  var items = [];
+
+  $.each(data, function(key, val) {
+    items.push(val);
+  });
+
+  $(function() {
+
+    function change_page(path) {
+      if (path.length > 0)
+        window.location = '/profiles/nigeria/' + path.toLowerCase();
+    }
+
+    $( "#lgas" ).autocomplete({
+      source: items,
+      minLength: 3,
+      select: function( event, ui ) {
+        change_page(ui.item.path);
+      },
+    });
+  });
+
+});
+  </script>
+
   {% block scripts %}{% endblock %}
 </body>
 </html>

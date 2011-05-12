@@ -112,3 +112,14 @@ def load_nigeria_regions_to_file():
     f = open(NIGERIA_REGION_CACHE, 'w')
     f.write(json_val)
     f.close()
+
+def lgas_json(request):
+    dbm = DatabaseManager(
+                server=settings.MANGROVE_DATABASES['default']['SERVER'],
+                database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+    lgas = [{'label': lga.aggregation_paths['_geo'][-1], \
+             'path': "/".join([slugify(part) \
+                               for part \
+                               in lga.aggregation_paths['_geo'][-2:]])} \
+            for lga in get_entities_by_type(dbm, 'LGA')]
+    return HttpResponse(json.dumps(lgas), mimetype='application/json')
