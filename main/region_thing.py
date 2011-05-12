@@ -1,6 +1,6 @@
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
 
-from mangrove.datastore.entity import get
+from mangrove.datastore.entity import Entity
 from mangrove.datastore.database import get_db_manager
 
 
@@ -23,8 +23,8 @@ class RegionThing(object):
 
     def activity_status(self):
         import random
-        ii = random.randint(0,2)
-        return {'scaleupStatus':ii}
+        ii = random.randint(0, 2)
+        return {'scaleupStatus': ii}
 
     def activity_status_json(self):
         import json
@@ -32,7 +32,7 @@ class RegionThing(object):
 
     @property
     def entity(self):
-        return get(get_db_manager(self.server, self.database), self.entity_id)
+        return get_db_manager(self.server, self.database).get(self.entity_id, Entity)
 
     def find_child_by_slug_array(self, slugs):
         if slugs[0] == self.slug:

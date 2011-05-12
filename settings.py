@@ -134,6 +134,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'nmis.main',
+    'nmis.nmis_files',
     'registration',
     'django.contrib.admin',
     'compressor',

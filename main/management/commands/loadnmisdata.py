@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
+from mangrove.datastore.entity import Entity
 
 class Command(BaseCommand):
     help = "Loads the NMIS dataset from the 'NIMS Data' Google Doc."
@@ -53,6 +54,13 @@ class Command(BaseCommand):
             primitive_type='boolean'
         )
         datadict_types['cgs'] = cgs_type.save()
+        geo_id_type = DataDictType(
+            dbm,
+            slug='geo_id',
+            name='Geographic ID',
+            primitive_type='string'
+        )
+        datadict_types['geo_id'] = geo_id_type.save()
 
         print "Importing location entities from 'Nigeria LGAs ALL' worksheet"
         for row in nims_data['Nigeria LGAs ALL']:
@@ -60,10 +68,11 @@ class Command(BaseCommand):
             state = get_string('state', row)
             lga = get_string('lga', row)
             cgs = get_boolean('cgs', row)
+            geo_id = get_string('geoid', row)
             location = (country, state, lga)
             if country not in countries:
                 e = Entity(dbm, entity_type=["Location", "Country"], location=[country])
-                locations[(country)] = e.save()
+                locations[(country,)] = e.save()
                 countries[country] = e.id
                 print "...(%s)" % country
             if state not in states:
@@ -73,7 +82,9 @@ class Command(BaseCommand):
                 print "...(%s, %s)" % (country, state)
             e = Entity(dbm, entity_type=["Location", "LGA"], location=[country, state, lga])
             locations[location] = e.save()
-            print "...(%s, %s, %s)" % location
+            data = [(geo_id_type.slug, geo_id, geo_id_type)]
+            e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+            print "...(%s, %s, %s) / %s" % (country, state, lga, geo_id)
             if cgs:
                 num_cgs += 1
                 e.add_data(data=[(cgs_type.slug, cgs, cgs_type)])
@@ -114,7 +125,7 @@ class Command(BaseCommand):
                 data.append(point)
             if location in locations:
                 lga_loaded.append(lga)
-                e = mangrove.datastore.entity.get(dbm, locations[location])
+                e = dbm.get(locations[location], Entity)
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
@@ -153,7 +164,7 @@ class Command(BaseCommand):
                 data = [(slug, row['value'], get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
-                e = mangrove.datastore.entity.get(dbm, locations[location])
+                e = dbm.get(locations[location], Entity)
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
@@ -188,7 +199,7 @@ class Command(BaseCommand):
             data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
-                e = mangrove.datastore.entity.get(dbm, locations[location])
+                e = dbm.get(locations[location], Entity)
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
@@ -223,7 +234,7 @@ class Command(BaseCommand):
             data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
-                e = mangrove.datastore.entity.get(dbm, locations[location])
+                e = dbm.get(locations[location], Entity)
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
