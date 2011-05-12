@@ -2,9 +2,10 @@
 
 import operator
 from mangrove.datastore.datadict import DataDictType
+from mangrove.datastore import data
 
 
-class CalculatedDataDictType(DataDictType):
+class ScoreDataDictType(DataDictType):
 
     def __init__(self, *args, **kwargs):
         self._score_builder = ScoreBuilder()
@@ -12,7 +13,7 @@ class CalculatedDataDictType(DataDictType):
         self._score_builder.add_components(components)
         f = self._score_builder.get_formula()
         self.set_formula(f)
-        super(CalculatedDataDictType, self).__init__(*args, **kwargs)
+        super(ScoreDataDictType, self).__init__(*args, **kwargs)
 
     def set_formula(self, f):
         """
@@ -86,3 +87,12 @@ class ScoreBuilder(object):
                     numerator += value
             return numerator / denominator
         return formula
+
+
+# class LgaIndicator(DataDictType):
+
+#     def get_values(self):
+#         reurn data.fetch(self.manager, entity_type=ENTITY_TYPE,
+#                             aggregates={"patients": data.reduce_functions.SUM},
+#                             aggregate_on={'type': 'location', "level": 2},
+#                             )
