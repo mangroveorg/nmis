@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
+from mangrove.datastore.entity import Entity
 
 class Command(BaseCommand):
     help = "Loads the NMIS dataset from the 'NIMS Data' Google Doc."
@@ -114,7 +115,7 @@ class Command(BaseCommand):
                 data.append(point)
             if location in locations:
                 lga_loaded.append(lga)
-                e = mangrove.datastore.entity.get(dbm, locations[location])
+                e = dbm.get(locations[location], Entity)
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
@@ -153,7 +154,7 @@ class Command(BaseCommand):
                 data = [(slug, row['value'], get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
-                e = mangrove.datastore.entity.get(dbm, locations[location])
+                e = dbm.get(locations[location], Entity)
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
@@ -188,7 +189,7 @@ class Command(BaseCommand):
             data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
-                e = mangrove.datastore.entity.get(dbm, locations[location])
+                e = dbm.get(locations[location], Entity)
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
@@ -223,7 +224,7 @@ class Command(BaseCommand):
             data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
             if location in locations:
                 lga_loaded.append(lga)
-                e = mangrove.datastore.entity.get(dbm, locations[location])
+                e = dbm.get(locations[location], Entity)
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             else:
                 if not lga in lga_failed:
