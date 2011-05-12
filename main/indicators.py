@@ -2,6 +2,7 @@
 
 import operator
 from mangrove.datastore.datadict import DataDictType
+from mangrove.datastore import data
 
 
 class ScoreDataDictType(DataDictType):
@@ -86,3 +87,12 @@ class ScoreBuilder(object):
                     numerator += value
             return numerator / denominator
         return formula
+
+
+# class LgaIndicator(DataDictType):
+
+#     def get_values(self):
+#         reurn data.fetch(self.manager, entity_type=ENTITY_TYPE,
+#                             aggregates={"patients": data.reduce_functions.SUM},
+#                             aggregate_on={'type': 'location', "level": 2},
+#                             )
