@@ -84,6 +84,8 @@ class ScoreBuilder(object):
                 if value is not None:
                     denominator += 1
                     numerator += value
+            if denominator == 0:
+                return None
             return numerator / denominator
         return formula
 
