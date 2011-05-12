@@ -43,7 +43,7 @@ class Command(BaseCommand):
                                "for usage.")
         self._convert_pictures(photos_folder, formats)
 
-    def _convert_pictures(self, photos_folder, formats):
+    def _convert_pictures(self, photos_folder, formats, overwrite=False):
 
         # check path existence
         if not os.path.isdir(photos_folder):
@@ -66,9 +66,13 @@ class Command(BaseCommand):
                 smakedirs(format_folder)
                 format_file = os.path.join(format_folder, '%s_%s.%s' % (format, canon_path, file_ext))
 
+                # skip if file exist
+                if os.path.exists(format_file) and not overwrite:
+                    print("File %s already exist." % format_file)
+                    continue
+
                 command = ['convert', '-thumbnail', format, raw_path, format_file]
-                #print(" ".join(command))
-                #continue
+
                 if subprocess.call(command) != 0:
                     # something went wrong. who cares?
                     print("FAILED to convert %s to %s." % (canon_path, format))
