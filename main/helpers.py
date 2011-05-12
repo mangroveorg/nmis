@@ -9,7 +9,7 @@ from registration import signals as reg_signals
 
 def group_required(group, login_url=None):
     """
-    Decorator for views that checks whether a user has a particular group, 
+    Decorator for views that checks whether a user has a particular group,
     redirecting to the log-in page if necessary.
     """
     return user_passes_test(lambda u: group in \

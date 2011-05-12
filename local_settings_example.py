@@ -1,6 +1,6 @@
-#stuff specific to this install should be used in this file.
-DEBUG = False
-TEMPLATE_DEBUG = DEBUG
+
+import os
+CURRENT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 #this should be unique
 SECRET_KEY = 'tHiSiSnOtUnIqUew0)_d6az7=^vhffs9sn0zq!g(aopz(x&mzl'
@@ -8,7 +8,7 @@ SECRET_KEY = 'tHiSiSnOtUnIqUew0)_d6az7=^vhffs9sn0zq!g(aopz(x&mzl'
 #database info should probably go here too...
 
 GMAIL_USERNAME = "mangrove.nmis"
-GMAIL_PASSWORD = ""
+GMAIL_PASSWORD = ""  # "platformnameYEARprojectacronym"
 
 # email-sending. used for User registration
 EMAIL_HOST = 'localhost'
@@ -23,3 +23,6 @@ ACCOUNT_ACTIVATION_DAYS = 5
 
 # where to redirect after login
 LOGIN_REDIRECT_URL = '/'
+
+# where massive pictures are stored
+PICTURES_FOLDER = '%s/pictures/' % CURRENT_DIR
