@@ -102,9 +102,6 @@ def regnav_lga(region_thing, context):
     context.lga_siblings = region_thing.parent.children
 
 
-def some_metadata(region_thing, context):
-    return {}
-
 from main.raw_mdg_indicator_list import INDICATORS as indicator_list
 
 def lga_mdg_table(region_thing, context):
