@@ -25,6 +25,7 @@ def region_navigation(request, region_path):
     # probably could use django's lookup thing for this
     context.profile_root = "/profiles/"
     country_root_object = region_root_object()
+    context.stylesheets = []
     if region_path == "":
         return HttpResponseRedirect("/profiles/nigeria")
     #query country for sub sections
@@ -37,7 +38,7 @@ def region_navigation(request, region_path):
     for widget_id in widget_ids:
         try:
             context.__dict__[widget_id] = getattr(widgets, widget_id)(region_thing=region_thing_object, context=context)
-        except:
+        except AttributeError, e:
             context.__dict__[widget_id] = False
     return render_to_response("region_navigation.html", context_instance=context)
 
