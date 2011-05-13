@@ -1,5 +1,4 @@
 
-
 var LaunchOpenLayers = (function (_wrap) { 
   $("#map").height(475);
 
@@ -9,7 +8,7 @@ var LaunchOpenLayers = (function (_wrap) {
     projection: new OpenLayers.Projection("EPSG:900913"),
     displayProjection: new OpenLayers.Projection("EPSG:4326"),
     units: "m",
-    numZoomLevels: 11,
+    numZoomLevels: 9,
     maxResolution: 156543.0339,
     restrictedExtent: new OpenLayers.Bounds(
         -4783.9396188051, 463514.13943762, 1707405.4936624, 1625356.9691642
@@ -53,6 +52,12 @@ var LaunchOpenLayers = (function (_wrap) {
     {'layername': 'nigeria_maternal_health', 'type': 'png'}
   );
 
+  var nigeria_primary_education_enrollment = new OpenLayers.Layer.TMS(
+    "Nigeria Primary Education Enrollment",
+    [mapserver],
+    {'layername': 'nigeria_primary_education_enrollment', 'type': 'png'}
+  );
+
  var gsat = new OpenLayers.Layer.Google(
     "Google Satellite",
     {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
@@ -63,10 +68,27 @@ var LaunchOpenLayers = (function (_wrap) {
     {type: google.maps.MapTypeId.TERRAIN}
   );
 
-  map.addLayers([nigeria, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, gphy, gsat]);
+  map.addLayers([nigeria, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_primary_education_enrollment, gphy, gsat]);
 
+  //map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.setCenter(new OpenLayers.LonLat(851310.77702182, 1044435.5543009), 6);
-  
+
+
+    $('#layer-select').change(function(param) {
+        $('#layer-select option').each(function () {
+            layer_id = $(this).val();
+            layer = eval(layer_id);
+            layer.setVisibility(false);
+        });
+
+        layer_id = $(this).val();
+        layer = eval(layer_id);
+        layer.setVisibility(true);
+
+        $('.mapped-indicator').hide();
+        $('#mapped-'+layer_id).show();       
+    });  
+
 
 })
