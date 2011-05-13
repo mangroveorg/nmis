@@ -394,7 +394,7 @@ class Command(BaseCommand):
                         entity_data['geometry'] = False
                     for key in row.keys():
                         if key.startswith('*'):
-                            slug = str(slugify(unicode(key.strip(), 'utf-8')))
+                            slug = str(slugify(unicode(key.strip().replace('*', ''), 'utf-8')))
                             name = key
                             primitive_type = 'string'
                             tags = ['Facility', 'Baseline', 'Health']
