@@ -109,8 +109,21 @@ def regnav_lga(region_thing, context):
 from main.raw_mdg_indicator_list import INDICATORS as indicator_list
 from collections import defaultdict
 
+def format_indicator(value):
+    try:
+        fvalue = float(value)
+        return "%.2f" % fvalue
+    except:
+        pass
+    return value       
+
 def get_variable_values_for_region_thing(variable_slug, region_thing, data_set={}):
-    return "3.142%"
+    dbm = DatabaseManager(
+         server=settings.MANGROVE_DATABASES['default']['SERVER'],
+         database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+    #print("ENTITY: %s -- %s" % (region_thing.entity, region_thing.entity.id))
+    #print("SLUG: %s" % variable_slug)
+    return format_indicator(region_thing.entity.values({variable_slug: 'latest'})[variable_slug])
 
 def lga_mdg_table(region_thing, context):
     context.stylesheets.append('/static/css/src/mdg_table.css')
@@ -122,7 +135,7 @@ def lga_mdg_table(region_thing, context):
         if sname not in sector_names:
             sector_names.append(sname)
             sector_grouped_data[sslug] = []
-        tt = {'value': get_variable_values_for_region_thing(sslug, region_thing), \
+        tt = {'value': get_variable_values_for_region_thing(i['slug'], region_thing), \
                 'goal_number': i['goal_number'], \
                 'sector': i['sector'], \
                 'subsector': i['subsector'], \
@@ -135,6 +148,21 @@ def lga_mdg_table(region_thing, context):
         sectors.append({'name':s, 'slug':s.lower()})
     context.indicator_list = {'sectors': sectors, 'grouped_list': sector_grouped_data, 'grouped_list_json': json.dumps(sector_grouped_data)}
 
+def get_score_for(facility, slug):
+    raw_score = facility.values({slug: 'latest'})[slug]
+    if not raw_score:
+        raw_score = 0
+    #print("SCORE:%s" % raw_score)
+    try:
+        f = float(raw_score)
+        p = f * 100
+        score = "%.2f" % p + "%"
+        return score
+    except Exception as e:
+        #print("EXCP: %s" % e)
+        pass
+    return raw_score
+
 def lga_facilities_data(region_thing, context):
 
     dbm = DatabaseManager(
@@ -143,17 +171,26 @@ def lga_facilities_data(region_thing, context):
 
     try:
         entities_list = get_entities_in(dbm, region_thing.entity.location_path, 'Health Clinic')
-        print(entities_list)
-        #facility_list = [hc.values({'facility_type': 'latest'})['facility_type'] for hc in entities_list]        
-        facility_list = [{'sector': 'health', 'facility_type': hc.values({'facility_name': 'latest'})['facility_name'].title(), 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': hc.values({'photo': 'latest'})['photo'][:-4]} for hc in entities_list]
+        #print("\n".join([e.id for e in entities_list]))
+        facility_list = [{'sector': 'health', \
+                          'facility_type': hc.values({'facility_name': 'latest'})['facility_name'].title(), \
+                          'access_pct': get_score_for(hc, 'access'), \
+                          'infrastructure_pct': get_score_for(hc, 'infrastructure'), \
+                          'staffing_pct': get_score_for(hc, 'staffing'), \
+                          'hiv_pct': get_score_for(hc, 'hiv_services'), \
+                          'maternal_pct': get_score_for(hc, 'maternal_services'), \
+                          'supplies_pct': get_score_for(hc, 'equipment_supplies'), \
+                          'latlng': '%s' % hc.geometry['coordinates'][0] + ',' + '%s' % hc.geometry['coordinates'][1], \
+                          'image_id': hc.values({'photo': 'latest'})['photo'][:-4]} \
+                         for hc in entities_list]
     except Exception as e:
-        print("ERROR: %s" % e)
+        #print("ERROR: %s" % e)
+        pass
 
-    print(facility_list)
-    f1 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': '11223342'}
-    f2 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "20%", 'hiv_pct': "10%", 'maternal_pct': "59%", 'supplies_pct': "43%", 'latlng': '7.531101,8.539607', 'image_id': '11223343'}
-    f3 = {'sector': 'education', 'facility_type': 'School', 'latlng': '7.631101,8.639607', 'image_id': '11223344'}
-    f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
+    #f1 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': '11223342'}
+    #f2 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "20%", 'hiv_pct': "10%", 'maternal_pct': "59%", 'supplies_pct': "43%", 'latlng': '7.531101,8.539607', 'image_id': '11223343'}
+    #f3 = {'sector': 'education', 'facility_type': 'School', 'latlng': '7.631101,8.639607', 'image_id': '11223344'}
+    #f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
     
     #facility_list = [f1, f2, f3, f4]
     
