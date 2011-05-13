@@ -11,6 +11,11 @@
 		padding: 3px 20px;
 		height: 150px;
 	}
+	#image-nav .image-iwrap {
+		width: 100%;
+		overflow: auto;
+		height: 130px;
+	}
 	#image-nav ul {
 		width: 999em;
 	}
@@ -99,31 +104,29 @@ widgets.push(function(){
 			if(this.slug===s) {return true;} else {return false;}
 		}).get(0);
 		
-		imageNavigation.empty();
+		var naviWrap = $("<div />", {'class':'image-iwrap'});
+		imageNavigation.html(naviWrap);
 		var ulList = $("<ul />");
 
 		var tt = $("<h4 />").text("Photos for " + sector.name);
 		
 		var facilities = $.map(facilityData.bySector[sector.slug], function(uid, i){return facilityData.list[uid];})
 		
-			$(facilities).each(function(i, facility){
-                var t = facility.image_id;
-				var thumbnailUrl = '/pictures/fwd/'+t+'/140x140';
-				var biggerImage = '/pictures/fwd/'+t+'/raw';
-				var im = $("<img />", {'src':thumbnailUrl});
-				var li = $("<li />", {'class':'img-wrap'}).html(im);
-				li.click(function(){
-					$('.ui-dialog').remove();
-					var pu = $("<div />");
-					pu.html($("<img />", {'src':biggerImage}));
-					pu.dialog();
-				})
-				ulList.append(li);
-			});
-		imageNavigation.append($("<div />", {'class':'clearfix'}).html("&nbsp;"))
-		
-		imageNavigation.append(tt);
-		imageNavigation.append(ulList);
+		$(facilities).each(function(i, facility){
+            var t = facility.image_id;
+			var thumbnailUrl = '/pictures/fwd/'+t+'/140x140';
+			var biggerImage = '/pictures/fwd/'+t+'/raw';
+			var im = $("<img />", {'src':thumbnailUrl});
+			var li = $("<li />", {'class':'img-wrap'}).html(im);
+			li.click(function(){
+				$('.ui-dialog').remove();
+				var pu = $("<div />");
+				pu.html($("<img />", {'src':biggerImage}));
+				pu.dialog();
+			})
+			ulList.append(li);
+		});
+		naviWrap.append(ulList);
 	}
 	
 	var facilityTableWrap = $('#lga-facilities-table').html($('<div />', {'id': 'facility-tabs'}).html($('<ul />'))).append($('<div />', {'id':'image-nav'}));
