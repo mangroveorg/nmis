@@ -8,7 +8,7 @@
 			var groupedList = {};
 			var sectorNames = [];
 			$.each(rawData, function(i, pt){
-				if(pt.uid===undefined) { pt.uid = '/pictures/fwd/' + pt.image_id + '/140x140'; }
+				if(pt.uid===undefined) { pt.uid = pt.id; }
 				if(!~sectorNames.indexOf(pt.sector)) {
 					sectorNames.push(pt.sector);
 					groupedList[pt.sector] = [];
