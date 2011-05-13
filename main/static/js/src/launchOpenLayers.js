@@ -70,21 +70,16 @@ var LaunchOpenLayers = (function (_wrap) {
 
   map.addLayers([nigeria, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_primary_education_enrollment, gphy, gsat]);
 
-  //map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.setCenter(new OpenLayers.LonLat(851310.77702182, 1044435.5543009), 6);
 
 
     $('#layer-select').change(function(param) {
-        $('#layer-select option').each(function () {
-            layer_id = $(this).val();
-            layer = eval(layer_id);
-            layer.setVisibility(false);
-        });
 
         layer_id = $(this).val();
         layer = eval(layer_id);
-        layer.setVisibility(true);
+
+        layer.map.setBaseLayer(layer);
 
         $('.mapped-indicator').hide();
         $('#mapped-'+layer_id).show();       
