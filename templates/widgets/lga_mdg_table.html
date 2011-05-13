@@ -17,7 +17,18 @@
 	<script type="text/javascript" charset="utf-8">
 		var mdgData = {{indicator_list.grouped_list_json|safe}};
 		function mdgDescription(gn){
-			return "Description";
+			var gN = +gn;
+			var goalText = [
+			    " &raquo; Eradicate extreme poverty and hunger",
+			    " &raquo; Achieve universal primary education",
+			    " &raquo; Promote gender equality and empower women",
+			    " &raquo; Reduce child mortality rates",
+			    " &raquo; Improve maternal health",
+			    " &raquo; Combat HIV/AIDS, malaria, and other diseases",
+			    " &raquo; Ensure environmental sustainability",
+			    " &raquo; Develop a global partnership for development"
+			];
+			return goalText[gn-1];
 		}
 		function createMdgTableFromArray(ldata) {
 			var goals = [];
