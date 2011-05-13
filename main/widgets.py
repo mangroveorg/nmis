@@ -173,6 +173,7 @@ def lga_facilities_data(region_thing, context):
         entities_list = get_entities_in(dbm, region_thing.entity.location_path, 'Health Clinic')
         #print("\n".join([e.id for e in entities_list]))
         facility_list = [{'sector': 'health', \
+                          'id': hc.id, \
                           'facility_type': hc.values({'facility_name': 'latest'})['facility_name'].title(), \
                           'access_pct': get_score_for(hc, 'access'), \
                           'infrastructure_pct': get_score_for(hc, 'infrastructure'), \
