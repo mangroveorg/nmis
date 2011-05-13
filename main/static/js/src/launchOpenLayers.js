@@ -41,6 +41,18 @@ var LaunchOpenLayers = (function (_wrap) {
     {'layername': 'nigeria_child_nutrition', 'type': 'png'}
   );
 
+  var nigeria_malaria = new OpenLayers.Layer.TMS(
+    "Nigeria Malaria",
+    [mapserver],
+    {'layername': 'nigeria_malaria', 'type': 'png'}
+  );
+
+  var nigeria_maternal_health = new OpenLayers.Layer.TMS(
+    "Nigeria Maternal Health",
+    [mapserver],
+    {'layername': 'nigeria_maternal_health', 'type': 'png'}
+  );
+
  var gsat = new OpenLayers.Layer.Google(
     "Google Satellite",
     {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
@@ -51,7 +63,7 @@ var LaunchOpenLayers = (function (_wrap) {
     {type: google.maps.MapTypeId.TERRAIN}
   );
 
-  map.addLayers([nigeria, nigeria_child_health, nigeria_child_nutrition, gphy, gsat]);
+  map.addLayers([nigeria, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, gphy, gsat]);
 
   map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.setCenter(new OpenLayers.LonLat(851310.77702182, 1044435.5543009), 6);
