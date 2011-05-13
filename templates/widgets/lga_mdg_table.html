@@ -43,7 +43,7 @@
 						sectorAndSubsector += ":<br>" + dr.subsector;
 					}
 					thisRow.append($('<td />', {'class':'subgoal'}).html(sectorAndSubsector));
-					thisRow.append($('<td />').text(dr.name));
+					thisRow.append($('<td />').html(dr.name + "<br /><small><em>Data Source: "+ dr.data_source+"</em></small>"));
 					thisRow.append($('<td />').text(dr.value));
 					tbody.append(thisRow);
 				});

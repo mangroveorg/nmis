@@ -109,8 +109,21 @@ def regnav_lga(region_thing, context):
 from main.raw_mdg_indicator_list import INDICATORS as indicator_list
 from collections import defaultdict
 
+def format_indicator(value):
+    try:
+        fvalue = float(value)
+        return "%.2f" % fvalue
+    except:
+        pass
+    return value       
+
 def get_variable_values_for_region_thing(variable_slug, region_thing, data_set={}):
-    return "3.142%"
+    dbm = DatabaseManager(
+         server=settings.MANGROVE_DATABASES['default']['SERVER'],
+         database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+    print("ENTITY: %s -- %s" % (region_thing.entity, region_thing.entity.id))
+    print("SLUG: %s" % variable_slug)
+    return format_indicator(region_thing.entity.values({variable_slug: 'latest'})[variable_slug])
 
 def lga_mdg_table(region_thing, context):
     context.stylesheets.append('/static/css/src/mdg_table.css')
@@ -122,7 +135,7 @@ def lga_mdg_table(region_thing, context):
         if sname not in sector_names:
             sector_names.append(sname)
             sector_grouped_data[sslug] = []
-        tt = {'value': get_variable_values_for_region_thing(sslug, region_thing), \
+        tt = {'value': get_variable_values_for_region_thing(i['slug'], region_thing), \
                 'goal_number': i['goal_number'], \
                 'sector': i['sector'], \
                 'subsector': i['subsector'], \
@@ -143,7 +156,7 @@ def lga_facilities_data(region_thing, context):
 
     try:
         entities_list = get_entities_in(dbm, region_thing.entity.location_path, 'Health Clinic')
-        print(entities_list)
+        #print(entities_list)
         #facility_list = [hc.values({'facility_type': 'latest'})['facility_type'] for hc in entities_list]        
         facility_list = [{'sector': 'health', 'facility_type': hc.values({'facility_name': 'latest'})['facility_name'].title(), 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': hc.values({'photo': 'latest'})['photo'][:-4]} for hc in entities_list]
     except Exception as e:
