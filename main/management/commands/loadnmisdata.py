@@ -49,13 +49,15 @@ class Command(BaseCommand):
         load_population = True
         load_mdg = True
         load_facility = True
-        num_facilities_to_import = 100
+        num_facilities_to_import = 10
 
         countries = {}
         states = {}
         locations = {}
         num_cgs = 0
         datadict_types = {}
+        geo_id_dict = {}
+
         cgs_type = DataDictType(
             dbm,
             slug='cgs',
@@ -95,8 +97,8 @@ class Command(BaseCommand):
                 e = Entity(dbm,
                            entity_type=["Location", "Country"],
                            location=[country],
-                           geometry=geometry,
-                           centroid=centroid)
+                           centroid=centroid,
+                           gr_id=gr_id)
                 locations[(country,)] = e.save()
                 countries[country] = e.id
                 num_rows += 1
@@ -109,8 +111,8 @@ class Command(BaseCommand):
                 e = Entity(dbm,
                            entity_type=["Location", "State"],
                            location=[country, state],
-                           geometry=geometry,
-                           centroid=centroid)
+                           centroid=centroid,
+                           gr_id=gr_id)
                 locations[(country, state)] = e.save()
                 states[state] = e.id
                 num_rows += 1
@@ -122,11 +124,13 @@ class Command(BaseCommand):
             e = Entity(dbm,
                        entity_type=["Location", "LGA"],
                        location=[country, state, lga],
-                       geometry=geometry,
-                       centroid=centroid)
+                       centroid=centroid,
+                       gr_id=gr_id)
             locations[location] = e.save()
+            geo_id_dict[geo_id] = e
             data = [(geo_id_type.slug, geo_id, geo_id_type)]
             e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+
             num_rows += 1
             print "[%s]...(%s, %s, %s)" % (num_rows, country, state, lga)
             if cgs:
@@ -316,8 +320,12 @@ class Command(BaseCommand):
                     long = float(geocode[1])
                 else:
                     geocode = False
-                entities = get_entities_by_value(dbm, geo_id_type, geo_id)
-                entity = entities[0] if entities else None
+#                entities = get_entities_by_value(dbm, geo_id_type, geo_id)
+#                entity = entities[0] if entities else None
+                if geo_id in geo_id_dict:
+                    entity = geo_id_dict[geo_id]
+                else:
+                    entity = False
                 if entity:
                     entity_data = {}
                     entity_data['datarecords'] = []
