@@ -19,14 +19,14 @@
 		function mdgDescription(gn){
 			var gN = +gn;
 			var goalText = [
-			    " &raquo; Eradicate extreme poverty and hunger",
-			    " &raquo; Achieve universal primary education",
-			    " &raquo; Promote gender equality and empower women",
-			    " &raquo; Reduce child mortality rates",
-			    " &raquo; Improve maternal health",
-			    " &raquo; Combat HIV/AIDS, malaria, and other diseases",
-			    " &raquo; Ensure environmental sustainability",
-			    " &raquo; Develop a global partnership for development"
+			    "Goal 1 &raquo; Eradicate extreme poverty and hunger",
+			    "Goal 2 &raquo; Achieve universal primary education",
+			    "Goal 3 &raquo; Promote gender equality and empower women",
+			    "Goal 4 &raquo; Reduce child mortality rates",
+			    "Goal 5 &raquo; Improve maternal health",
+			    "Goal 6 &raquo; Combat HIV/AIDS, malaria, and other diseases",
+			    "Goal 7 &raquo; Ensure environmental sustainability",
+			    "Goal 8 &raquo; Develop a global partnership for development"
 			];
 			return goalText[gn-1];
 		}
@@ -44,7 +44,7 @@
 				dataByGoal[d.goal_number].push(d);
 			});
 			$(goals.sort()).each(function(i, gn){
-				var goalHeaderRow = $("<tr />").html($("<td />", {'class':'mdg_header', 'colspan':2}).text("MDG "+gn+": "+mdgDescription(gn)));
+				var goalHeaderRow = $("<tr />").html($("<td />", {'class':'mdg_header', 'colspan':2}).html(mdgDescription(gn)));
 				goalHeaderRow.append($("<td />", {'class':'mdg_header'}).text("2011"));
 				tbody.append(goalHeaderRow);
 				$.each(dataByGoal[gn], function(i, dr){
