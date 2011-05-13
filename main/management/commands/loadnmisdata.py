@@ -46,10 +46,11 @@ class Command(BaseCommand):
         user_spreadsheets = GoogleSpreadsheetsClient(settings.GMAIL_USERNAME, settings.GMAIL_PASSWORD)
         nims_data = user_spreadsheets['NIMS Data Deux']
 
-        load_population = True
-        load_mdg = True
+        load_population = False
+        load_other = False
+        load_mdg = False
         load_facility = True
-        num_facilities_to_import = 10
+        max_facilities_to_import = 50
 
         countries = {}
         states = {}
@@ -65,6 +66,7 @@ class Command(BaseCommand):
             primitive_type='boolean'
         )
         datadict_types['cgs'] = cgs_type.save()
+
         geo_id_type = DataDictType(
             dbm,
             slug='geo_id',
@@ -72,6 +74,15 @@ class Command(BaseCommand):
             primitive_type='string'
         )
         datadict_types['geo_id'] = geo_id_type.save()
+
+        name_type = DataDictType(
+            dbm,
+            slug='name',
+            name='Name',
+            primitive_type='string'
+        )
+        datadict_types['name'] = name_type.save()
+
         country_geo_id = {}
         for row in nims_data['Nigeria Country ALL']:
             country_geo_id[row['name']] = row['grid']
@@ -101,6 +112,8 @@ class Command(BaseCommand):
                            gr_id=gr_id)
                 locations[(country,)] = e.save()
                 countries[country] = e.id
+                data = [(name_type.slug, country, name_type)]
+                e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
                 num_rows += 1
                 print "[%s]...(%s)" % (num_rows, country)
             if state not in states:
@@ -115,6 +128,8 @@ class Command(BaseCommand):
                            gr_id=gr_id)
                 locations[(country, state)] = e.save()
                 states[state] = e.id
+                data = [(name_type.slug, state, name_type)]
+                e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
                 num_rows += 1
                 print "[%s]...(%s, %s)" % (num_rows, country, state)
             gr_id = lga_gr_id
@@ -128,6 +143,8 @@ class Command(BaseCommand):
                        gr_id=gr_id)
             locations[location] = e.save()
             geo_id_dict[geo_id] = e
+            data = [(name_type.slug, lga, name_type)]
+            e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
             data = [(geo_id_type.slug, geo_id, geo_id_type)]
             e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
 
@@ -162,6 +179,48 @@ class Command(BaseCommand):
                     datadict_types[slug] = dd_type.save()
 
             for row in nims_data['Population Data']:
+                state = get_string('state', row)
+                lga = get_string('lga', row)
+                location = ("Nigeria", state, lga)
+                data = []
+                if not state or not lga:
+                    continue
+                for dd_key in datadict_types.keys():
+                    ss_key = dd_key.replace('_', '')
+                    point = (dd_key, get_number(ss_key, row), get_datadict_type(dbm, datadict_types[dd_key]))
+                    data.append(point)
+                if location in locations:
+                    lga_loaded.append(lga)
+                    e = dbm.get(locations[location], Entity)
+                    e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                else:
+                    if not lga in lga_failed:
+                        lga_failed.append(lga)
+
+            print "Loaded %d out of %d records" % (len(lga_loaded), len(lga_failed) + len(lga_loaded))
+            if lga_failed:
+                print "%d LGAs failed to load:" % len(lga_failed)
+                for lga in lga_failed:
+                    print "\t%s" % lga
+
+        if load_other:
+            print "Adding data from 'lga_other' worksheet"
+            for row in nims_data['lga_other_variables']:
+                slug = get_string('slug', row)
+                name = get_string('name', row)
+                primitive_type = get_string('primitivetype', row)
+                tags = get_list('tags', row)
+                if not slug in datadict_types:
+                    dd_type = DataDictType(
+                        dbm,
+                        slug=slug,
+                        name=name,
+                        primitive_type=primitive_type,
+                        tags=tags
+                    )
+                    datadict_types[slug] = dd_type.save()
+
+            for row in nims_data['lga_other']:
                 state = get_string('state', row)
                 lga = get_string('lga', row)
                 location = ("Nigeria", state, lga)
@@ -302,7 +361,7 @@ class Command(BaseCommand):
 
             print "Adding Health Clinics and associated data"
 
-            file_name = 'Health_2011_03_18_geoid.csv'
+            file_name = 'Health_PhaseII_RoundI_Clean_StarredVariables.csv'
             dirname = settings.DATA_DIRECTORY
             abspath = os.path.abspath(dirname)
             file_path = os.path.join(abspath, file_name)
@@ -311,9 +370,9 @@ class Command(BaseCommand):
             things_to_build = []
             for row in csv_reader.iter_dicts():
                 num_rows += 1
-                if num_rows >= num_facilities_to_import: break
-                geo_id = get_string('geo_id', row)
-                geocode = get_string('geocode_of_facility', row).split()
+                if num_rows > max_facilities_to_import: break
+                geo_id = get_string('*geoid', row)
+                geocode = get_string('*geocodeoffacility', row).split()
                 lat, long = None, None
                 if geocode and len(geocode) >= 2:
                     lat = float(geocode[0])
@@ -334,25 +393,26 @@ class Command(BaseCommand):
                     else:
                         entity_data['geometry'] = False
                     for key in row.keys():
-                        slug = str(slugify(unicode(key.strip(), 'utf-8')))
-                        name = key
-                        primitive_type = 'string'
-                        tags = ['Facility', 'Baseline', 'Health']
-                        value = row[key]
-                        data = {
-                            'label': slug,
-                            'value': value,
-                            'slug': slug
-                        }
-                        datarecord = {
-                            'slug': slug,
-                            'name': name,
-                            'primitive_type': primitive_type,
-                            'tags': tags,
-                            'value': value,
-                            'data': data
-                        }
-                        entity_data['datarecords'].append(datarecord)
+                        if key.startswith('*'):
+                            slug = str(slugify(unicode(key.strip(), 'utf-8')))
+                            name = key
+                            primitive_type = 'string'
+                            tags = ['Facility', 'Baseline', 'Health']
+                            value = row[key]
+                            data = {
+                                'label': slug,
+                                'value': value,
+                                'slug': slug
+                            }
+                            datarecord = {
+                                'slug': slug,
+                                'name': name,
+                                'primitive_type': primitive_type,
+                                'tags': tags,
+                                'value': value,
+                                'data': data
+                            }
+                            entity_data['datarecords'].append(datarecord)
                     things_to_build.append((entity, entity_data))
 
             num_rows = 0
@@ -387,6 +447,6 @@ class Command(BaseCommand):
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
                 clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
-                print '[X]...Record added'
+                print '[X]...Record added (%s variables)' % len(all_records)
 
             print "Loaded %d records" % num_rows
