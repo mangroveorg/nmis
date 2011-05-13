@@ -101,13 +101,13 @@ widgets.push(function(){
 		
 		imageNavigation.empty();
 		var ulList = $("<ul />");
+
+		var tt = $("<h4 />").text("Photos for " + sector.name);
 		
-//		if(sector===undefined || facilityData.bySector[sector.slug]===undefined) {
-//			console.log("Nothing can be dislpayed");
-			var sampleImageIds = ["100", "200", "300", "400", "500", "600", "700", "800"];
-			
-			imageNavigation.append(ulList);
-			$(sampleImageIds).each(function(i, t){
+		var facilities = $.map(facilityData.bySector[sector.slug], function(uid, i){return facilityData.list[uid];})
+		
+			$(facilities).each(function(i, facility){
+                var t = facility.image_id;
 				var thumbnailUrl = '/pictures/fwd/'+t+'/140x140';
 				var biggerImage = '/pictures/fwd/'+t+'/raw';
 				var im = $("<img />", {'src':thumbnailUrl});
@@ -120,24 +120,8 @@ widgets.push(function(){
 				})
 				ulList.append(li);
 			});
-			imageNavigation.append(ulList);
-			return false;
-//		}
-		
-		var tt = $("<h4 />").text("Photos for " + sector.name);
-		
-		var facilities = $.map(facilityData.bySector[sector.slug], function(uid, i){return facilityData.list[uid];})
-		
-		$(facilities).each(function(i, facility){
-			var li = $("<li />").text(facility.uid).data('facilityUid', facility.uid);
-			li.click(function(){
-				$(this).trigger('facility-click', {uid:facility.uid})
-			})
-			ulList.append(li);
-		})
 		imageNavigation.append($("<div />", {'class':'clearfix'}).html("&nbsp;"))
 		
-		imageNavigation.empty();
 		imageNavigation.append(tt);
 		imageNavigation.append(ulList);
 	}
