@@ -45,7 +45,8 @@ def forward(request, pic_id, format='raw'):
     try:
         file_name = os.listdir(size_folder)[0]
     except OSError:
-        file_name = 'unknown'
+        pic_id = 'failed'
+        file_name = '%s_failed.jpg' % format
     file_path = os.path.join(os.path.join(pic_id, format), file_name)
     file_url = '%s%s' % (settings.PICTURES_URL, file_path)
     return HttpResponseRedirect(file_url)
