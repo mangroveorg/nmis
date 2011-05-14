@@ -133,38 +133,6 @@ a:hover { color: #036; }
   p, h2, h3 { orphans: 3; widows: 3; }
   h2, h3{ page-break-after: avoid; }
 }
-
-header a#logo {
-    font-family: 'Comic Sans MS';
-    display: block;
-    line-height: 27px;
-    font-size: 26px;
-    text-decoration: none;
-    width: 200px;
-    padding-top: 5px;
-    padding-left: 12px;
-    color: #444;
-}
-#container, #container header, #container #main, #container footer {
-    font-family: 'Comic Sans MS';
-	background-color: #f7f7f7;
-	margin-top: 5px;
-	position: relative;
-}
-#container {
-    background-color: #f6f6f6;
-	margin: 4px;
-	width: 1100px;
-	margin: 0 auto;
-}
-#container header {
-	height: 42px;
-	margin-top: 0;
-}
-#container footer {
-	height: 14px;
-}
-#container #main {}
 #container #main.with-nav {
     position: relative;
     padding-top: 2.5em;
@@ -176,6 +144,12 @@ header a#logo {
     position: absolute;
     left:0;
     top: 2.4em;
+    z-index: 100;
+    background-color: #F7F7F7;
+    border: 1px solid #ccc;
+    border-width: 0 1px 1px 1px;
+    padding-bottom: 8px;
+    -moz-border-bottom-right-radius: 4px;
 }
 #region-nav h2 {
     padding: 3px 8px;
@@ -191,15 +165,6 @@ header a#logo {
     display: block;
     text-decoration: none;
     padding: 3px 15px;
-}
-#region-nav a.scaleup-phase-one {
-    color: #1B4B99;
-}
-#region-nav a.scaleup-phase-two {
-    color: #1B4B99;
-}
-#region-nav a.scaleup-inactive {
-    color: #89A0BC;
 }
 #region-nav ul a:hover {
     background-color: #ccc;
@@ -346,42 +311,3 @@ p.region-breadcrumbs a.mode-link span.c {
 
 	margin: 3px 15px 3px 10px;
 }
-h3.mock-up {
-    padding: 2px 15px;
-    line-height: 30px;
-    border-bottom: 1px solid #888;
-}
-div.search-box {
-    position: absolute;
-    top: 9px;
-    right: 20px;
-    border: 1px solid black;
-    border-radius: 8px;
-    -moz-border-radius: 8px;
-    padding-left: 18px;
-    height: 21px;
-    background-color: #fff;
-}
-div.search-box span.magnifying-glass {
-    position: absolute;
-    top: 4px;
-    left: 5px;;
-    background-image: url('/static/sample_imgs/search_img.png');
-    background-repeat: no-repeat;
-    background-position: center;
-    display: block;
-    width: 11px;
-    height: 14px;
-}
-div.search-box input {
-    font-family: 'Comic Sans MS';
-    background-color: transparent;
-    border: 0 none;
-}
-
-#content.facilities .mdg-indicators-only, #content.mdg-indicators .facilities-only {
-    display: none;
-}
-
-.js .display-block-when-ready {display: none;}
-.js .display-block-when-ready.ready {display: block;}

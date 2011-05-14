@@ -5,3 +5,128 @@
  */
 
 @import 'widgets/mdg_table.scss';
+
+body {
+    font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
+}
+
+header {
+	background-image: url('/static/images/bg_shade.png');
+	background-repeat: repeat-x;
+	background-color: #777;
+	overflow: hidden;
+	height: 50px;
+	margin-top: 0;
+	
+	a#logo {
+		background-image: url('/static/images/nmis_pilot.png');
+		background-repeat: no-repeat;
+		background-position: 0px -14px;
+		display: block;
+		width: 600px;
+		height: 2em;
+		font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
+		font-size: 20px;
+		text-decoration: none;
+		color: #444;
+		text-indent: 5em;
+		line-height: 45px;
+		span {
+			color: #eee;
+			text-shadow: 1px 1px 3px #444;
+		}
+	}
+}
+
+footer {
+	height: 14px;
+}
+
+#container {
+	box-shadow: 0px 2px 5px black;
+    background-color: #f6f6f6;
+	margin: 4px;
+	width: 1100px;
+	margin: 0 auto 22px;
+	header, #main, footer {
+		position: relative;
+	}
+	#main, footer {
+		margin-top: 5px;
+		background-color: #f7f7f7;
+	}
+}
+
+
+div.search-box {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    -moz-border-radius: 8px;
+    padding-left: 18px;
+    height: 21px;
+    background-color: #eee;
+	span.magnifying-glass {
+	    position: absolute;
+	    top: 4px;
+	    left: 5px;
+	    background-image: url('/static/images/search_img.png');
+	    background-repeat: no-repeat;
+	    background-position: center;
+	    display: block;
+	    width: 11px;
+	    height: 14px;
+	}
+	input {
+	    font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
+	    background-color: transparent;
+	    border: 0 none;
+	}
+}
+
+.js {
+	.display-block-when-ready, .display-inline-when-ready {
+		display: none;
+	}
+	.ready {
+		&.display-block-when-ready {
+			display: block;
+		}
+		&.display-inline-when-ready {
+			display: inline;
+		}
+		&.display-inline-table-when-ready {
+			display: inline-table;
+		}
+	}
+}
+h1, h2, h3, h4, h5, h6 {
+	&.mock-up {
+		background-image: url('/static/images/lighter_grad.png');
+		background-color: #999;
+		color: #fff;
+		text-shadow: 2px 1px 3px #444;
+		padding: 2px 15px;
+	    line-height: 30px;
+	    border-bottom: 1px solid #888;
+	}
+}
+
+#content.facilities .mdg-indicators-only, #content.mdg-indicators .facilities-only {
+    display: none;
+}
+
+
+.map-h {
+	h2.indicator-head {
+		color: #444;
+		border: 1px solid #666;
+		padding: 4px 12px;
+		margin: 3px 4px;
+	}
+	> * {
+		margin: 4px 12px;
+	}
+}
