@@ -158,6 +158,7 @@ class Command(BaseCommand):
         print "States (%d)" % len(states)
         print "LGAs (%d) (%d as CGS)" % ((len(locations) - len(countries) - len(states)), num_cgs)
         print "Total locations (%d)" % len(locations)
+
         lga_loaded = []
         lga_failed = []
 
@@ -203,6 +204,8 @@ class Command(BaseCommand):
                 for lga in lga_failed:
                     print "\t%s" % lga
 
+        lga_loaded = []
+        lga_failed = []
         if load_other:
             print "Adding data from 'lga_other' worksheet"
             for row in nims_data['lga_other_variables']:
