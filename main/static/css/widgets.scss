@@ -13,6 +13,7 @@ body {
 header {
 	background-image: url('/static/images/bg_shade.png');
 	background-repeat: repeat-x;
+	background-color: #777;
 	overflow: hidden;
 	height: 50px;
 	margin-top: 0;
@@ -20,18 +21,20 @@ header {
 	a#logo {
 		background-image: url('/static/images/nmis_pilot.png');
 		background-repeat: no-repeat;
-		background-position: 0px -12px;
+		background-position: 0px -14px;
 		display: block;
-		width: 200px;
+		width: 600px;
 		height: 2em;
 		font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
-		line-height: 27px;
-		font-size: 26px;
+		font-size: 20px;
 		text-decoration: none;
 		color: #444;
-		
+		text-indent: 5em;
+		line-height: 45px;
 		span {
-			display: none
+			display: none;
+			color: #eee;
+			text-shadow: 1px 1px 3px #444;
 		}
 	}
 }
@@ -41,16 +44,17 @@ footer {
 }
 
 #container {
+	box-shadow: 0px 2px 5px black;
     background-color: #f6f6f6;
 	margin: 4px;
 	width: 1100px;
-	margin: 0 auto;
+	margin: 0 auto 22px;
 	header, #main, footer {
 		position: relative;
-		background-color: #f7f7f7;
 	}
 	#main, footer {
 		margin-top: 5px;
+		background-color: #f7f7f7;
 	}
 }
 
@@ -102,8 +106,9 @@ div.search-box {
 h1, h2, h3, h4, h5, h6 {
 	&.mock-up {
 		background-image: url('/static/images/lighter_grad.png');
+		background-color: #999;
 		color: #fff;
-		text-shadow: 2px 1px 3px #222;
+		text-shadow: 2px 1px 3px #444;
 		padding: 2px 15px;
 	    line-height: 30px;
 	    border-bottom: 1px solid #888;
@@ -112,4 +117,17 @@ h1, h2, h3, h4, h5, h6 {
 
 #content.facilities .mdg-indicators-only, #content.mdg-indicators .facilities-only {
     display: none;
+}
+
+
+.map-h {
+	h2.indicator-head {
+		color: #444;
+		border: 1px solid #666;
+		padding: 4px 12px;
+		margin: 3px 4px;
+	}
+	> * {
+		margin: 4px 12px;
+	}
 }
