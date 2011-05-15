@@ -135,7 +135,7 @@ a:hover { color: #036; }
 }
 
 header a#logo {
-    font-family: 'Comic Sans MS';
+    font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
     display: block;
     line-height: 27px;
     font-size: 26px;
@@ -146,7 +146,7 @@ header a#logo {
     color: #444;
 }
 #container, #container header, #container #main, #container footer {
-    font-family: 'Comic Sans MS';
+    font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
 	background-color: #f7f7f7;
 	margin-top: 5px;
 	position: relative;
@@ -374,7 +374,7 @@ div.search-box span.magnifying-glass {
     height: 14px;
 }
 div.search-box input {
-    font-family: 'Comic Sans MS';
+    font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
     background-color: transparent;
     border: 0 none;
 }
