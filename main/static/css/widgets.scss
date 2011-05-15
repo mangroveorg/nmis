@@ -5,3 +5,111 @@
  */
 
 @import 'widgets/mdg_table.scss';
+
+body {
+    font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
+}
+
+header {
+	background-image: url('/static/images/bg_shade.png');
+	background-repeat: repeat-x;
+	overflow: hidden;
+	height: 50px;
+	margin-top: 0;
+	
+	a#logo {
+		background-image: url('/static/images/nmis_pilot.png');
+		background-repeat: no-repeat;
+		background-position: 0px -12px;
+		display: block;
+		width: 200px;
+		height: 2em;
+		font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
+		line-height: 27px;
+		font-size: 26px;
+		text-decoration: none;
+		color: #444;
+		
+		span {
+			display: none
+		}
+	}
+}
+
+footer {
+	height: 14px;
+}
+
+#container {
+    background-color: #f6f6f6;
+	margin: 4px;
+	width: 1100px;
+	margin: 0 auto;
+	header, #main, footer {
+		position: relative;
+		background-color: #f7f7f7;
+	}
+	#main, footer {
+		margin-top: 5px;
+	}
+}
+
+
+div.search-box {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    border: 1px solid black;
+    border-radius: 8px;
+    -moz-border-radius: 8px;
+    padding-left: 18px;
+    height: 21px;
+    background-color: #eee;
+	span.magnifying-glass {
+	    position: absolute;
+	    top: 4px;
+	    left: 5px;
+	    background-image: url('/static/images/search_img.png');
+	    background-repeat: no-repeat;
+	    background-position: center;
+	    display: block;
+	    width: 11px;
+	    height: 14px;
+	}
+	input {
+	    font-family: "Lucida Grande","Bitstream Vera Sans",Verdana,sans-serif;
+	    background-color: transparent;
+	    border: 0 none;
+	}
+}
+
+.js {
+	.display-block-when-ready, .display-inline-when-ready {
+		display: none;
+	}
+	.ready {
+		&.display-block-when-ready {
+			display: block;
+		}
+		&.display-inline-when-ready {
+			display: inline;
+		}
+		&.display-inline-table-when-ready {
+			display: inline-table;
+		}
+	}
+}
+h1, h2, h3, h4, h5, h6 {
+	&.mock-up {
+		background-image: url('/static/images/lighter_grad.png');
+		color: #fff;
+		text-shadow: 2px 1px 3px #222;
+		padding: 2px 15px;
+	    line-height: 30px;
+	    border-bottom: 1px solid #888;
+	}
+}
+
+#content.facilities .mdg-indicators-only, #content.mdg-indicators .facilities-only {
+    display: none;
+}
