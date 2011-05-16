@@ -46,11 +46,11 @@ class Command(BaseCommand):
         user_spreadsheets = GoogleSpreadsheetsClient(settings.GMAIL_USERNAME, settings.GMAIL_PASSWORD)
         nims_data = user_spreadsheets['NIMS Data Deux']
 
-        load_population = True
-        load_other = True
-        load_mdg = True
+        load_population = False
+        load_other = False
+        load_mdg = False
         load_facility = True
-        max_facilities_to_import = 50
+        max_facilities_to_import = 25
 
         countries = {}
         states = {}
@@ -449,6 +449,98 @@ class Command(BaseCommand):
                         d['data']['value'],
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
+                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                print '[X]...Record added (%s variables)' % len(all_records)
+
+            print "Loaded %d records" % num_rows
+
+            print "Adding Water Points and associated data"
+
+            file_name = 'baseline_water_cleaned_2011May11_truncated.csv'
+            dirname = settings.DATA_DIRECTORY
+            abspath = os.path.abspath(dirname)
+            file_path = os.path.join(abspath, file_name)
+            csv_reader = CsvReader(file_path)
+            num_rows = 0
+            things_to_build = []
+            for row in csv_reader.iter_dicts():
+                num_rows += 1
+                if num_rows > max_facilities_to_import: break
+                geo_id = get_string('geo_id', row)
+                geocode = get_string('gps', row).split()
+                lat, long = None, None
+                if geocode and len(geocode) >= 2:
+                    lat = float(geocode[0])
+                    long = float(geocode[1])
+                else:
+                    geocode = False
+#                entities = get_entities_by_value(dbm, geo_id_type, geo_id)
+#                entity = entities[0] if entities else None
+                if geo_id in geo_id_dict:
+                    entity = geo_id_dict[geo_id]
+                else:
+                    entity = False
+                if entity:
+                    entity_data = {}
+                    entity_data['datarecords'] = []
+                    if geocode:
+                        entity_data['geometry'] = {'type': 'Point', 'coordinates': [lat, long]}
+                    else:
+                        entity_data['geometry'] = False
+                    for key in row.keys():
+                        slug = str(slugify(unicode(key.strip().replace('*', ''), 'utf-8')))
+                        name = key
+                        primitive_type = 'string'
+                        tags = ['Facility', 'Baseline', 'Water']
+                        value = row[key]
+                        data = {
+                            'label': slug,
+                            'value': value,
+                            'slug': slug
+                        }
+                        datarecord = {
+                            'slug': slug,
+                            'name': name,
+                            'primitive_type': primitive_type,
+                            'tags': tags,
+                            'value': value,
+                            'data': data
+                        }
+                        entity_data['datarecords'].append(datarecord)
+                    things_to_build.append((entity, entity_data))
+
+            num_rows = 0
+            for (e, t) in things_to_build:
+                num_rows += 1
+                print '[%s] Facility added inside %s' % (num_rows, e.location_path)
+                if t['geometry']:
+                    clinic = Entity(dbm,
+                                    entity_type=["Facility", "Water Point"],
+                                    location=e.location_path,
+                                    geometry=t['geometry'])
+                    print '[X]...with geometry: %s' % t['geometry']
+                else:
+                    clinic = Entity(dbm,
+                                    entity_type=["Facility", "Water Point"],
+                                    location=e.location_path)
+                clinic.save()
+                all_records = []
+                for d in t['datarecords']:
+                    if not d['slug'] in datadict_types:
+                        dd_type = DataDictType(
+                            dbm,
+                            slug=d['slug'],
+                            name=d['name'],
+                            primitive_type=d['primitive_type'],
+                            tags=d['tags']
+                        )
+                        datadict_types[d['slug']] = dd_type.save()
+                    data_to_add = (
+                        d['data']['label'],
+                        d['data']['value'],
+                        get_datadict_type(dbm, datadict_types[d['slug']]))
+                    all_records.append(data_to_add)
+                print all_records
                 clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
                 print '[X]...Record added (%s variables)' % len(all_records)
 
