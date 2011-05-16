@@ -1,6 +1,15 @@
 
-var LaunchOpenLayers = (function (_wrap) { 
-  $("#map").height(475);
+var LaunchOpenLayers = (function (wrapId, _opts) { 
+  var wrap = $('#'+wrapId);
+  wrap.height(475);
+  
+  var defaultOpts = {
+      centroid: {
+          lat: 851310.77702182,
+          lng: 1044435.5543009
+      },
+      zoom: 6
+  }, opts = $.extend({}, _opts, defaultOpts);
 
   OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
   OpenLayers.ImgPath = "http://js.mapbox.com/theme/dark/";
@@ -21,7 +30,7 @@ var LaunchOpenLayers = (function (_wrap) {
     ) 
   };
   
-  map = new OpenLayers.Map('map', options);
+  map = new OpenLayers.Map(wrapId, options);
   var mapserver = "http://tilestream.openmangrove.org:8888/";
   
   var nigeria = new OpenLayers.Layer.TMS(

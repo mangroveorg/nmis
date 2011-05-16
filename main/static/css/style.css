@@ -144,6 +144,12 @@ a:hover { color: #036; }
     position: absolute;
     left:0;
     top: 2.4em;
+    z-index: 100;
+    background-color: #F7F7F7;
+    border: 1px solid #ccc;
+    border-width: 0 1px 1px 1px;
+    padding-bottom: 8px;
+    -moz-border-bottom-right-radius: 4px;
 }
 #region-nav h2 {
     padding: 3px 8px;
@@ -159,15 +165,6 @@ a:hover { color: #036; }
     display: block;
     text-decoration: none;
     padding: 3px 15px;
-}
-#region-nav a.scaleup-phase-one {
-    color: #1B4B99;
-}
-#region-nav a.scaleup-phase-two {
-    color: #1B4B99;
-}
-#region-nav a.scaleup-inactive {
-    color: #89A0BC;
 }
 #region-nav ul a:hover {
     background-color: #ccc;

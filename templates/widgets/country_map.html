@@ -18,7 +18,7 @@ widgetActivators.country_map = (function(){
       dataType: 'script',
     });
     $.when(openLayers, launchScript).done(function(unk, status){
-      LaunchOpenLayers("#map-bar");
+      LaunchOpenLayers("map");
     });
   });
 });
