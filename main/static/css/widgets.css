@@ -56,7 +56,6 @@ header {
     text-indent: 5em;
     line-height: 45px; }
     header a#logo span {
-      display: none;
       color: #eee;
       text-shadow: 1px 1px 3px #444; }
 
