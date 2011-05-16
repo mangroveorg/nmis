@@ -5,10 +5,11 @@
 var map, layer, tags;
 widgetActivators.country_map = (function(){
   $(function(){
+	/*--
     var polyMaps = $.ajax({
       url: "http://maps.georegistry.org/files/polymaps.min.js",
       dataType: 'script'
-    });
+    });--*/
     var openLayers = $.ajax({
       url: '/static/js/libs/OpenLayers.js',
       dataType: 'script'
