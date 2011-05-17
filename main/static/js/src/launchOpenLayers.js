@@ -1,4 +1,3 @@
-
 var LaunchOpenLayers = (function (wrapId, _opts) { 
   var wrap = $('#'+wrapId);
   wrap.height(475);
@@ -8,6 +7,9 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
           lat: 0.000068698255561324,
           lng: 0.000083908685869343
       },
+      localTiles: false,
+      tileUrl: "http://tilestream.openmangrove.org:8888/",
+      tileCache: "http://localhost:8000/tiles/",
       zoom: 6
   }, opts = $.extend({}, _opts, defaultOpts);
 
@@ -31,8 +33,8 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
   };
   
   map = new OpenLayers.Map(wrapId, options);
-  var mapserver = "http://tilestream.openmangrove.org:8888/";
-  
+  var mapserver = !!opts.localTiles ? 
+                    opts.tileCache : opts.tileUrl;
   var nigeria = new OpenLayers.Layer.TMS(
     "Nigeria",
     [ mapserver],
