@@ -51,6 +51,7 @@ percentage_households_with_access_to_improved_water_sources	YES	YES	Infrastructu
 percentage_households_with_access_to_improved_sanitation	YES	YES	Infrastructure	Sanitation access	7	Percentage households with access to improved sanitation	?
 """
 
+
 def convert_pasted_data():
     lines = pasted_from_spreadsheet.strip().split("\n")
     q = [l.split("\t") for l in lines]

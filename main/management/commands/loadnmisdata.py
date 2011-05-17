@@ -3,6 +3,7 @@ from django.conf import settings
 
 from mangrove.datastore.entity import Entity
 
+
 class Command(BaseCommand):
     help = "Loads the NMIS dataset from the 'NIMS Data' Google Doc."
     args = "<server> <database> | <database>"

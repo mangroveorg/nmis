@@ -96,6 +96,7 @@ def load_nigeria_regions_to_file():
     f.write(json_val)
     f.close()
 
+
 def lgas_json(request):
     dbm = DatabaseManager(
                 server=settings.MANGROVE_DATABASES['default']['SERVER'],

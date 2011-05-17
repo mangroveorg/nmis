@@ -10,12 +10,12 @@ from mangrove.datastore.database import DatabaseManager
 from mangrove.datastore.entity import get_entities_by_type, get_entities_in
 
 WIDGETS_BY_REGION_LEVEL = [
-#country:
-    ["country_map", "country_key_indicators", "country_state_nav"],
-#state:
-    ["regnav_state", "state_map", "state_mdg_performance"],
-#lga:
-    ["regnav_lga", "lga_facilities_data", "lga_map", "lga_mdg_table", "lga_facilities_table"]
+        #country:
+        ["country_map", "country_key_indicators", "country_state_nav"],
+        #state:
+        ["regnav_state", "state_map", "state_mdg_performance"],
+        #lga:
+        ["regnav_lga", "lga_facilities_data", "lga_map", "lga_mdg_table", "lga_facilities_table"]
 ]
 
 
@@ -30,7 +30,7 @@ def _packaged_dict_for_entity(rt):
     This can be reused with commonly repeated values for the widget.
     """
     entity = rt.entity
-    return {u'entity_id': entity.id, \
+    return {u'entity_id': entity.id,\
             u'name': entity.aggregation_paths['_geo'][-1]}
 
 
@@ -88,7 +88,7 @@ def country_state_nav(region_thing, context):
 
 def table_ranking(region_thing, context):
     return {'variable': 'Child Mortality', 'list': [\
-                {'name': 'First', 'color': '#A0EFA0', 'rank': '#1', 'value': '0'}, \
+                {'name': 'First', 'color': '#A0EFA0', 'rank': '#1', 'value': '0'},\
                 {'name': 'Second', 'color': 'red', 'rank': '#2', 'value': '50'}]}
 
 
@@ -109,21 +109,24 @@ def regnav_lga(region_thing, context):
 from main.raw_mdg_indicator_list import INDICATORS as indicator_list
 from collections import defaultdict
 
+
 def format_indicator(value):
     try:
         fvalue = float(value)
         return "%.2f" % fvalue
     except:
         pass
-    return value       
+    return value
+
 
 def get_variable_values_for_region_thing(variable_slug, region_thing, data_set={}):
     dbm = DatabaseManager(
-         server=settings.MANGROVE_DATABASES['default']['SERVER'],
-         database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+        server=settings.MANGROVE_DATABASES['default']['SERVER'],
+        database=settings.MANGROVE_DATABASES['default']['DATABASE'])
     #print("ENTITY: %s -- %s" % (region_thing.entity, region_thing.entity.id))
     #print("SLUG: %s" % variable_slug)
     return format_indicator(region_thing.entity.values({variable_slug: 'latest'})[variable_slug])
+
 
 def lga_mdg_table(region_thing, context):
     context.stylesheets.append('/static/css/src/mdg_table.css')
@@ -135,24 +138,26 @@ def lga_mdg_table(region_thing, context):
         if sname not in sector_names:
             sector_names.append(sname)
             sector_grouped_data[sslug] = []
-        tt = {'value': get_variable_values_for_region_thing(i['slug'], region_thing), \
-                'goal_number': i['goal_number'], \
-                'sector': i['sector'], \
-                'subsector': i['subsector'], \
-                'name': i['name'], \
-                'data_source': i['data_source']}
+        tt = {'value': get_variable_values_for_region_thing(i['slug'], region_thing),\
+              'goal_number': i['goal_number'],\
+              'sector': i['sector'],\
+              'subsector': i['subsector'],\
+              'name': i['name'],\
+              'data_source': i['data_source']}
         if i['lga_display']:
             sector_grouped_data[sslug].append(tt)
     sectors = []
     for s in sector_names:
-        sectors.append({'name':s, 'slug':s.lower()})
-    context.indicator_list = {'sectors': sectors, 'grouped_list': sector_grouped_data, 'grouped_list_json': json.dumps(sector_grouped_data)}
+        sectors.append({'name': s, 'slug': s.lower()})
+    context.indicator_list = {'sectors': sectors, 'grouped_list': sector_grouped_data,
+                              'grouped_list_json': json.dumps(sector_grouped_data)}
+
 
 def get_score_for(facility, slug):
     raw_score = facility.values({slug: 'latest'})[slug]
     if not raw_score:
         raw_score = 0
-    #print("SCORE:%s" % raw_score)
+        #print("SCORE:%s" % raw_score)
     try:
         f = float(raw_score)
         p = f * 100
@@ -163,26 +168,26 @@ def get_score_for(facility, slug):
         pass
     return raw_score
 
-def lga_facilities_data(region_thing, context):
 
+def lga_facilities_data(region_thing, context):
     dbm = DatabaseManager(
-         server=settings.MANGROVE_DATABASES['default']['SERVER'],
-         database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+        server=settings.MANGROVE_DATABASES['default']['SERVER'],
+        database=settings.MANGROVE_DATABASES['default']['DATABASE'])
 
     try:
         entities_list = get_entities_in(dbm, region_thing.entity.location_path, 'Health Clinic')
         #print("\n".join([e.id for e in entities_list]))
-        facility_list = [{'sector': 'health', \
-                          'id': hc.id, \
-                          'facility_type': hc.values({'facility_name': 'latest'})['facility_name'].title(), \
-                          'access_pct': get_score_for(hc, 'access'), \
-                          'infrastructure_pct': get_score_for(hc, 'infrastructure'), \
-                          'staffing_pct': get_score_for(hc, 'staffing'), \
-                          'hiv_pct': get_score_for(hc, 'hiv_services'), \
-                          'maternal_pct': get_score_for(hc, 'maternal_services'), \
-                          'supplies_pct': get_score_for(hc, 'equipment_supplies'), \
-                          'latlng': '%s' % hc.geometry['coordinates'][0] + ',' + '%s' % hc.geometry['coordinates'][1], \
-                          'image_id': hc.values({'photo': 'latest'})['photo'][:-4]} \
+        facility_list = [{'sector': 'health',\
+                          'id': hc.id,\
+                          'facility_type': hc.values({'facility_name': 'latest'})['facility_name'].title(),\
+                          'access_pct': get_score_for(hc, 'access'),\
+                          'infrastructure_pct': get_score_for(hc, 'infrastructure'),\
+                          'staffing_pct': get_score_for(hc, 'staffing'),\
+                          'hiv_pct': get_score_for(hc, 'hiv_services'),\
+                          'maternal_pct': get_score_for(hc, 'maternal_services'),\
+                          'supplies_pct': get_score_for(hc, 'equipment_supplies'),\
+                          'latlng': '%s' % hc.geometry['coordinates'][0] + ',' + '%s' % hc.geometry['coordinates'][1],\
+                          'image_id': hc.values({'photo': 'latest'})['photo'][:-4]}\
                          for hc in entities_list]
     except Exception as e:
         #print("ERROR: %s" % e)
@@ -192,26 +197,27 @@ def lga_facilities_data(region_thing, context):
     #f2 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "20%", 'hiv_pct': "10%", 'maternal_pct': "59%", 'supplies_pct': "43%", 'latlng': '7.531101,8.539607', 'image_id': '11223343'}
     #f3 = {'sector': 'education', 'facility_type': 'School', 'latlng': '7.631101,8.639607', 'image_id': '11223344'}
     #f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
-    
+
     #facility_list = [f1, f2, f3, f4]
-    
+
     health_columns = [['facility_type', 'Facility Type'],
-                    ['access_pct', 'Access'],
-                    ['infrastructure_pct', 'Infrastructure'],
-                    ['staffing_pct', 'Staffing'],
-                    ['hiv_pct', 'HIV'],
-                    ['maternal_pct', 'Maternal'],
-                    ['supplies_pct', 'Supplies']]
+                      ['access_pct', 'Access'],
+                      ['infrastructure_pct', 'Infrastructure'],
+                      ['staffing_pct', 'Staffing'],
+                      ['hiv_pct', 'HIV'],
+                      ['maternal_pct', 'Maternal'],
+                      ['supplies_pct', 'Supplies']]
     edu_columns = [['facility_type', 'Facility Type']]
     water_columns = [['facility_type', 'Facility Type']]
-    
+
     sector_list = [{'slug': 'health', 'name': 'Health', 'columns': health_columns},
-              #      {'slug': 'education', 'name': 'Education', 'columns': edu_columns},
-              #      {'slug': 'water', 'name': 'Water', 'columns': water_columns}
-                ]
-    
+                   #      {'slug': 'education', 'name': 'Education', 'columns': edu_columns},
+                   #      {'slug': 'water', 'name': 'Water', 'columns': water_columns}
+    ]
+
     context.facility_data = json.dumps(facility_list)
     context.facility_sectors = json.dumps(sector_list)
+
 
 def lga_facilities_table(region_thing, context):
     context.facilities_list = [region_thing.name]

@@ -15,6 +15,7 @@ from django.conf import settings
 RAW_FOLDER_NAME = 'raw'
 RAW_FILE_PREFIX = 'raw'
 
+
 def smakedirs(folder):
     if not os.path.exists(folder):
         os.makedirs(folder)

@@ -12,6 +12,7 @@ import os
 
 from main.raw_mdg_indicator_list import INDICATORS as indicator_list
 
+
 def list_indicators(request):
     context = RequestContext(request)
     context.ilist = indicator_list
