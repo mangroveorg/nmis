@@ -38,6 +38,25 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     [ mapserver],
     { 'layername': 'nigeria_base', 'type': 'png' }
   );
+
+  var nigearia_immunization_rate = new OpenLayers.Layer.TMS(
+    "Nigeria Immunization Rate",
+    [mapserver],
+    {'layername': 'nigearia_immunization_rate', 'type': 'png'}
+  );
+
+  var nigeria_under5_mortality_rate = new OpenLayers.Layer.TMS(
+    "Nigeria Under 5 Mortality Rate",
+    [ mapserver],
+    { 'layername': 'nigeria_under5_mortality_rate', 'type': 'png' }
+  );
+
+  var nigeria_wasting = new OpenLayers.Layer.TMS(
+    "Nigeria Child Wasting",
+    [ mapserver],
+    { 'layername': 'nigeria_wasting', 'type': 'png' }
+  );
+
   var nigeria_child_health = new OpenLayers.Layer.TMS(
     "Nigeria Child Health",
     [mapserver],
@@ -61,11 +80,14 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     {'layername': 'nigeria_maternal_health', 'type': 'png'}
   );
 
+
   var nigeria_primary_education_enrollment = new OpenLayers.Layer.TMS(
     "Nigeria Primary Education Enrollment",
     [mapserver],
     {'layername': 'nigeria_primary_education_enrollment', 'type': 'png'}
   );
+
+
 
  var gsat = new OpenLayers.Layer.Google(
     "Google Satellite",
@@ -77,7 +99,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     {type: google.maps.MapTypeId.TERRAIN}
   );
 
-  map.addLayers([nigeria, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_primary_education_enrollment, gphy, gsat]);
+    map.addLayers([nigeria, nigearia_immunization_rate, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_wasting, nigeria_under5_mortality_rate, nigeria_primary_education_enrollment, gphy, gsat]);
 
   map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.setCenter(new OpenLayers.LonLat(851310.77702182, 1044435.5543009), 6);
