@@ -4,9 +4,9 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
   wrap.height(475);
   
   var defaultOpts = {
-      centroid: {
-          lat: 851310.77702182,
-          lng: 1044435.5543009
+      centroid: {          
+          lat: 0.000068698255561324,
+          lng: 0.000083908685869343
       },
       zoom: 6
   }, opts = $.extend({}, _opts, defaultOpts);
@@ -102,8 +102,9 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     map.addLayers([nigeria, nigearia_immunization_rate, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_wasting, nigeria_under5_mortality_rate, nigeria_primary_education_enrollment, gphy, gsat]);
 
   map.addControl(new OpenLayers.Control.LayerSwitcher());
-  map.setCenter(new OpenLayers.LonLat(851310.77702182, 1044435.5543009), 6);
 
+  var center = new OpenLayers.LonLat(opts.centroid.lng, opts.centroid.lat);
+  map.setCenter(center, opts.zoom)
 
     $('#layer-select').change(function(param) {
 
