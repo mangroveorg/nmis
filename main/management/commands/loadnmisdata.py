@@ -373,7 +373,8 @@ class Command(BaseCommand):
             things_to_build = []
             for row in csv_reader.iter_dicts():
                 num_rows += 1
-                if num_rows > max_facilities_to_import: break
+                if num_rows > max_facilities_to_import:
+                    break
                 geo_id = get_string('*geoid', row)
                 geocode = get_string('*geocodeoffacility', row).split()
                 lat, long = None, None
@@ -465,7 +466,8 @@ class Command(BaseCommand):
             things_to_build = []
             for row in csv_reader.iter_dicts():
                 num_rows += 1
-                if num_rows > max_facilities_to_import: break
+                if num_rows > max_facilities_to_import:
+                    break
                 geo_id = get_string('geo_id', row)
                 geocode = get_string('gps', row).split()
                 lat, long = None, None

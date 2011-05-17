@@ -52,20 +52,21 @@ percentage_households_with_access_to_improved_sanitation	YES	YES	Infrastructure	
 """
 
 def convert_pasted_data():
-   lines = pasted_from_spreadsheet.strip().split("\n")
-   q = [l.split("\t") for l in lines]
-   r = []
-   for d in q:
-       o = {'slug': d[0],
-            'country_display': d[1]=="YES",
-           'lga_display': d[2]=="YES",
-           'sector': d[3],
-           'subsector': d[4],
-           'goal_number': int(d[5]),
-           'name': d[6].strip(),
-           'data_source': d[7].strip()
-           }
-       r.append(o)
-   return r
+    lines = pasted_from_spreadsheet.strip().split("\n")
+    q = [l.split("\t") for l in lines]
+    r = []
+    for d in q:
+        o = {'slug': d[0],
+             'country_display': d[1] == "YES",
+             'lga_display': d[2] == "YES",
+             'sector': d[3],
+             'subsector': d[4],
+             'goal_number': int(d[5]),
+             'name': d[6].strip(),
+             'data_source': d[7].strip()
+        }
+        r.append(o)
+
+    return r
 
 INDICATORS = convert_pasted_data()
