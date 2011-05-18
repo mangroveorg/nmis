@@ -170,36 +170,26 @@ def get_score_for(facility, slug):
 
 
 def lga_facilities_data(region_thing, context):
-    dbm = DatabaseManager(
-        server=settings.MANGROVE_DATABASES['default']['SERVER'],
-        database=settings.MANGROVE_DATABASES['default']['DATABASE'])
-
-    try:
-        entities_list = get_entities_in(dbm, region_thing.entity.location_path, 'Health Clinic')
-        #print("\n".join([e.id for e in entities_list]))
-        facility_list = [{'sector': 'health',\
-                          'id': hc.id,\
-                          'facility_type': hc.values({'facility_name': 'latest'})['facility_name'].title(),\
-                          'access_pct': get_score_for(hc, 'access'),\
-                          'infrastructure_pct': get_score_for(hc, 'infrastructure'),\
-                          'staffing_pct': get_score_for(hc, 'staffing'),\
-                          'hiv_pct': get_score_for(hc, 'hiv_services'),\
-                          'maternal_pct': get_score_for(hc, 'maternal_services'),\
-                          'supplies_pct': get_score_for(hc, 'equipment_supplies'),\
-                          'latlng': '%s' % hc.geometry['coordinates'][0] + ',' + '%s' % hc.geometry['coordinates'][1],\
-                          'image_id': hc.values({'photo': 'latest'})['photo'][:-4]}\
-                         for hc in entities_list]
-    except Exception as e:
-        #print("ERROR: %s" % e)
-        pass
-
+    from facilities.models import *
     #f1 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': '11223342'}
     #f2 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "20%", 'hiv_pct': "10%", 'maternal_pct': "59%", 'supplies_pct': "43%", 'latlng': '7.531101,8.539607', 'image_id': '11223343'}
     #f3 = {'sector': 'education', 'facility_type': 'School', 'latlng': '7.631101,8.639607', 'image_id': '11223344'}
     #f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
 
     #facility_list = [f1, f2, f3, f4]
-
+#takai : 120698
+    
+    geo_id = 120698
+    
+    facility_list = []
+    for edu in EducationInventory.objects.all():
+        facility_list.append(edu.display_dict())
+    
+    for health in ClinicInventory.objects.all():
+        facility_list.append(health.display_dict())
+    
+    f1 = {'sector': 'health', 'facility_type': 'Yes'}
+    f2 = {'sector': 'education', 'facility_type': 'School'}
     health_columns = [['facility_type', 'Facility Type'],
                       ['access_pct', 'Access'],
                       ['infrastructure_pct', 'Infrastructure'],
@@ -207,13 +197,14 @@ def lga_facilities_data(region_thing, context):
                       ['hiv_pct', 'HIV'],
                       ['maternal_pct', 'Maternal'],
                       ['supplies_pct', 'Supplies']]
-    edu_columns = [['facility_type', 'Facility Type']]
-    water_columns = [['facility_type', 'Facility Type']]
-
+    edu_columns = [['level_of_education', 'Level of Education'],
+                        ['facility_type', 'Facility Type'],
+                        ['num_students_frthr_than_3km', 'Students Walking +3km'],
+                        ['power_sources_none', 'No Power Sources'],
+                        ['school_condition', 'School Condition'],
+                        ['num_tchrs_total', 'Total Number of Teachers']]
     sector_list = [{'slug': 'health', 'name': 'Health', 'columns': health_columns},
-                   #      {'slug': 'education', 'name': 'Education', 'columns': edu_columns},
-                   #      {'slug': 'water', 'name': 'Water', 'columns': water_columns}
-    ]
+                    {'slug': 'education', 'name': 'Education', 'columns': edu_columns}]
 
     context.facility_data = json.dumps(facility_list)
     context.facility_sectors = json.dumps(sector_list)
