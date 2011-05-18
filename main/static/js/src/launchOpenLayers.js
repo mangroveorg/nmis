@@ -41,6 +41,39 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     { 'layername': 'nigeria_base', 'type': 'png' }
   );
 
+    
+
+  var nigeria_healthworkers_per_thousand  = new OpenLayers.Layer.TMS(
+    "Nigeria health workers per thousand people",
+    [mapserver],
+    {'layername': 'nigeria_healthworkers_per_thousand', 'type': 'png'}
+  );
+
+  var pct_healthfacilities_with_institutional_delivery  = new OpenLayers.Layer.TMS(
+    "Nigeria Health Facilities with Institutional Deliveries",
+    [mapserver],
+    {'layername': 'pct_healthfacilities_with_institutional_delivery', 'type': 'png'}
+  );
+
+  var nigeria_pct_no_bednet_malmeds_oneweek  = new OpenLayers.Layer.TMS(
+    "Nigeria No Stockouts of Bednets or Malaria Medicine",
+    [mapserver],
+    {'layername': 'nigeria_pct_no_bednet_malmeds_oneweek', 'type': 'png'}
+  );
+
+  var nigeria_pct_classroom_need_repair  = new OpenLayers.Layer.TMS(
+    "Nigeria Classrooms That Need Repair",
+    [mapserver],
+    {'layername': 'nigeria_pct_classroom_need_repair', 'type': 'png'}
+  );
+
+  var nigeria_prop_ratio_greater_than_40  = new OpenLayers.Layer.TMS(
+    "Nigeria classrooms with proportion student to teacher ratio > 40",
+    [mapserver],
+    {'layername': 'nigeria_prop_ratio_greater_than_40', 'type': 'png'}
+  );
+
+
   var nigearia_immunization_rate = new OpenLayers.Layer.TMS(
     "Nigeria Immunization Rate",
     [mapserver],
@@ -89,8 +122,6 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     {'layername': 'nigeria_primary_education_enrollment', 'type': 'png'}
   );
 
-
-
  var gsat = new OpenLayers.Layer.Google(
     "Google Satellite",
     {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
@@ -101,7 +132,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     {type: google.maps.MapTypeId.TERRAIN}
   );
 
-    map.addLayers([nigeria, nigearia_immunization_rate, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_wasting, nigeria_under5_mortality_rate, nigeria_primary_education_enrollment, gphy, gsat]);
+    map.addLayers([nigeria, nigeria_healthworkers_per_thousand, pct_healthfacilities_with_institutional_delivery, nigeria_pct_no_bednet_malmeds_oneweek, nigeria_pct_classroom_need_repair, nigeria_prop_ratio_greater_than_40, nigearia_immunization_rate, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_wasting, nigeria_under5_mortality_rate, nigeria_primary_education_enrollment, gphy, gsat]);
 
   map.addControl(new OpenLayers.Control.LayerSwitcher());
 
