@@ -26,7 +26,7 @@ class Command(BaseCommand):
     def _import_data(self, server, database):
         from mangrove.datastore.database import DatabaseManager
         from mangrove.datastore.entity import Entity, get_entities_by_value
-        from mangrove.datastore.datadict import DataDictType, get_datadict_type
+        from mangrove.datastore.datadict import DataDictType, get_datadict_type, create_datadict_type
         from mangrove.utils import GoogleSpreadsheetsClient
         from mangrove.utils.google_spreadsheets import get_string, get_number, get_boolean, get_list
         from mangrove.utils.spreadsheets import CsvReader
@@ -47,11 +47,11 @@ class Command(BaseCommand):
         user_spreadsheets = GoogleSpreadsheetsClient(settings.GMAIL_USERNAME, settings.GMAIL_PASSWORD)
         nims_data = user_spreadsheets['NIMS Data Deux']
 
-        load_population = False
-        load_other = False
-        load_mdg = False
+        load_population = True
+        load_other = True
+        load_mdg = True
         load_facility = True
-        max_facilities_to_import = 25
+        max_facilities_to_import = 10000
 
         countries = {}
         states = {}
@@ -60,29 +60,37 @@ class Command(BaseCommand):
         datadict_types = {}
         geo_id_dict = {}
 
-        cgs_type = DataDictType(
+        cgs_type = create_datadict_type(
             dbm,
             slug='cgs',
             name='CGS',
             primitive_type='boolean'
         )
-        datadict_types['cgs'] = cgs_type.save()
+        datadict_types['cgs'] = cgs_type.id
 
-        geo_id_type = DataDictType(
+        geo_id_type = create_datadict_type(
             dbm,
             slug='geo_id',
             name='Geographic ID',
             primitive_type='string'
         )
-        datadict_types['geo_id'] = geo_id_type.save()
+        datadict_types['geo_id'] = geo_id_type.id
 
-        name_type = DataDictType(
+        name_type = create_datadict_type(
             dbm,
             slug='name',
             name='Name',
             primitive_type='string'
         )
-        datadict_types['name'] = name_type.save()
+        datadict_types['name'] = name_type.id
+
+        mdg_type = create_datadict_type(
+            dbm,
+            slug='mdg',
+            name='MDG',
+            primitive_type='string'
+        )
+        datadict_types['mdg'] = mdg_type.id
 
         country_geo_id = {}
         for row in nims_data['Nigeria Country ALL']:
@@ -171,14 +179,14 @@ class Command(BaseCommand):
                 primitive_type = get_string('primitivetype', row)
                 tags = get_list('tags', row)
                 if not slug in datadict_types:
-                    dd_type = DataDictType(
+                    dd_type = create_datadict_type(
                         dbm,
                         slug=slug,
                         name=name,
                         primitive_type=primitive_type,
                         tags=tags
                     )
-                    datadict_types[slug] = dd_type.save()
+                    datadict_types[slug] = dd_type.id
 
             for row in nims_data['Population Data']:
                 state = get_string('state', row)
@@ -215,14 +223,14 @@ class Command(BaseCommand):
                 primitive_type = get_string('primitivetype', row)
                 tags = get_list('tags', row)
                 if not slug in datadict_types:
-                    dd_type = DataDictType(
+                    dd_type = create_datadict_type(
                         dbm,
                         slug=slug,
                         name=name,
                         primitive_type=primitive_type,
                         tags=tags
                     )
-                    datadict_types[slug] = dd_type.save()
+                    datadict_types[slug] = dd_type.id
 
             for row in nims_data['lga_other']:
                 state = get_string('state', row)
@@ -256,26 +264,26 @@ class Command(BaseCommand):
             lga_loaded = []
             lga_failed = []
             for row in nims_data['Education MDG Data']:
-                slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
-                name = row['indicator'].strip()
-                lga = row['lga'].strip()
-                state = row['state'].strip()
-                mdg = row['mdg'].strip()
+                raw_slug = get_string('indicator', row)
+                if not raw_slug: continue
+                slug = str(slugify(unicode(raw_slug, 'utf-8')))
+                name = get_string('indicator', row)
+                lga = get_string('lga', row)
+                state = get_string('state', row)
+                mdg = get_string('mdg', row)
+                value = get_string('value', row)
                 location = ("Nigeria", state, lga)
                 if not slug in datadict_types:
-                    dd_type = DataDictType(
+                    dd_type = create_datadict_type(
                         dbm,
                         slug=slug,
                         name=name,
                         primitive_type='number',
-                        mdg=mdg,
                         tags=['Education', 'MDG']
                     )
-                    datadict_types[slug] = dd_type.save()
-                if row['value'] is not None:
-                    data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
-                else:
-                    data = [(slug, row['value'], get_datadict_type(dbm, datadict_types[slug]))]
+                    datadict_types[slug] = dd_type.id
+                data = [(slug, value, get_datadict_type(dbm, datadict_types[slug]))]
+                data.append((mdg_type.slug, mdg, mdg_type))
                 if location in locations:
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
@@ -294,23 +302,26 @@ class Command(BaseCommand):
             lga_loaded = []
             lga_failed = []
             for row in nims_data['Infrastructure MDG Data']:
-                slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
-                name = row['indicator'].strip()
-                lga = row['lga'].strip()
-                state = row['state'].strip()
-                mdg = row['mdg'].strip()
+                raw_slug = get_string('indicator', row)
+                if not raw_slug: continue
+                slug = str(slugify(unicode(raw_slug, 'utf-8')))
+                name = get_string('indicator', row)
+                lga = get_string('lga', row)
+                state = get_string('state', row)
+                mdg = get_string('mdg', row)
+                value = get_string('value', row)
                 location = ("Nigeria", state, lga)
                 if not slug in datadict_types:
-                    dd_type = DataDictType(
+                    dd_type = create_datadict_type(
                         dbm,
                         slug=slug,
                         name=name,
                         primitive_type='number',
-                        mdg=mdg,
                         tags=['Infrastructure', 'MDG']
                     )
-                    datadict_types[slug] = dd_type.save()
-                data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
+                    datadict_types[slug] = dd_type.id
+                data = [(slug, value, get_datadict_type(dbm, datadict_types[slug]))]
+                data.append((mdg_type.slug, mdg, mdg_type))
                 if location in locations:
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
@@ -329,23 +340,26 @@ class Command(BaseCommand):
             lga_loaded = []
             lga_failed = []
             for row in nims_data['Health MDG Data']:
-                slug = str(slugify(unicode(row['indicator'].strip(), 'utf-8')))
-                name = row['indicator'].strip()
-                lga = row['lga'].strip()
-                state = row['state'].strip()
-                mdg = row['mdg'].strip()
+                raw_slug = get_string('indicator', row)
+                if not raw_slug: continue
+                slug = str(slugify(unicode(raw_slug, 'utf-8')))
+                name = get_string('indicator', row)
+                lga = get_string('lga', row)
+                state = get_string('state', row)
+                mdg = get_string('mdg', row)
+                value = get_string('value', row)
                 location = ("Nigeria", state, lga)
                 if not slug in datadict_types:
-                    dd_type = DataDictType(
+                    dd_type = create_datadict_type(
                         dbm,
                         slug=slug,
                         name=name,
                         primitive_type='number',
-                        mdg=mdg,
                         tags=['Health', 'MDG']
                     )
-                    datadict_types[slug] = dd_type.save()
-                data = [(slug, row['value'].strip(), get_datadict_type(dbm, datadict_types[slug]))]
+                    datadict_types[slug] = dd_type.id
+                data = [(slug, value, get_datadict_type(dbm, datadict_types[slug]))]
+                data.append((mdg_type.slug, mdg, mdg_type))
                 if location in locations:
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
@@ -365,7 +379,7 @@ class Command(BaseCommand):
 
             print "Adding Health Clinics and associated data"
 
-            file_name = 'Health_PhaseII_RoundI_Clean_StarredVariables.csv'
+            file_name = 'health_demo.csv'
             dirname = settings.DATA_DIRECTORY
             abspath = os.path.abspath(dirname)
             file_path = os.path.join(abspath, file_name)
@@ -376,8 +390,8 @@ class Command(BaseCommand):
                 num_rows += 1
                 if num_rows > max_facilities_to_import:
                     break
-                geo_id = get_string('*geoid', row)
-                geocode = get_string('*geocodeoffacility', row).split()
+                geo_id = get_string('geoid', row)
+                geocode = get_string('geocodeoffacility', row).split()
                 lat, long = None, None
                 if geocode and len(geocode) >= 2:
                     lat = float(geocode[0])
@@ -398,26 +412,25 @@ class Command(BaseCommand):
                     else:
                         entity_data['geometry'] = False
                     for key in row.keys():
-                        if key.startswith('*'):
-                            slug = str(slugify(unicode(key.strip().replace('*', ''), 'utf-8')))
-                            name = key
-                            primitive_type = 'string'
-                            tags = ['Facility', 'Baseline', 'Health']
-                            value = row[key]
-                            data = {
-                                'label': slug,
-                                'value': value,
-                                'slug': slug
-                            }
-                            datarecord = {
-                                'slug': slug,
-                                'name': name,
-                                'primitive_type': primitive_type,
-                                'tags': tags,
-                                'value': value,
-                                'data': data
-                            }
-                            entity_data['datarecords'].append(datarecord)
+                        slug = str(slugify(unicode(key.strip(), 'utf-8')))
+                        name = key
+                        primitive_type = 'string'
+                        tags = ['Facility', 'Baseline', 'Health']
+                        value = row[key]
+                        data = {
+                            'label': slug,
+                            'value': value,
+                            'slug': slug
+                        }
+                        datarecord = {
+                            'slug': slug,
+                            'name': name,
+                            'primitive_type': primitive_type,
+                            'tags': tags,
+                            'value': value,
+                            'data': data
+                        }
+                        entity_data['datarecords'].append(datarecord)
                     things_to_build.append((entity, entity_data))
 
             num_rows = 0
@@ -438,14 +451,14 @@ class Command(BaseCommand):
                 all_records = []
                 for d in t['datarecords']:
                     if not d['slug'] in datadict_types:
-                        dd_type = DataDictType(
+                        dd_type = create_datadict_type(
                             dbm,
                             slug=d['slug'],
                             name=d['name'],
                             primitive_type=d['primitive_type'],
                             tags=d['tags']
                         )
-                        datadict_types[d['slug']] = dd_type.save()
+                        datadict_types[d['slug']] = dd_type.id
                     data_to_add = (
                         d['data']['label'],
                         d['data']['value'],
@@ -458,7 +471,7 @@ class Command(BaseCommand):
 
             print "Adding Water Points and associated data"
 
-            file_name = 'baseline_water_cleaned_2011May11_truncated.csv'
+            file_name = 'education_demo.csv'
             dirname = settings.DATA_DIRECTORY
             abspath = os.path.abspath(dirname)
             file_path = os.path.join(abspath, file_name)
@@ -491,7 +504,7 @@ class Command(BaseCommand):
                     else:
                         entity_data['geometry'] = False
                     for key in row.keys():
-                        slug = str(slugify(unicode(key.strip().replace('*', ''), 'utf-8')))
+                        slug = str(slugify(unicode(key.strip(), 'utf-8')))
                         name = key
                         primitive_type = 'string'
                         tags = ['Facility', 'Baseline', 'Water']
@@ -530,20 +543,19 @@ class Command(BaseCommand):
                 all_records = []
                 for d in t['datarecords']:
                     if not d['slug'] in datadict_types:
-                        dd_type = DataDictType(
+                        dd_type = create_datadict_type(
                             dbm,
                             slug=d['slug'],
                             name=d['name'],
                             primitive_type=d['primitive_type'],
                             tags=d['tags']
                         )
-                        datadict_types[d['slug']] = dd_type.save()
+                        datadict_types[d['slug']] = dd_type.id
                     data_to_add = (
                         d['data']['label'],
                         d['data']['value'],
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
-                print all_records
                 clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
                 print '[X]...Record added (%s variables)' % len(all_records)
 
