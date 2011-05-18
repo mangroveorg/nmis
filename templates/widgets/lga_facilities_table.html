@@ -127,6 +127,10 @@ widgets.push(function(){
 			ulList.append(li);
 		});
 		naviWrap.append(ulList);
+		var tot = 0;
+		$('li', ulList).each(function(){
+			tot += $(this).width();
+		});
 	}
 	
 	var facilityTableWrap = $('#lga-facilities-table').html($('<div />', {'id': 'facility-tabs'}).html($('<ul />'))).append($('<div />', {'id':'image-nav'}));
@@ -146,6 +150,9 @@ widgets.push(function(){
 	ftabs.tabs({select: function(evt, ui){
 		$(evt.target).trigger('sector-change', {sector: $(ui.panel).data('sector-slug')})
 	}});
+	$('#lga-facilities-table').height(600);
+	$('#facility-tabs').height('50%');
+	$('#facility-tabs').find('.ui-tabs-panel').css({'overflow':'auto','height':'75%'})
 	facilityTableWrap.addClass('ready');
-})
+});
 </script>
