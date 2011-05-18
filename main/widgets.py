@@ -182,22 +182,26 @@ def lga_facilities_data(region_thing, context):
     geo_id = 120698
     
     facility_list = []
-    for edu in EducationInventory.objects.all():
+    for edu in EducationInventory.objects.filter(lga_geoid=geo_id):
         facility_list.append(edu.display_dict())
     
-    for health in ClinicInventory.objects.all():
+    for health in ClinicInventory.objects.filter(lga_geoid=geo_id):
         facility_list.append(health.display_dict())
     
     f1 = {'sector': 'health', 'facility_type': 'Yes'}
     f2 = {'sector': 'education', 'facility_type': 'School'}
-    health_columns = [['facility_type', 'Facility Type'],
-                      ['access_pct', 'Access'],
-                      ['infrastructure_pct', 'Infrastructure'],
-                      ['staffing_pct', 'Staffing'],
-                      ['hiv_pct', 'HIV'],
-                      ['maternal_pct', 'Maternal'],
-                      ['supplies_pct', 'Supplies']]
-    edu_columns = [['level_of_education', 'Level of Education'],
+    health_columns = [['name', 'Name'], ['facility_type', 'Facility Type'],
+                      ['power_sources_none', 'No Power Source'],
+                      ['type_staff_nurse_midwife', 'Type Staff Nurse Midwife'],
+                      ['emergency_obstetrics_yn', 'Emergency Obstetricts Available'],
+                      ['antimalarials_stockout_yn', 'Antimalarials Stockout']]
+#     power_sources_none  type_staff_nurse_midwife    emergency_obstetrics_yn antimalarials_stockout_yn
+#                      ['infrastructure_pct', 'Infrastructure'],
+#                      ['staffing_pct', 'Staffing'],
+#                      ['hiv_pct', 'HIV'],
+#                      ['maternal_pct', 'Maternal'],
+#                      ['supplies_pct', 'Supplies']]
+    edu_columns = [['name', 'Name'], ['level_of_education', 'Level of Education'],
                         ['facility_type', 'Facility Type'],
                         ['num_students_frthr_than_3km', 'Students Walking +3km'],
                         ['power_sources_none', 'No Power Sources'],
