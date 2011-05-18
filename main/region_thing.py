@@ -3,6 +3,7 @@
 from mangrove.datastore.entity import Entity
 from mangrove.datastore.database import get_db_manager
 
+from facilities.models import Lga
 
 class RegionThing(object):
     """
