@@ -1,11 +1,43 @@
-<div id="lga-facilities-table" class="facilities-only display-block-when-ready">
+<link rel="stylesheet" href="/static/openlayers/default/style.css" type="text/css" media="screen" title="no title" charset="utf-8">
+<div class="facilities-only" id="lga-facilities-wrap">
+	<div id="lga-facilities-map">
+	</div>
+	<div id="lga-facilities-table" class="display-block-when-ready">
+	</div>
 </div>
+<script type="text/javascript" charset="utf-8">
+	function loadMap(latlngs) {
+		var openLayers = $.ajax({
+	      url: '/static/js/libs/OpenLayers.js',
+	      dataType: 'script'
+	    });
+	    var launchScript = $.ajax({
+	      url: '/static/js/src/launchOpenLayers.js',
+	      dataType: 'script',
+	    });
+	    $.when(openLayers, launchScript).done(function(unk, status){
+	      LaunchOpenLayers("lga-facilities-map", {
+			points: facilityData.list,
+			mapHeight: 350,
+			localTiles: false
+			});
+	    });
+	}
+</script>
 <style type="text/css" media="screen">
 	table.facility-list {
 		width: 100%;
 	}
 	tr.selected-facility td {
 		background-color: #eee;
+		border-color: #ddd;
+	}
+	table.facility-list td {
+		padding: 2px 5px;
+		border: 1px solid #eee;
+	}
+	td.col-power_sources_none, td.col-type_staff_nurse_midwife, td.col-emergency_obstetrics_yn, td.col-antimalarials_stockout_yn {
+		text-align: center;
 	}
 	#image-nav {
 		padding: 3px 20px;
@@ -150,9 +182,10 @@ widgets.push(function(){
 	ftabs.tabs({select: function(evt, ui){
 		$(evt.target).trigger('sector-change', {sector: $(ui.panel).data('sector-slug')})
 	}});
-	$('#lga-facilities-table').height(600);
+	$('#lga-facilities-wrap').height($(window).height()-160);
 	$('#facility-tabs').height('50%');
 	$('#facility-tabs').find('.ui-tabs-panel').css({'overflow':'auto','height':'75%'})
 	facilityTableWrap.addClass('ready');
+	loadMap(facilityData);
 });
 </script>

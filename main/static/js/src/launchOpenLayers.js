@@ -1,25 +1,28 @@
 var LaunchOpenLayers = (function (wrapId, _opts) { 
   var wrap = $('#'+wrapId);
-  wrap.height(475);
-  
   var defaultOpts = {
       centroid: {          
           lat: 0.000068698255561324,
           lng: 0.000083908685869343
       },
+      points: false,
+      latLngs: false,
+      boundingBox: false,
+      mapHeight: 475,
       localTiles: false,
       tileUrl: "http://tilestream.openmangrove.org:8888/",
       tileCache: "http://localhost:8000/tiles/",
       zoom: 6
-  }, opts = $.extend({}, _opts, defaultOpts);
+  }, opts = $.extend({}, defaultOpts, _opts);
 
+  wrap.css({'height':opts.mapHeight});
   OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
   OpenLayers.ImgPath = "http://js.mapbox.com/theme/dark/";
   var options = {
     projection: new OpenLayers.Projection("EPSG:900913"),
     displayProjection: new OpenLayers.Projection("EPSG:4326"),
     units: "m",
-    numZoomLevels: 9,
+//    numZoomLevels: 9,
     maxResolution: 156543.0339,
     restrictedExtent: new OpenLayers.Bounds(
         -4783.9396188051, 463514.13943762, 1707405.4936624, 1625356.9691642
@@ -132,7 +135,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     {type: google.maps.MapTypeId.TERRAIN}
   );
 
-    map.addLayers([nigeria, nigeria_healthworkers_per_thousand, pct_healthfacilities_with_institutional_delivery, nigeria_pct_no_bednet_malmeds_oneweek, nigeria_pct_classroom_need_repair, nigeria_prop_ratio_greater_than_40, nigearia_immunization_rate, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_wasting, nigeria_under5_mortality_rate, nigeria_primary_education_enrollment, gphy, gsat]);
+    map.addLayers([nigeria, nigeria_healthworkers_per_thousand, pct_healthfacilities_with_institutional_delivery, nigeria_pct_no_bednet_malmeds_oneweek, nigeria_pct_classroom_need_repair, nigeria_prop_ratio_greater_than_40, nigearia_immunization_rate, nigeria_child_health, nigeria_child_nutrition, nigeria_malaria, nigeria_maternal_health, nigeria_wasting, nigeria_under5_mortality_rate, nigeria_primary_education_enrollment, gsat, gphy]);
 
   map.addControl(new OpenLayers.Control.LayerSwitcher());
 
@@ -147,8 +150,28 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
         layer.map.setBaseLayer(layer);
 
         $('.mapped-indicator').hide();
-        $('#mapped-'+layer_id).show();       
+        $('#mapped-'+layer_id).show();
     });  
 
-
+    if(!!opts.points) {
+        var markers = new OpenLayers.Layer.Markers( "Markers" );
+        map.addLayer(markers);
+        
+        var icon = (function(){
+            var size = new OpenLayers.Size(21,25);
+            var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+            return new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png', size, offset);
+        })();
+        
+        var bounds = new OpenLayers.Bounds();
+        var lls = [];
+    	$.each(opts.points, function(i, d){
+    		var _ll = d.latlng.split(",");
+    		var ll = [+_ll[0], +_ll[1]];
+            bounds.extend(new OpenLayers.LonLat(ll[1], ll[0]));
+            markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(ll[1], ll[0]), icon));
+    	});
+    	
+        map.zoomToExtent(bounds);
+    }
 })
