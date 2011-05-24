@@ -50,7 +50,9 @@ class Command(BaseCommand):
         load_population = True
         load_other = True
         load_mdg = True
-        load_facility = True
+        load_health = True
+        load_water = True
+        load_education = True
         max_facilities_to_import = 10000
 
         countries = {}
@@ -111,13 +113,13 @@ class Command(BaseCommand):
             location = (country, state, lga)
             if country not in countries:
                 gr_id = country_geo_id[country]
-                feature = get_feature_by_id(gr_id)
-                geometry = feature['geometry']
-                centroid = json.loads(feature['properties']['geometry_centroid'])
+#                feature = get_feature_by_id(gr_id)
+#                geometry = feature['geometry']
+#                centroid = json.loads(feature['properties']['geometry_centroid'])
                 e = Entity(dbm,
                            entity_type=["Location", "Country"],
                            location=[country],
-                           centroid=centroid,
+#                           centroid=centroid,
                            gr_id=gr_id)
                 locations[(country,)] = e.save()
                 countries[country] = e.id
@@ -127,13 +129,13 @@ class Command(BaseCommand):
                 print "[%s]...(%s)" % (num_rows, country)
             if state not in states:
                 gr_id = state_geo_ids[state]
-                feature = get_feature_by_id(gr_id)
-                geometry = feature['geometry']
-                centroid = json.loads(feature['properties']['geometry_centroid'])
+#                feature = get_feature_by_id(gr_id)
+#                geometry = feature['geometry']
+#                centroid = json.loads(feature['properties']['geometry_centroid'])
                 e = Entity(dbm,
                            entity_type=["Location", "State"],
                            location=[country, state],
-                           centroid=centroid,
+#                           centroid=centroid,
                            gr_id=gr_id)
                 locations[(country, state)] = e.save()
                 states[state] = e.id
@@ -142,13 +144,13 @@ class Command(BaseCommand):
                 num_rows += 1
                 print "[%s]...(%s, %s)" % (num_rows, country, state)
             gr_id = lga_gr_id
-            feature = get_feature_by_id(gr_id)
-            geometry = feature['geometry']
-            centroid = json.loads(feature['properties']['geometry_centroid'])
+#            feature = get_feature_by_id(gr_id)
+#            geometry = feature['geometry']
+#            centroid = json.loads(feature['properties']['geometry_centroid'])
             e = Entity(dbm,
                        entity_type=["Location", "LGA"],
                        location=[country, state, lga],
-                       centroid=centroid,
+#                       centroid=centroid,
                        gr_id=gr_id)
             locations[location] = e.save()
             geo_id_dict[geo_id] = e
@@ -203,6 +205,7 @@ class Command(BaseCommand):
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
                     e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                    print [(key, value) for (key, value, typ) in data]
                 else:
                     if not lga in lga_failed:
                         lga_failed.append(lga)
@@ -241,12 +244,14 @@ class Command(BaseCommand):
                     continue
                 for dd_key in datadict_types.keys():
                     ss_key = dd_key.replace('_', '')
+                    if not get_number(ss_key, row): continue
                     point = (dd_key, get_number(ss_key, row), get_datadict_type(dbm, datadict_types[dd_key]))
                     data.append(point)
                 if location in locations:
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
                     e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                    print [(key, value) for (key, value, typ) in data]
                 else:
                     if not lga in lga_failed:
                         lga_failed.append(lga)
@@ -283,11 +288,11 @@ class Command(BaseCommand):
                     )
                     datadict_types[slug] = dd_type.id
                 data = [(slug, value, get_datadict_type(dbm, datadict_types[slug]))]
-                data.append((mdg_type.slug, mdg, mdg_type))
                 if location in locations:
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
                     e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                    print [(key, value) for (key, value, typ) in data]
                 else:
                     if not lga in lga_failed:
                         lga_failed.append(lga)
@@ -321,11 +326,11 @@ class Command(BaseCommand):
                     )
                     datadict_types[slug] = dd_type.id
                 data = [(slug, value, get_datadict_type(dbm, datadict_types[slug]))]
-                data.append((mdg_type.slug, mdg, mdg_type))
                 if location in locations:
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
                     e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                    print [(key, value) for (key, value, typ) in data]
                 else:
                     if not lga in lga_failed:
                         lga_failed.append(lga)
@@ -359,11 +364,11 @@ class Command(BaseCommand):
                     )
                     datadict_types[slug] = dd_type.id
                 data = [(slug, value, get_datadict_type(dbm, datadict_types[slug]))]
-                data.append((mdg_type.slug, mdg, mdg_type))
                 if location in locations:
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
                     e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                    print [(key, value) for (key, value, typ) in data]
                 else:
                     if not lga in lga_failed:
                         lga_failed.append(lga)
@@ -374,12 +379,12 @@ class Command(BaseCommand):
                 for lga in lga_failed:
                     print "\t%s" % lga
 
-        if load_facility:
+        if load_health:
             print "Adding Facility data..."
 
             print "Adding Health Clinics and associated data"
 
-            file_name = 'health_demo.csv'
+            file_name = 'health.csv'
             dirname = settings.DATA_DIRECTORY
             abspath = os.path.abspath(dirname)
             file_path = os.path.join(abspath, file_name)
@@ -469,9 +474,10 @@ class Command(BaseCommand):
 
             print "Loaded %d records" % num_rows
 
+        if load_water:
             print "Adding Water Points and associated data"
 
-            file_name = 'education_demo.csv'
+            file_name = 'water.csv'
             dirname = settings.DATA_DIRECTORY
             abspath = os.path.abspath(dirname)
             file_path = os.path.join(abspath, file_name)
@@ -538,6 +544,99 @@ class Command(BaseCommand):
                 else:
                     clinic = Entity(dbm,
                                     entity_type=["Facility", "Water Point"],
+                                    location=e.location_path)
+                clinic.save()
+                all_records = []
+                for d in t['datarecords']:
+                    if not d['slug'] in datadict_types:
+                        dd_type = create_datadict_type(
+                            dbm,
+                            slug=d['slug'],
+                            name=d['name'],
+                            primitive_type=d['primitive_type'],
+                            tags=d['tags']
+                        )
+                        datadict_types[d['slug']] = dd_type.id
+                    data_to_add = (
+                        d['data']['label'],
+                        d['data']['value'],
+                        get_datadict_type(dbm, datadict_types[d['slug']]))
+                    all_records.append(data_to_add)
+                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                print '[X]...Record added (%s variables)' % len(all_records)
+
+            print "Loaded %d records" % num_rows
+
+        if load_education:
+            print "Adding Education Facilities and associated data"
+
+            file_name = 'education.csv'
+            dirname = settings.DATA_DIRECTORY
+            abspath = os.path.abspath(dirname)
+            file_path = os.path.join(abspath, file_name)
+            csv_reader = CsvReader(file_path)
+            num_rows = 0
+            things_to_build = []
+            for row in csv_reader.iter_dicts():
+                num_rows += 1
+                if num_rows > max_facilities_to_import:
+                    break
+                geo_id = get_string('geo_id', row)
+                geocode = get_string('gps', row).split()
+                lat, long = None, None
+                if geocode and len(geocode) >= 2:
+                    lat = float(geocode[0])
+                    long = float(geocode[1])
+                else:
+                    geocode = False
+#                entities = get_entities_by_value(dbm, geo_id_type, geo_id)
+#                entity = entities[0] if entities else None
+                if geo_id in geo_id_dict:
+                    entity = geo_id_dict[geo_id]
+                else:
+                    entity = False
+                if entity:
+                    entity_data = {}
+                    entity_data['datarecords'] = []
+                    if geocode:
+                        entity_data['geometry'] = {'type': 'Point', 'coordinates': [lat, long]}
+                    else:
+                        entity_data['geometry'] = False
+                    for key in row.keys():
+                        slug = str(slugify(unicode(key.strip(), 'utf-8')))
+                        name = key
+                        primitive_type = 'string'
+                        tags = ['Facility', 'Baseline', 'Education']
+                        value = row[key]
+                        data = {
+                            'label': slug,
+                            'value': value,
+                            'slug': slug
+                        }
+                        datarecord = {
+                            'slug': slug,
+                            'name': name,
+                            'primitive_type': primitive_type,
+                            'tags': tags,
+                            'value': value,
+                            'data': data
+                        }
+                        entity_data['datarecords'].append(datarecord)
+                    things_to_build.append((entity, entity_data))
+
+            num_rows = 0
+            for (e, t) in things_to_build:
+                num_rows += 1
+                print '[%s] Facility added inside %s' % (num_rows, e.location_path)
+                if t['geometry']:
+                    clinic = Entity(dbm,
+                                    entity_type=["Facility", "School"],
+                                    location=e.location_path,
+                                    geometry=t['geometry'])
+                    print '[X]...with geometry: %s' % t['geometry']
+                else:
+                    clinic = Entity(dbm,
+                                    entity_type=["Facility", "School"],
                                     location=e.location_path)
                 clinic.save()
                 all_records = []
