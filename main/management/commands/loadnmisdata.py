@@ -441,7 +441,7 @@ class Command(BaseCommand):
             num_rows = 0
             for (e, t) in things_to_build:
                 num_rows += 1
-                print '[%s] Facility added inside %s' % (num_rows, e.location_path)
+                print '[%s] Health Clinic added inside %s' % (num_rows, e.location_path)
                 if t['geometry']:
                     clinic = Entity(dbm,
                                     entity_type=["Facility", "Health Clinic"],
@@ -469,12 +469,10 @@ class Command(BaseCommand):
                         d['data']['value'],
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
-                    clinic.add_data([data_to_add])
-#                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
-#                print '[X]...Record added (%s variables)' % len(all_records)
+                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
                 print '[X]...%s records added' % len(all_records)
 
-            print "Loaded %d records" % num_rows
+            print "Loaded %d Health Facilities" % num_rows
 
         if load_water:
             print "Adding Water Points and associated data"
@@ -536,7 +534,7 @@ class Command(BaseCommand):
             num_rows = 0
             for (e, t) in things_to_build:
                 num_rows += 1
-                print '[%s] Facility added inside %s' % (num_rows, e.location_path)
+                print '[%s] Water Point added inside %s' % (num_rows, e.location_path)
                 if t['geometry']:
                     clinic = Entity(dbm,
                                     entity_type=["Facility", "Water Point"],
@@ -565,12 +563,12 @@ class Command(BaseCommand):
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
                 clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
-                print '[X]...Record added (%s variables)' % len(all_records)
+                print '[X]...%s records added' % len(all_records)
 
-            print "Loaded %d records" % num_rows
+            print "Loaded %d Water Points" % num_rows
 
         if load_education:
-            print "Adding Education Facilities and associated data"
+            print "Adding Schools and associated data"
 
             file_name = 'education.csv'
             dirname = settings.DATA_DIRECTORY
@@ -629,7 +627,7 @@ class Command(BaseCommand):
             num_rows = 0
             for (e, t) in things_to_build:
                 num_rows += 1
-                print '[%s] Facility added inside %s' % (num_rows, e.location_path)
+                print '[%s] School added inside %s' % (num_rows, e.location_path)
                 if t['geometry']:
                     clinic = Entity(dbm,
                                     entity_type=["Facility", "School"],
@@ -658,6 +656,6 @@ class Command(BaseCommand):
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
                 clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
-                print '[X]...Record added (%s variables)' % len(all_records)
+                print '[X]...%s records added' % len(all_records)
 
-            print "Loaded %d records" % num_rows
+            print "Loaded %d Schools" % num_rows
