@@ -41,6 +41,6 @@ class Command(BaseCommand):
         for view in view_js:
             start = datetime.now()
             print("Generating view `%s`" % view)
-            dbm.load_all_rows_in_view('mangrove_views/%s' % view)
+            dbm.load_all_rows_in_view('%s' % view)
             end = datetime.now()
             print("\ttook %d seconds" % (end - start).seconds)
