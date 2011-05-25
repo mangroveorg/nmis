@@ -126,7 +126,7 @@ class Command(BaseCommand):
                 data = [(name_type.slug, country, name_type)]
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
                 num_rows += 1
-                print "[%s]...(%s)" % (num_rows, country)
+                print "[%s]...(%s) -- %s" % (num_rows, country, e.id)
             if state not in states:
                 gr_id = state_geo_ids[state]
 #                feature = get_feature_by_id(gr_id)
@@ -142,7 +142,7 @@ class Command(BaseCommand):
                 data = [(name_type.slug, state, name_type)]
                 e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
                 num_rows += 1
-                print "[%s]...(%s, %s)" % (num_rows, country, state)
+                print "[%s]...(%s, %s) -- %s" % (num_rows, country, state, e.id)
             gr_id = lga_gr_id
 #            feature = get_feature_by_id(gr_id)
 #            geometry = feature['geometry']
@@ -160,7 +160,7 @@ class Command(BaseCommand):
             e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
 
             num_rows += 1
-            print "[%s]...(%s, %s, %s)" % (num_rows, country, state, lga)
+            print "[%s]...(%s, %s, %s) -- %s" % (num_rows, country, state, lga, e.id)
             if cgs:
                 num_cgs += 1
                 e.add_data(data=[(cgs_type.slug, cgs, cgs_type)])
@@ -469,8 +469,10 @@ class Command(BaseCommand):
                         d['data']['value'],
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
-                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
-                print '[X]...Record added (%s variables)' % len(all_records)
+                    clinic.add_data([data_to_add])
+#                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+#                print '[X]...Record added (%s variables)' % len(all_records)
+                print '[X]...%s records added' % len(all_records)
 
             print "Loaded %d records" % num_rows
 
