@@ -16,6 +16,8 @@ class FacilityInventory(models.Model):
         if self.display_values is not None:
             dd = json.loads(self.display_values)
             ll = self.latlng_str
+            dd['sector'] = self.SECTOR
+            dd['name'] = self.name
             if ll is not None:
                 lat, lng, alt, acc = self.latlng_str.split(" ")
                 dd['latlng'] = ','.join([lat, lng])
@@ -26,19 +28,19 @@ class FacilityInventory(models.Model):
         abstract = True
 
 class ClinicInventory(FacilityInventory):
-    pass
+    SECTOR = "health"
 
 class WaterPointInventory(FacilityInventory):
-    pass
+    SECTOR = "water"
 
 class LGAInventory(FacilityInventory):
-    pass
+    SECTOR = "lga"
 
 class EducationInventory(FacilityInventory):
-    pass
+    SECTOR = "education"
 
 class AgricultureInventory(FacilityInventory):
-    pass
+    SECTOR = "agriculture"
 
 class Lga(models.Model):
     geoid = models.CharField(max_length=50)
