@@ -9,8 +9,10 @@ import re
 
 FACILITY_CSV_DATA = os.path.join(settings.CURRENT_DIR, 'facilities', 'data')
 
+
 def remove_quotes(str):
     return re.sub("\"$", "", re.sub("^\"", "", str))
+
 
 def convert_to_list(csvstr):
     lines = csvstr.strip().split("\n")
@@ -24,15 +26,18 @@ def convert_to_list(csvstr):
         rows.append(row_dict)
     return rows
 
+
 class Command(BaseCommand):
     help = "Loads the facility data to sql."
+
     def handle(self, *args, **options):
-        if len(args)==1 and args[0]=="reload":
+        if len(args) == 1 and args[0] == "reload":
             print "Deleting all inventory data"
             for e in EducationInventory.objects.all():
                 e.delete()
             for c in ClinicInventory.objects.all():
                 c.delete()
+
         def convert_csv(sector, cls):
             with open(os.path.join(FACILITY_CSV_DATA, "%s.csv" % sector)) as f:
                 healths = convert_to_list(f.read())
@@ -49,5 +54,6 @@ class Command(BaseCommand):
                         hobj.lga_geoid = geoid
                         hobj.save()
                 print "%s yielded %d Facilities in DB" % (sector, cls.objects.count())
+
         convert_csv('education', EducationInventory)
         convert_csv('health', ClinicInventory)

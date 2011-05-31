@@ -170,24 +170,26 @@ def get_score_for(facility, slug):
 
 
 from facilities.models import *
-def lga_facilities_data(region_thing, context):
-    #f1 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': '11223342'}
-    #f2 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "20%", 'hiv_pct': "10%", 'maternal_pct': "59%", 'supplies_pct': "43%", 'latlng': '7.531101,8.539607', 'image_id': '11223343'}
-    #f3 = {'sector': 'education', 'facility_type': 'School', 'latlng': '7.631101,8.639607', 'image_id': '11223344'}
-    #f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
 
-    #facility_list = [f1, f2, f3, f4]
+
+def lga_facilities_data(region_thing, context):
+#f1 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': '11223342'}
+#f2 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "20%", 'hiv_pct': "10%", 'maternal_pct': "59%", 'supplies_pct': "43%", 'latlng': '7.531101,8.539607', 'image_id': '11223343'}
+#f3 = {'sector': 'education', 'facility_type': 'School', 'latlng': '7.631101,8.639607', 'image_id': '11223344'}
+#f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
+
+#facility_list = [f1, f2, f3, f4]
 #takai : 120698
-    
+
     geo_id = 120698
-    
+
     facility_list = []
     for edu in EducationInventory.objects.filter(lga_geoid=geo_id):
         facility_list.append(edu.display_dict())
-    
+
     for health in ClinicInventory.objects.filter(lga_geoid=geo_id):
         facility_list.append(health.display_dict())
-    
+
     f1 = {'sector': 'health', 'facility_type': 'Yes'}
     f2 = {'sector': 'education', 'facility_type': 'School'}
     health_columns = [['name', 'Name'], ['facility_type', 'Facility Type'],
@@ -195,20 +197,20 @@ def lga_facilities_data(region_thing, context):
                       ['type_staff_nurse_midwife', 'Type Staff Nurse Midwife'],
                       ['emergency_obstetrics_yn', 'Emergency Obstetricts Available'],
                       ['antimalarials_stockout_yn', 'Antimalarials Stockout']]
-#     power_sources_none  type_staff_nurse_midwife    emergency_obstetrics_yn antimalarials_stockout_yn
-#                      ['infrastructure_pct', 'Infrastructure'],
-#                      ['staffing_pct', 'Staffing'],
-#                      ['hiv_pct', 'HIV'],
-#                      ['maternal_pct', 'Maternal'],
-#                      ['supplies_pct', 'Supplies']]
+    #     power_sources_none  type_staff_nurse_midwife    emergency_obstetrics_yn antimalarials_stockout_yn
+    #                      ['infrastructure_pct', 'Infrastructure'],
+    #                      ['staffing_pct', 'Staffing'],
+    #                      ['hiv_pct', 'HIV'],
+    #                      ['maternal_pct', 'Maternal'],
+    #                      ['supplies_pct', 'Supplies']]
     edu_columns = [['name', 'Name'], ['level_of_education', 'Level of Education'],
-                        ['facility_type', 'Facility Type'],
-                        ['num_students_frthr_than_3km', 'Students Walking +3km'],
-                        ['power_sources_none', 'No Power Sources'],
-                        ['school_condition', 'School Condition'],
-                        ['num_tchrs_total', 'Total Number of Teachers']]
+                   ['facility_type', 'Facility Type'],
+                   ['num_students_frthr_than_3km', 'Students Walking +3km'],
+                   ['power_sources_none', 'No Power Sources'],
+                   ['school_condition', 'School Condition'],
+                   ['num_tchrs_total', 'Total Number of Teachers']]
     sector_list = [{'slug': 'health', 'name': 'Health', 'columns': health_columns},
-                    {'slug': 'education', 'name': 'Education', 'columns': edu_columns}]
+                   {'slug': 'education', 'name': 'Education', 'columns': edu_columns}]
 
     context.facility_data = json.dumps(facility_list)
     context.facility_sectors = json.dumps(sector_list)
