@@ -204,7 +204,7 @@ class Command(BaseCommand):
                 if location in locations:
                     lga_loaded.append(lga)
                     e = dbm.get(locations[location], Entity)
-                    e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                    e.add_data(data, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC), multiple_records=True)
                     print [(key, value) for (key, value, typ) in data]
                 else:
                     if not lga in lga_failed:
@@ -469,7 +469,7 @@ class Command(BaseCommand):
                         d['data']['value'],
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
-                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC), multiple_records=True)
                 print '[X]...%s records added' % len(all_records)
 
             print "Loaded %d Health Facilities" % num_rows
@@ -562,7 +562,7 @@ class Command(BaseCommand):
                         d['data']['value'],
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
-                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC), multiple_records=True)
                 print '[X]...%s records added' % len(all_records)
 
             print "Loaded %d Water Points" % num_rows
@@ -655,7 +655,7 @@ class Command(BaseCommand):
                         d['data']['value'],
                         get_datadict_type(dbm, datadict_types[d['slug']]))
                     all_records.append(data_to_add)
-                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC))
+                clinic.add_data(all_records, event_time=datetime.datetime(2011, 03, 01, tzinfo=UTC), multiple_records=True)
                 print '[X]...%s records added' % len(all_records)
 
             print "Loaded %d Schools" % num_rows
