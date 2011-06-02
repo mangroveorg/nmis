@@ -39,8 +39,8 @@ class Command(BaseCommand):
         dbm = DatabaseManager(server=server, database=database)
 
         for view in view_js:
-            start = datetime.now()
             print("Generating view `%s`" % view)
-            dbm.load_all_rows_in_view('mangrove_views/%s' % view)
+            start = datetime.now()
+            dbm.load_all_rows_in_view(view)
             end = datetime.now()
             print("\ttook %d seconds" % (end - start).seconds)
