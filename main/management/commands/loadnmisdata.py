@@ -405,7 +405,7 @@ class Command(BaseCommand):
             try:
                 csv_reader = CsvReader(file_path)
             except IOError:
-                raise IOError("File not found: %s. You may need to install dropbox." % file_path)
+                raise IOError("File not found: %s. You may need to install dropbox and upload DATA_DIRECTORY in settings.py." % file_path)
             num_rows = 0
             things_to_build = []
             for row in csv_reader.iter_dicts():
