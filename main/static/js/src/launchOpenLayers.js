@@ -62,15 +62,16 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
               'type': 'png'
           });
   });
-/*-  mapLayers.push(new OpenLayers.Layer.Google(
-      "Google Satellite",
-      {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
-      ));
-  mapLayers.push(new OpenLayers.Layer.Google(
-      "Google Physical",
-      {type: google.maps.MapTypeId.TERRAIN}
-      ));
-  */
+  if(typeof(google)!=='undefined') {
+        mapLayers.push(new OpenLayers.Layer.Google(
+            "Google Satellite",
+            {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
+            ));
+        mapLayers.push(new OpenLayers.Layer.Google(
+            "Google Physical",
+            {type: google.maps.MapTypeId.TERRAIN}
+            ));
+  }
   map.addLayers(mapLayers);
   map.addControl(new OpenLayers.Control.LayerSwitcher());
   map.setCenter(new OpenLayers.LonLat(opts.centroid.lng, opts.centroid.lat), opts.zoom);
