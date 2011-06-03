@@ -3,8 +3,11 @@
 <script type="text/javascript" charset="utf-8">
 
 (function(centroid){
-window.centroid = centroid;
-})({{lga_centroid}})
+window.centroid = {
+	lat: centroid[0],
+	lng: centroid[1]
+};
+})(/*-- show me the centroid! */{{lga_centroid}})
 </script>
 <!--
 <div class="map-bar map-mr map-h">
