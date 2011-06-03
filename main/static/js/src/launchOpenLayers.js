@@ -40,7 +40,6 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
     projection: new OpenLayers.Projection("EPSG:900913"),
     displayProjection: new OpenLayers.Projection("EPSG:4326"),
     units: "m",
-//    numZoomLevels: 9,
     maxResolution: 156543.0339,
     restrictedExtent: new OpenLayers.Bounds(
         -4783.9396188051, 463514.13943762, 1707405.4936624, 1625356.9691642
@@ -52,19 +51,18 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
       20037500
     ) 
   };
-  
   map = new OpenLayers.Map(wrapId, options);
   var mapserver = !!opts.localTiles ? 
                     opts.tileCache : opts.tileUrl;
-                    
-  var mapLayers = $.map(opts.layers, function(i, ldata){
+                
+  var mapLayers = $.map(opts.layers, function(ldata, i){
       return new OpenLayers.Layer.TMS(ldata[0], [mapserver], 
           {
               layername: ldata[1],
               'type': 'png'
           });
   });
-  mapLayers.push(new OpenLayers.Layer.Google(
+/*-  mapLayers.push(new OpenLayers.Layer.Google(
       "Google Satellite",
       {type: google.maps.MapTypeId.SATELLITE, numZoomLevels: 22}
       ));
@@ -72,10 +70,10 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
       "Google Physical",
       {type: google.maps.MapTypeId.TERRAIN}
       ));
-  
+  */
   map.addLayers(mapLayers);
   map.addControl(new OpenLayers.Control.LayerSwitcher());
-  map.setCenter(new OpenLayers.LonLat(opts.centroid.lng, opts.centroid.lat), opts.zoom)
+  map.setCenter(new OpenLayers.LonLat(opts.centroid.lng, opts.centroid.lat), opts.zoom);
 
   if(!!opts.layerSelector) {
       $(opts.layerSelector).change(function(param){
@@ -89,7 +87,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
   if(!!opts.points) {
       var markers = new OpenLayers.Layer.Markers("Markers");
       map.addLayer(markers);
-      var icon = (function(pointData){
+/*-      var icon = (function(pointData){
           var iconType = "health"; // for example
           if(icons[iconType]===undefined) {
                 var iconUrl = 'http://www.openlayers.org/dev/img/marker.png';
@@ -98,14 +96,14 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
                 icons[iconType] = new OpenLayers.Icon(iconUrl), size, offset);
             }
             return icons[iconType];
-        });
+        });*/
         
         var bounds = new OpenLayers.Bounds();
     	$.each(opts.points, function(i, d){
     		var _ll = d.latlng.split(",");
     		var ll = [+_ll[0], +_ll[1]];
             bounds.extend(new OpenLayers.LonLat(ll[1], ll[0]));
-            markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(ll[1], ll[0]), icon(d)));
+            markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(ll[1], ll[0])/*, icon(d)*/));
     	});
         map.zoomToExtent(bounds);
     }
