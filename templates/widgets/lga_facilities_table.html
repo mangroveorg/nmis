@@ -13,16 +13,15 @@
 	    });
 	    var launchScript = $.ajax({
 	      url: '/static/js/src/launchOpenLayers.js',
-	      dataType: 'script',
+	      dataType: 'script'
 	    });
 	    $.when(openLayers, launchScript).done(function(unk, status){
-		console.log("Should launch map with centroid :", centroid);
-	      LaunchOpenLayers("lga-facilities-map", {
-//			points: facilityData.list,
-			centroid: centroid,
-			mapHeight: 350,
-			localTiles: false
-			});
+		      LaunchOpenLayers("lga-facilities-map", {
+//						points: facilityData.list,
+						centroid: centroid,
+						mapHeight: 350,
+						localTiles: false
+					});
 	    });
 	}
 </script>
