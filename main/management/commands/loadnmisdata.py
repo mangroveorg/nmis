@@ -8,9 +8,16 @@ class Command(BaseCommand):
     help = "Loads the NMIS dataset from the 'NIMS Data' Google Doc."
     args = "<server> <database> | <database>"
 
+    from optparse import make_option
+    option_list = BaseCommand.option_list + (
+        make_option("--max_facilities_to_import", type="int", dest="max_facilities_to_import"),
+        make_option("--max_mdg_to_import", type="int", dest="max_mdg_to_import"),
+        )
+
     def handle(self, *args, **options):
         server = settings.MANGROVE_DATABASES['default']['SERVER']
         database = settings.MANGROVE_DATABASES['default']['DATABASE']
+
         if len(args) == 2:
             server = args[0]
             database = args[1]
@@ -21,9 +28,11 @@ class Command(BaseCommand):
         else:
             raise CommandError('Wrong number of arguments. Run \'python manage.py help loadnmisdata\' for usage.')
         #self._import_data(server, database)
-        self._import_data(server, database)
+        # maybe we can all this like python manage.py loadnmisdata max_facilities_to_import=10 max_mdg_to_import=10
+        print options
+        self._import_data(server, database, options.get('max_facilities_to_import',10000), options.get('max_mdg_to_import',10000))
 
-    def _import_data(self, server, database):
+    def _import_data(self, server, database, max_facilities_to_import=10000, max_mdg_to_import=10000):
         from mangrove.datastore.database import DatabaseManager
         from mangrove.datastore.entity import Entity, get_entities_by_value
         from mangrove.datastore.datadict import DataDictType, get_datadict_type, create_datadict_type
@@ -53,7 +62,6 @@ class Command(BaseCommand):
         load_health = True
         load_water = True
         load_education = True
-        max_facilities_to_import = 10000
 
         countries = {}
         states = {}
@@ -268,7 +276,9 @@ class Command(BaseCommand):
             print "Adding data from 'Education MDG Data' worksheet"
             lga_loaded = []
             lga_failed = []
-            for row in nims_data['Education MDG Data']:
+            for i, row in enumerate(nims_data['Education MDG Data']):
+                if i > max_mdg_to_import:
+                    break
                 raw_slug = get_string('indicator', row)
                 if not raw_slug: continue
                 slug = str(slugify(unicode(raw_slug, 'utf-8')))
@@ -306,7 +316,9 @@ class Command(BaseCommand):
             print "Adding data from 'Infrastructure MDG Data' worksheet"
             lga_loaded = []
             lga_failed = []
-            for row in nims_data['Infrastructure MDG Data']:
+            for i, row in enumerate(nims_data['Infrastructure MDG Data']):
+                if i > max_mdg_to_import:
+                    break
                 raw_slug = get_string('indicator', row)
                 if not raw_slug: continue
                 slug = str(slugify(unicode(raw_slug, 'utf-8')))
@@ -344,7 +356,9 @@ class Command(BaseCommand):
             print "Adding data from 'Health MDG Data' worksheet"
             lga_loaded = []
             lga_failed = []
-            for row in nims_data['Health MDG Data']:
+            for i, row in enumerate(nims_data['Health MDG Data']):
+                if i > max_mdg_to_import:
+                    break
                 raw_slug = get_string('indicator', row)
                 if not raw_slug: continue
                 slug = str(slugify(unicode(raw_slug, 'utf-8')))
@@ -388,7 +402,10 @@ class Command(BaseCommand):
             dirname = settings.DATA_DIRECTORY
             abspath = os.path.abspath(dirname)
             file_path = os.path.join(abspath, file_name)
-            csv_reader = CsvReader(file_path)
+            try:
+                csv_reader = CsvReader(file_path)
+            except IOError:
+                raise IOError("File not found: %s. You may need to install dropbox and upload DATA_DIRECTORY in settings.py." % file_path)
             num_rows = 0
             things_to_build = []
             for row in csv_reader.iter_dicts():

@@ -138,13 +138,14 @@ def lga_mdg_table(region_thing, context):
         if sname not in sector_names:
             sector_names.append(sname)
             sector_grouped_data[sslug] = []
-        tt = {'value': get_variable_values_for_region_thing(i['slug'], region_thing),\
+        value = get_variable_values_for_region_thing(i['slug'], region_thing)
+	tt = {'value': value,\
               'goal_number': i['goal_number'],\
               'sector': i['sector'],\
               'subsector': i['subsector'],\
               'name': i['name'],\
               'data_source': i['data_source']}
-        if i['lga_display']:
+        if i['lga_display'] and value is not None:
             sector_grouped_data[sslug].append(tt)
     sectors = []
     for s in sector_names:
@@ -198,3 +199,6 @@ def lga_facilities_data(region_thing, context):
 
 def lga_facilities_table(region_thing, context):
     context.facilities_list = [region_thing.name]
+
+def lga_map(region_thing, context):
+    context.lga_centroid = region_thing.entity.centroid
