@@ -5,26 +5,6 @@
 	<div id="lga-facilities-table" class="display-block-when-ready">
 	</div>
 </div>
-<script type="text/javascript" charset="utf-8">
-	function loadMap(latlngs) {
-		var openLayers = $.ajax({
-	      url: '/static/js/libs/OpenLayers.js',
-	      dataType: 'script'
-	    });
-	    var launchScript = $.ajax({
-	      url: '/static/js/src/launchOpenLayers.js',
-	      dataType: 'script'
-	    });
-	    $.when(openLayers, launchScript).done(function(unk, status){
-		      LaunchOpenLayers("lga-facilities-map", {
-//						points: facilityData.list,
-						centroid: centroid,
-						mapHeight: 350,
-						localTiles: false
-					});
-	    });
-	}
-</script>
 <style type="text/css" media="screen">
 	table.facility-list {
 		width: 100%;
@@ -108,11 +88,12 @@ widgets.push(function(){
 		var table = $('<table />', {'class':'facility-list'});
 		var thRow = $("<tr />");
 		table.append($("<thead />").html(thRow));
-		if(sector.columns!==undefined && sector.columns.length>0 && data.bySector[sector.slug]!==undefined && data.bySector[sector.slug].length>0) {
-			$.each(sector.columns, function(i, col){thRow.append($("<th />", {'class':'col-'+col[0]}).text(col[1]))});
-			
+		if(sector.columns!==undefined && sector.columns.length>0 && data.bySector[sector.name]!==undefined && data.bySector[sector.name].length>0) {
+			$.each(sector.columns, function(i, col){
+				thRow.append($("<th />", {'class':'col-'+col[0]}).text(col[1]))
+				});
 			var tbod = $("<tbody />");
-			$.each(data.bySector[sector.slug], function(i, fUid){
+			$.each(data.bySector[sector.name], function(i, fUid){
 				tbod.append(createRowForFacilityWithColumns(data.list[fUid], sector.columns))
 			})
 			table.append(tbod);
@@ -189,4 +170,24 @@ widgets.push(function(){
 	facilityTableWrap.addClass('ready');
 	loadMap(facilityData);
 });
+
+function loadMap(latlngs) {
+	var openLayers = $.ajax({
+      url: '/static/js/libs/OpenLayers.js',
+      dataType: 'script'
+    });
+    var launchScript = $.ajax({
+      url: '/static/js/src/launchOpenLayers.js',
+      dataType: 'script'
+    });
+    $.when(openLayers, launchScript).done(function(unk, status){
+	      LaunchOpenLayers("lga-facilities-map", {
+					centroidGoogleLatLng: centroid,
+					mapHeight: 350,
+					zoom: 9,
+					localTiles: false,
+					points: facilityData.list
+				});
+    });
+}
 </script>

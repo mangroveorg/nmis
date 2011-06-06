@@ -21,6 +21,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
           lat: 0.000068698255561324,
           lng: 0.000083908685869343
       },
+      centroidGoogleLatLng: false,
       points: false,
       latLngs: false,
       boundingBox: false,
@@ -31,11 +32,24 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
       tileCache: "http://localhost:8000/tiles/",
       layers: defaultLayers,
       zoom: 6
-  }, opts = $.extend({}, defaultOpts, _opts);
+  }
+  var opts = $.extend({}, defaultOpts, _opts);
 
+  if(opts.centroidGoogleLatLng !== false) {
+      function convertDamnCentroid(fromCoord) {
+                // convert standard lat long measurements to google projection
+                //convert from EPSG:900913 to EPSG:4326
+                var point = new OpenLayers.LonLat(fromCoord.lng, fromCoord.lat);
+                return point.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
+        }
+      opts.centroid = convertDamnCentroid(opts.centroidGoogleLatLng);
+      lagos = opts.centroid;
+//      console.log(opts.centroid);
+  }
   wrap.css({'height':opts.mapHeight});
   OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
-  OpenLayers.ImgPath = "http://js.mapbox.com/theme/dark/";
+  
+  OpenLayers.ImgPath = "/static/openlayers/default/img/";
   var options = {
     projection: new OpenLayers.Projection("EPSG:900913"),
     displayProjection: new OpenLayers.Projection("EPSG:4326"),
@@ -74,7 +88,11 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
   }
   map.addLayers(mapLayers);
   map.addControl(new OpenLayers.Control.LayerSwitcher());
-  map.setCenter(new OpenLayers.LonLat(opts.centroid.lng, opts.centroid.lat), opts.zoom);
+  if(opts.centroid instanceof OpenLayers.LonLat) {
+      map.setCenter(opts.centroid, opts.zoom);
+  } else {
+      map.setCenter(new OpenLayers.LonLat(opts.centroid.lng, opts.centroid.lat), opts.zoom);
+  }
 
   if(!!opts.layerSelector) {
       $(opts.layerSelector).change(function(param){
@@ -88,23 +106,16 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
   if(!!opts.points) {
       var markers = new OpenLayers.Layer.Markers("Markers");
       map.addLayer(markers);
-/*-      var icon = (function(pointData){
-          var iconType = "health"; // for example
-          if(icons[iconType]===undefined) {
-                var iconUrl = 'http://www.openlayers.org/dev/img/marker.png';
-                var size = new OpenLayers.Size(21,25);
-                var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-                icons[iconType] = new OpenLayers.Icon(iconUrl), size, offset);
-            }
-            return icons[iconType];
-        });*/
-        
         var bounds = new OpenLayers.Bounds();
     	$.each(opts.points, function(i, d){
-    		var _ll = d.latlng.split(",");
-    		var ll = [+_ll[0], +_ll[1]];
-            bounds.extend(new OpenLayers.LonLat(ll[1], ll[0]));
-            markers.addMarker(new OpenLayers.Marker(new OpenLayers.LonLat(ll[1], ll[0])/*, icon(d)*/));
+    	    var ll = d.latlng;
+    	    var oLl = new OpenLayers.LonLat(ll[1], ll[0]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));;
+    	    var iconUrl = "/static/openlayers/default/default_img/overview_replacement.gif"
+    	    var size = new OpenLayers.Size(21,25);
+    	    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+    	    var icon = new OpenLayers.Icon(iconUrl, size, offset);
+    	    markers.addMarker(new OpenLayers.Marker(oLl, icon));
+    	    bounds.extend(oLl);
     	});
         map.zoomToExtent(bounds);
     }
