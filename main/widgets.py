@@ -6,7 +6,7 @@ The widget_ids for each level are set in widgets.py.
 import json
 
 from django.conf import settings
-from mangrove.datastore.database import DatabaseManager
+from mangrove.datastore.database import DatabaseManager, get_db_manager
 from mangrove.datastore.entity import get_entities_by_type, get_entities_in
 
 WIDGETS_BY_REGION_LEVEL = [
@@ -177,9 +177,27 @@ def lga_facilities_data(region_thing, context):
     #f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
     #facility_list = [f1, f2, f3, f4]
     
-    facility_list = []
-    f1 = {'sector': 'health', 'facility_type': 'Yes'}
-    f2 = {'sector': 'education', 'facility_type': 'School'}
+    dbm = get_db_manager(
+        server=settings.MANGROVE_DATABASES['default']['SERVER'],
+        database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+    facilities = get_entities_in(dbm, region_thing.entity.location_path, 'Facility')
+    facility_data = []
+    for facility in facilities:
+        facility_type = facility.type_path[-1]
+        sector = ''
+        if facility_type == 'School':
+            sector = 'Education'
+        elif facility_type == 'Water Point':
+            sector = 'Water'
+        elif facility_type == 'Health Clinic':
+            sector = 'Health'
+        facility_data.append({
+         'sector': sector,
+         'facility_type': facility_type,
+         'latlng': facility.geometry['coordinates'],
+         'img_id': facility.value('photo')})
+    #f1 = {'sector': 'health', 'facility_type': 'Yes'}
+    #f2 = {'sector': 'education', 'facility_type': 'School'}
     health_columns = [['name', 'Name'], ['facility_type', 'Facility Type'],
                       ['power_sources_none', 'No Power Source'],
                       ['type_staff_nurse_midwife', 'Type Staff Nurse Midwife'],
@@ -193,7 +211,7 @@ def lga_facilities_data(region_thing, context):
                    ['num_tchrs_total', 'Total Number of Teachers']]
     sector_list = [{'slug': 'health', 'name': 'Health', 'columns': health_columns},
                    {'slug': 'education', 'name': 'Education', 'columns': edu_columns}]
-    context.facility_data = json.dumps(facility_list)
+    context.facility_data = json.dumps(facility_data, indent=4)
     context.facility_sectors = json.dumps(sector_list)
 
 
