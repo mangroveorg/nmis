@@ -1,7 +1,9 @@
 from django.core.management.base import BaseCommand, CommandError
 from django.conf import settings
 
-from mangrove.datastore.entity import Entity
+
+DEFAULT_FACILITIES_TO_IMPORT = 10000
+DEFAULT_MDG_TO_IMPORT = 10000
 
 
 class Command(BaseCommand):
@@ -15,6 +17,8 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        from mangrove.utils.types import is_number
+
         server = settings.MANGROVE_DATABASES['default']['SERVER']
         database = settings.MANGROVE_DATABASES['default']['DATABASE']
 
@@ -27,12 +31,16 @@ class Command(BaseCommand):
             pass
         else:
             raise CommandError('Wrong number of arguments. Run \'python manage.py help loadnmisdata\' for usage.')
-        #self._import_data(server, database)
-        # maybe we can all this like python manage.py loadnmisdata max_facilities_to_import=10 max_mdg_to_import=10
-        print options
-        self._import_data(server, database, options.get('max_facilities_to_import',10000), options.get('max_mdg_to_import',10000))
+        max_facilities_to_import = options.get('max_facilities_to_import',10000)
+        max_mdg_to_import = options.get('max_mdg_to_import',10000)
+        if not is_number(max_facilities_to_import):
+            max_facilities_to_import = DEFAULT_FACILITIES_TO_IMPORT
+        if not is_number(max_mdg_to_import):
+            max_mdg_to_import = DEFAULT_MDG_TO_IMPORT
+        self._import_data(server, database, max_facilities_to_import, max_mdg_to_import)
 
-    def _import_data(self, server, database, max_facilities_to_import=10000, max_mdg_to_import=10000):
+    def _import_data(self, server, database, max_facilities_to_import=DEFAULT_FACILITIES_TO_IMPORT,
+                     max_mdg_to_import=DEFAULT_MDG_TO_IMPORT):
         from mangrove.datastore.database import DatabaseManager
         from mangrove.datastore.entity import Entity, get_entities_by_value
         from mangrove.datastore.datadict import DataDictType, get_datadict_type, create_datadict_type
@@ -56,9 +64,9 @@ class Command(BaseCommand):
         user_spreadsheets = GoogleSpreadsheetsClient(settings.GMAIL_USERNAME, settings.GMAIL_PASSWORD)
         nims_data = user_spreadsheets['NIMS Data Deux']
 
-        load_population = True
-        load_other = True
-        load_mdg = True
+        load_population = False
+        load_other = False
+        load_mdg = False
         load_health = True
         load_water = True
         load_education = True
@@ -121,13 +129,13 @@ class Command(BaseCommand):
             location = (country, state, lga)
             if country not in countries:
                 gr_id = country_geo_id[country]
-#                feature = get_feature_by_id(gr_id)
+                feature = get_feature_by_id(gr_id)
 #                geometry = feature['geometry']
-#                centroid = json.loads(feature['properties']['geometry_centroid'])
+                centroid = json.loads(feature['properties']['geometry_centroid'])
                 e = Entity(dbm,
                            entity_type=["Location", "Country"],
                            location=[country],
-#                           centroid=centroid,
+                           centroid=centroid,
                            gr_id=gr_id)
                 locations[(country,)] = e.save()
                 countries[country] = e.id
@@ -137,13 +145,13 @@ class Command(BaseCommand):
                 print "[%s]...(%s) -- %s" % (num_rows, country, e.id)
             if state not in states:
                 gr_id = state_geo_ids[state]
-#                feature = get_feature_by_id(gr_id)
+                feature = get_feature_by_id(gr_id)
 #                geometry = feature['geometry']
-#                centroid = json.loads(feature['properties']['geometry_centroid'])
+                centroid = json.loads(feature['properties']['geometry_centroid'])
                 e = Entity(dbm,
                            entity_type=["Location", "State"],
                            location=[country, state],
-#                           centroid=centroid,
+                           centroid=centroid,
                            gr_id=gr_id)
                 locations[(country, state)] = e.save()
                 states[state] = e.id
@@ -152,13 +160,13 @@ class Command(BaseCommand):
                 num_rows += 1
                 print "[%s]...(%s, %s) -- %s" % (num_rows, country, state, e.id)
             gr_id = lga_gr_id
-#            feature = get_feature_by_id(gr_id)
+            feature = get_feature_by_id(gr_id)
 #            geometry = feature['geometry']
-#            centroid = json.loads(feature['properties']['geometry_centroid'])
+            centroid = json.loads(feature['properties']['geometry_centroid'])
             e = Entity(dbm,
                        entity_type=["Location", "LGA"],
                        location=[country, state, lga],
-#                       centroid=centroid,
+                       centroid=centroid,
                        gr_id=gr_id)
             locations[location] = e.save()
             geo_id_dict[geo_id] = e
