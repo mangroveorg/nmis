@@ -3,10 +3,11 @@
 <script type="text/javascript" charset="utf-8">
 
 (function(centroid){
-window.centroid = {
-	lat: centroid[0],
-	lng: centroid[1]
-};
+window.centroid = (centroid===undefined || centroid.length===0) ? 
+					undefined : {
+		lat: centroid[0],
+		lng: centroid[1]
+	};
 })(/*-- show me the centroid! */{{lga_centroid}})
 </script>
 <!--
