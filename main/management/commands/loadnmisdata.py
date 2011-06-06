@@ -64,9 +64,9 @@ class Command(BaseCommand):
         user_spreadsheets = GoogleSpreadsheetsClient(settings.GMAIL_USERNAME, settings.GMAIL_PASSWORD)
         nims_data = user_spreadsheets['NIMS Data Deux']
 
-        load_population = False
-        load_other = False
-        load_mdg = False
+        load_population = True
+        load_other = True
+        load_mdg = True
         load_health = True
         load_water = True
         load_education = True
