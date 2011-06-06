@@ -201,4 +201,6 @@ def lga_facilities_table(region_thing, context):
     context.facilities_list = [region_thing.name]
 
 def lga_map(region_thing, context):
-    context.lga_centroid = region_thing.entity.centroid
+    ll = [6.4530,3.3958333]
+#    ll = region_thing.entity.centroid
+    context.lga_centroid = ll
