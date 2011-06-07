@@ -23,7 +23,9 @@
 		})({{facility_data|safe}});
 		if(window.facilityData!==undefined && window.facilityData.list !==undefined) {
 			window.facilitySectors = (function(z){return z;})({{facility_sectors|safe}});
-			facilityDataLoaded();
+			$(function(){
+				facilityDataLoaded();
+			})
 		} else {
 			$.getJSON("/static/facility_data.json").done(function(d){
 				window.facilitySectors = d.sectors;
