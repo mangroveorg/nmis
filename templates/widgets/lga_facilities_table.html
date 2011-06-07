@@ -47,32 +47,16 @@
 <script type="text/javascript" charset="utf-8">
 var defaultSectorSlug = 'health';
 widgets.push(function(){
-	$.getJSON("/static/facility_data.json").done(function(d){
-		window.facilitySectors = d.sectors;
-		window.facilityData = (function(rawData){
-			var uidCounter = 0;
-			var list = {};
-			var groupedList = {};
-			var sectorNames = [];
-			$.each(rawData, function(i, pt){
-				if(pt.uid===undefined) { pt.uid = 'uid'+i; }
-				if(!~sectorNames.indexOf(pt.sector)) {
-					sectorNames.push(pt.sector);
-					groupedList[pt.sector] = [];
-				}
-				groupedList[pt.sector].push(pt.uid);
-				list[pt.uid]=pt;
-			});
-			return {bySector: groupedList,
-					list: list};
-		})(d.data);
-		facilityDataLoaded();
-	})
 	function facilityDataLoaded(){
+		function getKeys(x){
+			var keys = [];
+			$.each(x, function(i){keys.push(i)});
+			return keys;
+		}
 		$('body').bind('facility-click', function(evt, edata){
 			var facility = facilityData.list[edata.uid];
 			$('.ui-dialog').remove();
-			$('<div />').text("Clicked on point with data: " + JSON.stringify(facility)).dialog();
+			$('<div />').text("Clicked on point with data: " + getKeys(facility)).dialog();
 		});
 		$('body').bind('facility-mouseover', function(evt, edata){var facility = facilityData.list[edata.uid];});
 		$('body').bind('facility-mouseout', function(evt, edata){var facility = facilityData.list[edata.uid];});
