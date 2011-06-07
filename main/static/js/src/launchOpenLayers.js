@@ -125,7 +125,6 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
         var bounds = new OpenLayers.Bounds();
     	$.each(opts.points, function(i, d){
     	        if(d.latlng!==undefined) {
-    	            console.log(d.sector);
     	            var iconSector = (d.sector || 'default').toLowerCase();
             	    var icon = (iconMakers[iconSector] || iconMakers.defaultColor)();
             	    var ll = d.latlng;

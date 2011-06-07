@@ -25,26 +25,9 @@
 			window.facilitySectors = (function(z){return z;})({{facility_sectors|safe}});
 			facilityDataLoaded();
 		} else {
-			console.log("Loading sample data");
 			$.getJSON("/static/facility_data.json").done(function(d){
 				window.facilitySectors = d.sectors;
-				window.facilityData = (function(rawData){
-					var uidCounter = 0;
-					var list = {};
-					var groupedList = {};
-					var sectorNames = [];
-					$.each(rawData, function(i, pt){
-						if(pt.uid===undefined) { pt.uid = 'uid'+i; }
-						if(!~sectorNames.indexOf(pt.sector)) {
-							sectorNames.push(pt.sector);
-							groupedList[pt.sector] = [];
-						}
-						groupedList[pt.sector].push(pt.uid);
-						list[pt.uid]=pt;
-					});
-					return {bySector: groupedList,
-							list: list};
-				})(d.data);
+				window.facilityData = d.data;
 				facilityDataLoaded();
 			});
 		}
