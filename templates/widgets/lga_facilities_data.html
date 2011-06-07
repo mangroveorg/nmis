@@ -18,7 +18,7 @@
 			return {bySector: groupedList,
 					list: list};
 		})({{facility_data|safe}});
-		if(window.facilityData!==undefined && window.facilityData.list !==undefined && window.facilityData.list.length > 0) {
+		if(window.facilityData!==undefined && window.facilityData.list !==undefined) {
 			window.facilitySectors = (function(z){return z;})({{facility_sectors|safe}});
 			facilityDataLoaded();
 		} else {
