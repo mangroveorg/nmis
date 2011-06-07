@@ -197,7 +197,12 @@ class TableBuilder(object):
         dbm = get_db_manager(
             server=settings.MANGROVE_DATABASES['default']['SERVER'],
             database=settings.MANGROVE_DATABASES['default']['DATABASE'])
-        facilities = get_entities_in(dbm, self._region_thing.entity.location_path, self._sector)
+        sector_to_facility = {
+            'health': 'Health Clinic',
+            'education': 'School',
+            'water': 'Water Point'
+        }
+        facilities = get_entities_in(dbm, self._region_thing.entity.location_path, sector_to_facility[self._sector])
         slugs = [header[0] for header in self._headers]
         result = []
         for facility in facilities:
@@ -215,7 +220,7 @@ class TableBuilder(object):
 
 def lga_facilities_data(region_thing, context):
     tables = {
-        'Health Clinic': [
+        'health': [
             ['facility_name', 'Name'],
             ['facility_type', 'Type'],
             ['power_sources_none', 'No Power Source'],
@@ -223,7 +228,7 @@ def lga_facilities_data(region_thing, context):
             ['all_weather_road_yn', 'All-weather Road'],
             ['health_facility_condition', 'Condition']
         ],
-        'School': [
+        'education': [
             ['school_name', 'Name'],
             ['level_of_education', 'Level of Education'],
             ['education_type', 'Education Type'],
@@ -231,31 +236,24 @@ def lga_facilities_data(region_thing, context):
             ['power_sources_none', 'No Power Source'],
             ['water_sources_none', 'No Water Source']
         ],
-        'Water Point': [
+        'water': [
             ['water_source_type', 'Type'],
             ['lift', 'Lift'],
             ['water_source_developed_by', 'Developed by'],
             ['water_source_used_today_yn', 'Used today'],
             ['water_source_physical_state', 'Physical State']
         ]
-        }
+    }
     sector_list = []
     facility_data = []
     for sector, headers in tables.items():
-        facility_to_sector = {
-            'Health Facility': 'Health',
-            'School': 'Education',
-            'Water Point': 'Water'
-        }
-        d = {
-            'slug': facility_to_sector[sector],
-            'name': sector + 's',
+        sector_list.append({
+            'slug': sector,
+            'name': sector.capitalize(),
             'columns': headers
-        }
-        sector_list.append(d)
+        })
         table_builder = TableBuilder(sector, headers, region_thing)
         data = table_builder.get_data_for_table()
-        print data
         facility_data.extend(data)
     context.facility_data = json.dumps(facility_data, indent=4)
     context.facility_sectors = json.dumps(sector_list)
