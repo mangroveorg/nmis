@@ -242,8 +242,13 @@ def lga_facilities_data(region_thing, context):
     sector_list = []
     facility_data = []
     for sector, headers in tables.items():
+        facility_to_sector = {
+            'Health Facility': 'Health',
+            'School': 'Education',
+            'Water Point': 'Water'
+        }
         d = {
-            'slug': sector,
+            'slug': facility_to_sector[sector],
             'name': sector + 's',
             'columns': headers
         }
