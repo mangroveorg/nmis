@@ -63,6 +63,21 @@
   <script src="/static/js/src/script.js" type="text/javascript" charset="utf-8"></script>
 
 <script>
+function resizeFriendlyContent() {
+	var rnavHeight = $('#region-nav').height();
+	
+	var windowHeight = (function(){
+		var hh = $('header').height();
+		var windowHeight = $(window).height();
+		var padding = 70;
+		return windowHeight-hh-padding;
+	})();
+	
+	$('#main').css({
+		'height': rnavHeight > windowHeight ? rnavHeight: windowHeight
+	});
+}
+$(resizeFriendlyContent);
 /*
 $.getJSON('{% url lgas-list %}', function(data) {
   var items = [];

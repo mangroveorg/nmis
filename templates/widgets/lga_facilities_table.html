@@ -93,7 +93,7 @@ widgets.push(function(){
 			$(evt.target).trigger('sector-change', {sector: $(ui.panel).data('sector-slug')})
 		}});
 		$('#lga-facilities-wrap').height($(window).height()-160);
-		$('#facility-tabs').height('50%');
+		$('#facility-tabs').height(220);
 		$('#facility-tabs').find('.ui-tabs-panel').css({'overflow':'auto','height':'75%'})
 		facilityTableWrap.addClass('ready');
 		loadMap(facilityData);
