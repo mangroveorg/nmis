@@ -170,53 +170,92 @@ def get_score_for(facility, slug):
     return raw_score
 
 
+class TableBuilder(object):
+
+    def __init__(self, sector, headers, region_thing):
+        self._set_sector(sector)
+        self._set_headers(headers)
+        self._set_region_thing(region_thing)
+
+    def _set_sector(self, sector):
+        self._sector = sector
+
+    def _set_headers(self, headers):
+        assert type(headers) == list
+        for header in headers:
+            assert type(header)==list and len(header) == 2
+        self._headers = headers
+
+    def _set_region_thing(self, region_thing):
+        self._region_thing = region_thing
+
+    def get_data_for_table(self):
+        """
+        Return a list of cells for inclusion in this table. Base these cells on the sector, headers,
+        and region thing of this table builder.
+        """
+        dbm = get_db_manager(
+            server=settings.MANGROVE_DATABASES['default']['SERVER'],
+            database=settings.MANGROVE_DATABASES['default']['DATABASE'])
+        facilities = get_entities_in(dbm, self._region_thing.entity.location_path, self._sector)
+        slugs = [header[0] for header in self._headers]
+        result = []
+        for facility in facilities:
+            d = {
+                'sector': self._sector,
+                'facility_type': self._sector,
+                'latlng': facility.geometry['coordinates'],
+                'img_id': facility.value('photo')
+            }
+            for k in slugs:
+                d[k] = facility.value(k)
+            result.append(d)
+        return result
+
+
 def lga_facilities_data(region_thing, context):
-    #f1 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "13%", 'hiv_pct': "5%", 'maternal_pct': "16%", 'supplies_pct': "53%", 'latlng': '7.631101,8.539607', 'image_id': '11223342'}
-    #f2 = {'sector': 'health', 'facility_type': 'Primary Health Post', 'access_pct': "70%", 'infrastructure_pct': "30%", 'staffing_pct': "20%", 'hiv_pct': "10%", 'maternal_pct': "59%", 'supplies_pct': "43%", 'latlng': '7.531101,8.539607', 'image_id': '11223343'}
-    #f3 = {'sector': 'education', 'facility_type': 'School', 'latlng': '7.631101,8.639607', 'image_id': '11223344'}
-    #f4 = {'sector': 'water', 'facility_type': 'Water Point', 'latlng': '7.531101,8.639607', 'image_id': '11223345'}
-    #facility_list = [f1, f2, f3, f4]
-    
-    dbm = get_db_manager(
-        server=settings.MANGROVE_DATABASES['default']['SERVER'],
-        database=settings.MANGROVE_DATABASES['default']['DATABASE'])
-    facilities = get_entities_in(dbm, region_thing.entity.location_path, 'Facility')
+    tables = {
+        'Health Clinic': [
+            ['name', 'Name'],
+            ['facility_type', 'Facility Type'],
+            ['power_sources_none', 'No Power Source'],
+            ['type_staff_nurse_midwife', 'Type Staff Nurse Midwife'],
+            ['emergency_obstetrics_yn', 'Emergency Obstetricts Available'],
+            ['antimalarials_stockout_yn', 'Antimalarials Stockout']
+        ],
+        'School': [
+            ['name', 'Name'],
+            ['level_of_education', 'Level of Education'],
+            ['facility_type', 'Facility Type'],
+            ['num_students_frthr_than_3km', 'Students Walking +3km'],
+            ['power_sources_none', 'No Power Sources'],
+            ['school_condition', 'School Condition'],
+            ['num_tchrs_total', 'Total Number of Teachers']
+        ],
+        'Water Point': [
+            ['water_source_type', 'Type']
+        ]
+        }
+    sector_list = []
     facility_data = []
-    for facility in facilities:
-        facility_type = facility.type_path[-1]
-        sector = ''
-        if facility_type == 'School':
-            sector = 'Education'
-        elif facility_type == 'Water Point':
-            sector = 'Water'
-        elif facility_type == 'Health Clinic':
-            sector = 'Health'
-        facility_data.append({
-         'sector': sector,
-         'facility_type': facility_type,
-         'latlng': facility.geometry['coordinates'],
-         'img_id': facility.value('photo')})
-    #f1 = {'sector': 'health', 'facility_type': 'Yes'}
-    #f2 = {'sector': 'education', 'facility_type': 'School'}
-    health_columns = [['name', 'Name'], ['facility_type', 'Facility Type'],
-                      ['power_sources_none', 'No Power Source'],
-                      ['type_staff_nurse_midwife', 'Type Staff Nurse Midwife'],
-                      ['emergency_obstetrics_yn', 'Emergency Obstetricts Available'],
-                      ['antimalarials_stockout_yn', 'Antimalarials Stockout']]
-    edu_columns = [['name', 'Name'], ['level_of_education', 'Level of Education'],
-                   ['facility_type', 'Facility Type'],
-                   ['num_students_frthr_than_3km', 'Students Walking +3km'],
-                   ['power_sources_none', 'No Power Sources'],
-                   ['school_condition', 'School Condition'],
-                   ['num_tchrs_total', 'Total Number of Teachers']]
-    sector_list = [{'slug': 'health', 'name': 'Health', 'columns': health_columns},
-                   {'slug': 'education', 'name': 'Education', 'columns': edu_columns}]
+    for sector, headers in tables.items():
+        d = {
+            'slug': sector,
+            'name': sector + 's',
+            'columns': headers
+        }
+        sector_list.append(d)
+        table_builder = TableBuilder(sector, headers, region_thing)
+        data = table_builder.get_data_for_table()
+        print data
+        facility_data.extend(data)
     context.facility_data = json.dumps(facility_data, indent=4)
     context.facility_sectors = json.dumps(sector_list)
 
 
 def lga_facilities_table(region_thing, context):
     context.facilities_list = [region_thing.name]
+
 
 def lga_map(region_thing, context):
     ll = [6.4530,3.3958333]
