@@ -9,6 +9,17 @@
 	table.facility-list {
 		width: 100%;
 	}
+	.ui-tabs-nav li img.flag {
+		margin: 0 12px 0 0;
+		opacity: 0.5;
+	}
+	.ui-tabs-nav li.ui-state-active img.flag {
+		opacity: 1;
+	}
+	.ui-tabs-nav .sector-count {
+		font-size: 12px;
+		opacity: 0.8;
+	}
 	tr.selected-facility td {
 		background-color: #eee;
 		border-color: #ddd;
@@ -55,6 +66,7 @@ widgets.push(function(){
 			return keys;
 		}
 		$('body').bind('facility-click', function(evt, edata){
+			console.log("Scroll the table to the facility");
 			var facility = facilityData.list[edata.uid];
 			$('.ui-dialog').remove();
 			$('<div />').text("Clicked on point with data: " + getKeys(facility)).dialog();
@@ -76,13 +88,18 @@ widgets.push(function(){
 		
 		
 		var facilityTableWrap = $('#lga-facilities-table').html($('<div />', {'id': 'facility-tabs'}).html($('<ul />'))).append($('<div />', {'id':'image-nav'}));
-		var ftabs = $('div#facility-tabs', facilityTableWrap);
+		var ftabs = $('div#facility-tabs', facilityTableWrap).css({'padding-bottom':18});
 		var ftabUl = $('ul', ftabs);
 		var imageNavigation = $('div#image-nav', facilityTableWrap);
 
 		$.each(facilitySectors, function(i, sector){
 			var li = $("<li />");
-			li.append($("<a />", {'href':'#facilities-'+sector.slug}).text(sector.name));
+			var fdata = facilityData.bySector[sector.name];
+			var sectorCount = $("<span />", {'class':'sector-count '+sector.slug});
+			if(fdata instanceof Array && fdata.length > 0) {
+				sectorCount.text(" ("+fdata.length+")")
+			}
+			li.append($("<a />", {'href':'#facilities-'+sector.slug}).text(sector.name).append(sectorCount));
 			ftabUl.append(li);
 			ftabs.append(createTableForSectorWithData(sector, facilityData));
 		});
@@ -92,9 +109,25 @@ widgets.push(function(){
 		ftabs.tabs({select: function(evt, ui){
 			$(evt.target).trigger('sector-change', {sector: $(ui.panel).data('sector-slug')})
 		}});
+		(function deleteThisWhenYouWantToDoItProperly(){
+			var stColors = {
+	  			'facilities-water': "blue",
+	  			'facilities-health': "red",
+	  			'facilities-agriculture': "orange",
+	  			lga: "purple",
+	  			'facilities-education': "green",
+	  			defaultColor: "pink"
+	  		};
+			$('.ui-tabs-nav', ftabs).find('li a').each(function(){
+				var colorSlug = this.hash.replace("#", "");
+				var flagColor = stColors[colorSlug];
+				var flagUrl = "/static/images/geosilk/flag_"+flagColor+".png"
+				$(this).prepend($("<img />", {src: flagUrl, 'class': 'flag'}));
+			})
+		})();
 		$('#lga-facilities-wrap').height($(window).height()-160);
-		$('#facility-tabs').height(220);
-		$('#facility-tabs').find('.ui-tabs-panel').css({'overflow':'auto','height':'75%'})
+		ftabs.height(220);
+		ftabs.find('.ui-tabs-panel').css({'overflow':'auto','height':'75%'})
 		facilityTableWrap.addClass('ready');
 		loadMap(facilityData);
 	}
