@@ -216,24 +216,27 @@ class TableBuilder(object):
 def lga_facilities_data(region_thing, context):
     tables = {
         'Health Clinic': [
-            ['name', 'Name'],
-            ['facility_type', 'Facility Type'],
+            ['facility_name', 'Name'],
+            ['facility_type', 'Type'],
             ['power_sources_none', 'No Power Source'],
-            ['type_staff_nurse_midwife', 'Type Staff Nurse Midwife'],
-            ['emergency_obstetrics_yn', 'Emergency Obstetricts Available'],
-            ['antimalarials_stockout_yn', 'Antimalarials Stockout']
+            ['facility_owner_manager', 'Owner/Manager'],
+            ['all_weather_road_yn', 'All-weather Road'],
+            ['health_facility_condition', 'Condition']
         ],
         'School': [
-            ['name', 'Name'],
+            ['school_name', 'Name'],
             ['level_of_education', 'Level of Education'],
-            ['facility_type', 'Facility Type'],
-            ['num_students_frthr_than_3km', 'Students Walking +3km'],
-            ['power_sources_none', 'No Power Sources'],
-            ['school_condition', 'School Condition'],
-            ['num_tchrs_total', 'Total Number of Teachers']
+            ['education_type', 'Education Type'],
+            ['all_weather_road_yn', 'All-weather Road'],
+            ['power_sources_none', 'No Power Source'],
+            ['water_sources_none', 'No Water Source']
         ],
         'Water Point': [
-            ['water_source_type', 'Type']
+            ['water_source_type', 'Type'],
+            ['lift', 'Lift'],
+            ['water_source_developed_by', 'Developed by'],
+            ['water_source_used_today_yn', 'Used today'],
+            ['water_source_physical_state', 'Physical State']
         ]
         }
     sector_list = []
