@@ -43,8 +43,6 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
                 return point.transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));
         }
       opts.centroid = convertDamnCentroid(opts.centroidGoogleLatLng);
-      lagos = opts.centroid;
-//      console.log(opts.centroid);
   }
   wrap.css({'height':opts.mapHeight});
   OpenLayers.IMAGE_RELOAD_ATTEMPTS = 3;
@@ -105,15 +103,32 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
   }
   if(!!opts.points) {
       var markers = new OpenLayers.Layer.Markers("Markers");
+        var iconMakers = {};
+        var flagColors = "blue green orange pink purple red yellow".split(" ");
+  		var stColors = {
+  			water: "blue",
+  			health: "red",
+  			agriculture: "orange",
+  			lga: "purple",
+  			education: "green",
+  			defaultColor: "pink"
+  		};
+  		$.each(stColors, function(k, val){
+  		    iconMakers[k] = function(){
+  		        var url = window.location.origin + "/static/images/geosilk/flag_"+val+".png";
+      		    var size = new OpenLayers.Size(16,16);
+      		    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
+  		        return new OpenLayers.Icon(url, size, offset);
+  		    }
+  		    
+  		});
       map.addLayer(markers);
         var bounds = new OpenLayers.Bounds();
     	$.each(opts.points, function(i, d){
+    	    var iconSector = (d.sector || 'default').toLowerCase();
+    	    var icon = (iconMakers[iconSector] || iconMakers.default)();
     	    var ll = d.latlng;
     	    var oLl = new OpenLayers.LonLat(ll[1], ll[0]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));;
-    	    var iconUrl = "/static/openlayers/default/default_img/overview_replacement.gif"
-    	    var size = new OpenLayers.Size(21,25);
-    	    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
-    	    var icon = new OpenLayers.Icon(iconUrl, size, offset);
     	    markers.addMarker(new OpenLayers.Marker(oLl, icon));
     	    bounds.extend(oLl);
     	});

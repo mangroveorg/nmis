@@ -15,7 +15,7 @@ WIDGETS_BY_REGION_LEVEL = [
         #state:
         ["regnav_state", "state_map", "state_mdg_performance"],
         #lga:
-        ["regnav_lga", "lga_facilities_data", "lga_map", "lga_mdg_table", "lga_facilities_table"]
+        ["regnav_lga", "lga_map", "lga_mdg_table", "lga_facilities_table"]
 ]
 
 
