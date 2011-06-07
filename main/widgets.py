@@ -202,13 +202,14 @@ class TableBuilder(object):
             'education': 'School',
             'water': 'Water Point'
         }
-        facilities = get_entities_in(dbm, self._region_thing.entity.location_path, sector_to_facility[self._sector])
+        facility_type = sector_to_facility[self._sector]
+        facilities = get_entities_in(dbm, self._region_thing.entity.location_path, facility_type)
         slugs = [header[0] for header in self._headers]
         result = []
         for facility in facilities:
             d = {
                 'sector': self._sector,
-                'facility_type': self._sector,
+                'facility_type': facility_type,
                 'latlng': facility.geometry['coordinates'],
                 'img_id': facility.value('photo')
             }
