@@ -46,8 +46,9 @@
 </style>
 <script type="text/javascript" charset="utf-8">
 var defaultSectorSlug = 'health';
+var facilityDataLoaded = function(){};
 widgets.push(function(){
-	function facilityDataLoaded(){
+	facilityDataLoaded = function(){
 		function getKeys(x){
 			var keys = [];
 			$.each(x, function(i){keys.push(i)});

@@ -1,7 +1,6 @@
 <script type="text/javascript" charset="utf-8">
-	var facilitySectors = ({{facility_sectors|safe}});
-	
 	widgets.push(function(){
+		
 		window.facilityData = (function(rawData){
 			var uidCounter = 0;
 			var list = {};
@@ -18,6 +17,33 @@
 			});
 			return {bySector: groupedList,
 					list: list};
-		})({{facility_data|safe}})
+		})({{facility_data|safe}});
+		if(window.facilityData!==undefined && window.facilityData.list !==undefined && window.facilityData.list.length > 0) {
+			window.facilitySectors = (function(z){return z;})({{facility_sectors|safe}});
+			facilityDataLoaded();
+		} else {
+			console.log("Loading sample data");
+			$.getJSON("/static/facility_data.json").done(function(d){
+				window.facilitySectors = d.sectors;
+				window.facilityData = (function(rawData){
+					var uidCounter = 0;
+					var list = {};
+					var groupedList = {};
+					var sectorNames = [];
+					$.each(rawData, function(i, pt){
+						if(pt.uid===undefined) { pt.uid = 'uid'+i; }
+						if(!~sectorNames.indexOf(pt.sector)) {
+							sectorNames.push(pt.sector);
+							groupedList[pt.sector] = [];
+						}
+						groupedList[pt.sector].push(pt.uid);
+						list[pt.uid]=pt;
+					});
+					return {bySector: groupedList,
+							list: list};
+				})(d.data);
+				facilityDataLoaded();
+			});
+		}
 	})
 </script>

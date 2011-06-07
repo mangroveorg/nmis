@@ -1,6 +1,16 @@
 {
   "sectors": [
     {
+      "slug": "water",
+      "name": "Water",
+      "columns": [
+        [
+          "facility_type",
+          "Facility Type"
+        ]
+      ]
+    },
+    {
       "slug": "health",
       "columns": [
         [
