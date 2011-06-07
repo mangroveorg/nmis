@@ -6,6 +6,9 @@
 			var list = {};
 			var groupedList = {};
 			var sectorNames = [];
+			if(typeof(rawData)==='undefined' || rawData.length===0) {
+				return {}
+			}
 			$.each(rawData, function(i, pt){
 				if(pt.uid===undefined) { pt.uid = 'uid'+i; }
 				if(!~sectorNames.indexOf(pt.sector)) {

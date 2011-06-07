@@ -120,24 +120,26 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
       		    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
   		        return new OpenLayers.Icon(url, size, offset);
   		    }
-  		    
   		});
       map.addLayer(markers);
         var bounds = new OpenLayers.Bounds();
     	$.each(opts.points, function(i, d){
-    	        var iconSector = (d.sector || 'default').toLowerCase();
-        	    var icon = (iconMakers[iconSector] || iconMakers.default)();
-        	    var ll = d.latlng;
-        	    var oLl = new OpenLayers.LonLat(ll[1], ll[0]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));;
-        	    d.mrkr = new OpenLayers.Marker(oLl, icon);
-        	    d.mrkr.facilityUid = d.uid;
-        	    d.mrkr.events.on({
-        	        'click': function(evt){
-        	            $(evt.element).trigger('facility-click', {'uid': d.uid});
-        	        }
-        	    });
-        	    markers.addMarker(d.mrkr);
-        	    bounds.extend(oLl);
+    	        if(d.latlng!==undefined) {
+    	            console.log(d.sector);
+    	            var iconSector = (d.sector || 'default').toLowerCase();
+            	    var icon = (iconMakers[iconSector] || iconMakers.defaultColor)();
+            	    var ll = d.latlng;
+            	    var oLl = new OpenLayers.LonLat(ll[1], ll[0]).transform(new OpenLayers.Projection("EPSG:4326"), new OpenLayers.Projection("EPSG:900913"));;
+            	    d.mrkr = new OpenLayers.Marker(oLl, icon);
+            	    d.mrkr.facilityUid = d.uid;
+            	    d.mrkr.events.on({
+            	        'click': function(evt){
+            	            $(evt.element).trigger('facility-click', {'uid': d.uid});
+            	        }
+            	    });
+            	    markers.addMarker(d.mrkr);
+            	    bounds.extend(oLl);
+    	        } 
     	});
         map.zoomToExtent(bounds);
     }
