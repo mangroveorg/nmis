@@ -94,7 +94,7 @@ widgets.push(function(){
 
 		$.each(facilitySectors, function(i, sector){
 			var li = $("<li />");
-			var fdata = facilityData.bySector[sector.name];
+			var fdata = facilityData.bySector[sector.slug] || facilityData.bySector[sector.name];
 			var sectorCount = $("<span />", {'class':'sector-count '+sector.slug});
 			if(fdata instanceof Array && fdata.length > 0) {
 				sectorCount.text(" ("+fdata.length+")")
@@ -137,12 +137,13 @@ widgets.push(function(){
 		var table = $('<table />', {'class':'facility-list'});
 		var thRow = $("<tr />");
 		table.append($("<thead />").html(thRow));
-		if(sector.columns!==undefined && sector.columns.length>0 && data.bySector[sector.name]!==undefined && data.bySector[sector.name].length>0) {
+		var sectorData  = data.bySector[sector.slug] || data.bySector[sector.name];
+		if(sector.columns!==undefined && sector.columns.length>0 && sectorData!==undefined && sectorData.length>0) {
 			$.each(sector.columns, function(i, col){
 				thRow.append($("<th />", {'class':'col-'+col[0]}).text(col[1]))
 				});
 			var tbod = $("<tbody />");
-			$.each(data.bySector[sector.name], function(i, fUid){
+			$.each(sectorData, function(i, fUid){
 				tbod.append(createRowForFacilityWithColumns(data.list[fUid], sector.columns))
 			})
 			table.append(tbod);
