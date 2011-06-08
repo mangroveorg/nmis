@@ -115,7 +115,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
   		};
   		$.each(stColors, function(k, val){
   		    iconMakers[k] = function(){
-  		        var url = window.location.origin + "/static/images/geosilk/flag_"+val+".png";
+  		        var url = "/static/images/geosilk/flag_"+val+".png";
       		    var size = new OpenLayers.Size(16,16);
       		    var offset = new OpenLayers.Pixel(-(size.w/2), -size.h);
   		        return new OpenLayers.Icon(url, size, offset);
