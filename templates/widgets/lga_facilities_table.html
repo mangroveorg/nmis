@@ -58,33 +58,49 @@
 <script type="text/javascript" charset="utf-8">
 var defaultSectorSlug = 'health';
 var facilityDataLoaded = function(){};
+
+var selectedSector, selectedFacility;
+
 widgets.push(function(){
 	facilityDataLoaded = function(){
-		function getKeys(x){
-			var keys = [];
-			$.each(x, function(i){keys.push(i)});
-			return keys;
-		}
-		$('body').bind('facility-click', function(evt, edata){
+		$('body').bind('facility-select', function(evt, edata){
 			var facility = facilityData.list[edata.uid];
+			if(facility !== selectedFacility) {
+				selectedFacility === undefined || $('body').trigger('facility-unselect', {uid: selectedFacility.uid});
+				selectedFacility = facility;
+			}
+			$.each(facilityData.list, function(i, fdp){
+				fdp.mrkr === undefined || $(fdp.mrkr.icon.imageDiv).hide();
+			});
+			$(facility.mrkr.icon.imageDiv).show();
+			$('<div />').text("Clicked on point " + facility.uid).dialog({
+				close: function(){
+					selectedSector === undefined || (typeof(filterPointsBySector)!=='function') ||filterPointsBySector(selectedSector);
+				}
+			});
+		});
+		$('body').bind('facility-unselect', function(evt, edata){
 			$('.ui-dialog').remove();
-			$('<div />').text("Clicked on point with data: " + getKeys(facility)).dialog();
+			selectedFacility = undefined;
+//			var facility = facilityData.list[edata.uid];
 		});
 		$('body').bind('facility-mouseover', function(evt, edata){var facility = facilityData.list[edata.uid];});
 		$('body').bind('facility-mouseout', function(evt, edata){var facility = facilityData.list[edata.uid];});
-		$('body').bind('sector-change', function(evt, edata){var sector = edata.sector;});
+		$('body').bind('sector-change', function(evt, edata){
+			$('body').trigger('facility-unselect');
+			if(selectedSector !== edata.sector) {
+				selectedSector = edata.sector;
+				ftabs.tabs('select', facilitySectorSlugs.indexOf(selectedSector));
+				(typeof(filterPointsBySector)==='function') && filterPointsBySector(selectedSector);
+			}
+		});
 		/* actions to be taken for the facility navigation table and image stuff.
 		*/
-		$('body').bind('facility-click', function(evt, edata){
+		$('body').bind('facility-select', function(evt, edata){
 			var facility = facilityData.list[edata.uid];
 			$('.selected-facility').removeClass('selected-facility');
-			$(facility.tr).addClass('selected-facility');
+			facility.tr === undefined || $(facility.tr).addClass('selected-facility');
 		});
-		$('body').bind('sector-change', function(evt, edata){
-			var sector = edata.sector;
-	//		populateImageDivForSector(sector);
-		});
-		
 		
 		var facilityTableWrap = $('#lga-facilities-table').html($('<div />', {'id': 'facility-tabs'}).html($('<ul />'))).append($('<div />', {'id':'image-nav'}));
 		var ftabs = $('div#facility-tabs', facilityTableWrap).css({'padding-bottom':18});
@@ -103,11 +119,12 @@ widgets.push(function(){
 			ftabs.append(createTableForSectorWithData(sector, facilityData));
 		});
 
-		$(facilityTableWrap).trigger('sector-change', {sector: defaultSectorSlug});
-
 		ftabs.tabs({select: function(evt, ui){
 			$(evt.target).trigger('sector-change', {sector: $(ui.panel).data('sector-slug')})
 		}});
+		
+		$(facilityTableWrap).trigger('sector-change', {sector: defaultSectorSlug});
+		
 		(function deleteThisWhenYouWantToDoItProperly(){
 			var stColors = {
 	  			'facilities-water': "blue",
@@ -156,7 +173,7 @@ widgets.push(function(){
 			tr.append($("<td />", {'class':'col-'+colSlug}).text(fpoint[colSlug] || '–'));
 			tr.data('facility-uid', fpoint.uid);
 		});
-		tr.click(function(){$(this).trigger('facility-click', {'uid': fpoint.uid})});
+		tr.click(function(){$(this).trigger('facility-select', {'uid': fpoint.uid})});
 		tr.mouseover(function(){$(this).trigger('facility-mouseover', {uid: fpoint.uid})})
 		tr.mouseout(function(){$(this).trigger('facility-mouseout', {uid: fpoint.uid})})
 		fpoint.tr = tr.get(0);

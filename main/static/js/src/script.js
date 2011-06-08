@@ -56,8 +56,8 @@
     	content.trigger('modeChange', {mode:opts.defaultMode});
     }
 })($('#content'), [
-            ["MDG Indicators", "mdg-indicators"],
-            ["Facilities", "facilities"]
+            ["Facilities", "facilities"],
+            ["MDG Indicators", "mdg-indicators"]
         ]);
 
 /*-- Mark "activity status" on region nav objects...

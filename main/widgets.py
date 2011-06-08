@@ -363,9 +363,10 @@ def lga_facilities_data(region_thing, context):
             'name': sector.capitalize(),
             'columns': headers
         })
-    context.facility_data = json.dumps(facility_data, indent=4)
-    context.facility_sectors = json.dumps(sector_list, indent=4)
-
+    context.facility_table_data = json.dumps({\
+        'data': facility_data,
+        'sectors': sector_list
+    })
 
 def lga_facilities_table(region_thing, context):
     context.facilities_list = [region_thing.name]
