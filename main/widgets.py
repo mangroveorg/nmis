@@ -181,13 +181,16 @@ class TableBuilder(object):
         self._sector = sector
 
     def _set_headers(self, headers):
-        assert type(headers) == list
-        for header in headers:
-            assert type(header)==list and len(header) == 2
-        self._headers = headers
+        self._headers = []
+        for slug in headers:
+            data_dict_type = DataDictType.get_type(slug)
+            self._headers.append(data_dict_type)
 
     def _set_region_thing(self, region_thing):
         self._region_thing = region_thing
+
+    def get_headers_for_table(self):
+        return [[ddt.slug, ddt.name] for ddt in self._headers]
 
     def get_data_for_table(self):
         """
@@ -204,60 +207,110 @@ class TableBuilder(object):
         }
         facility_type = sector_to_facility[self._sector]
         facilities = get_entities_in(dbm, self._region_thing.entity.location_path, facility_type)
-        slugs = [header[0] for header in self._headers]
+        slugs = [header.slug for header in self._headers]
         result = []
         for facility in facilities:
-            d = {
-                'sector': self._sector,
-                'facility_type': facility_type,
-                'latlng': facility.geometry['coordinates'],
-                'img_id': facility.value('photo')
-            }
-            for k in slugs:
-                d[k] = facility.value(k)
+            data = facility.get_all_data()
+            times = data.keys()
+            times.sort()
+            # get the latest data
+            latest_data = data[times[-1]]
+            d = dict([(slug, latest_data[slug]) for slug in slugs])
+            d.update(
+                {
+                    'sector': self._sector,
+                    'facility_type': facility_type,
+                    'latlng': facility.geometry['coordinates'],
+                    'img_id': latest_data['photo']
+                    }
+                )
             result.append(d)
         return result
+
+class DataDictType(object):
+    FIELDS = ['slug', 'name', 'description']
+
+    TYPES = [
+        ['facility_name', 'Name', 'This is the facility name, bitch!'],
+        ['facility_type', 'Type'],
+        ['power_sources_none', 'No Power Source', "There ain't no power source at this god forsaken facility."],
+        ['facility_owner_manager', 'Owner/Manager'],
+        ['all_weather_road_yn', 'All-weather Road'],
+        ['health_facility_condition', 'Condition'],
+        ['school_name', 'Name'],
+        ['level_of_education', 'Level of Education'],
+        ['education_type', 'Education Type'],
+        ['all_weather_road_yn', 'All-weather Road'],
+        ['power_sources_none', 'No Power Source'],
+        ['water_sources_none', 'No Water Source'],
+        ['water_source_type', 'Type'],
+        ['lift', 'Lift'],
+        ['water_source_developed_by', 'Developed by'],
+        ['water_source_used_today_yn', 'Used today'],
+        ['water_source_physical_state', 'Physical State'],
+        ]
+
+    def __init__(self, *args):
+        for field, value in zip(self.FIELDS, args):
+            setattr(self, field, value)
+        # **kwargs
+        # for field in self.FIELDS:
+        #     setattr(self, field, kwargs.get(field))
+
+
+    @classmethod
+    def _create_types(cls):
+        cls._types = {}
+        for args in cls.TYPES:
+            cls._types[args[0]] = DataDictType(*args)
+
+    @classmethod
+    def get_type(cls, slug):
+        if not hasattr(cls, '_types'):
+            cls._create_types()
+        return cls._types[slug]
 
 
 def lga_facilities_data(region_thing, context):
     tables = {
         'health': [
-            ['facility_name', 'Name'],
-            ['facility_type', 'Type'],
-            ['power_sources_none', 'No Power Source'],
-            ['facility_owner_manager', 'Owner/Manager'],
-            ['all_weather_road_yn', 'All-weather Road'],
-            ['health_facility_condition', 'Condition']
+            'facility_name',
+            'facility_type',
+            'power_sources_none',
+            'facility_owner_manager',
+            'all_weather_road_yn',
+            'health_facility_condition',
         ],
         'education': [
-            ['school_name', 'Name'],
-            ['level_of_education', 'Level of Education'],
-            ['education_type', 'Education Type'],
-            ['all_weather_road_yn', 'All-weather Road'],
-            ['power_sources_none', 'No Power Source'],
-            ['water_sources_none', 'No Water Source']
+            'school_name',
+            'level_of_education',
+            'education_type',
+            'all_weather_road_yn',
+            'power_sources_none',
+            'water_sources_none',
         ],
         'water': [
-            ['water_source_type', 'Type'],
-            ['lift', 'Lift'],
-            ['water_source_developed_by', 'Developed by'],
-            ['water_source_used_today_yn', 'Used today'],
-            ['water_source_physical_state', 'Physical State']
+            'water_source_type',
+            'lift',
+            'water_source_developed_by',
+            'water_source_used_today_yn',
+            'water_source_physical_state',
         ]
     }
     sector_list = []
     facility_data = []
-    for sector, headers in tables.items():
+    for sector, slugs in tables.items():
+        table_builder = TableBuilder(sector, slugs, region_thing)
+        data = table_builder.get_data_for_table()
+        facility_data.extend(data)
+        headers = table_builder.get_headers_for_table()
         sector_list.append({
             'slug': sector,
             'name': sector.capitalize(),
             'columns': headers
         })
-        table_builder = TableBuilder(sector, headers, region_thing)
-        data = table_builder.get_data_for_table()
-        facility_data.extend(data)
     context.facility_data = json.dumps(facility_data, indent=4)
-    context.facility_sectors = json.dumps(sector_list)
+    context.facility_sectors = json.dumps(sector_list, indent=4)
 
 
 def lga_facilities_table(region_thing, context):
@@ -265,6 +318,6 @@ def lga_facilities_table(region_thing, context):
 
 
 def lga_map(region_thing, context):
-    ll = [6.4530,3.3958333]
-#    ll = region_thing.entity.centroid
+    #ll = [6.4530,3.3958333]
+    ll = region_thing.entity.centroid
     context.lga_centroid = ll
