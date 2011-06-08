@@ -73,9 +73,11 @@ function resizeFriendlyContent() {
 		return windowHeight-hh-padding;
 	})();
 	
-	$('#main').css({
-		'height': rnavHeight > windowHeight ? rnavHeight: windowHeight
-	});
+	if(rnavHeight > 0) {
+		$('#main').css({
+			'height': rnavHeight > windowHeight ? rnavHeight: windowHeight
+		});
+	}
 }
 $(resizeFriendlyContent);
 /*
