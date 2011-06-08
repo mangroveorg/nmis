@@ -36,9 +36,9 @@ def region_navigation(request, region_path):
     context.title = "NMIS Profiles: %s" % region_thing_object.name
     #what goes on behind the scenes that you don't need to edit--
     for widget_id in widget_ids:
-        try:
+        if hasattr(widgets, widget_id):
             context.__dict__[widget_id] = getattr(widgets, widget_id)(region_thing=region_thing_object, context=context)
-        except AttributeError, e:
+        else:
             context.__dict__[widget_id] = False
     return render_to_response("region_navigation.html", context_instance=context)
 
