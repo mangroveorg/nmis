@@ -139,7 +139,7 @@ def lga_mdg_table(region_thing, context):
             sector_names.append(sname)
             sector_grouped_data[sslug] = []
         value = get_variable_values_for_region_thing(i['slug'], region_thing)
-	tt = {'value': value,\
+        tt = {'value': value,\
               'goal_number': i['goal_number'],\
               'sector': i['sector'],\
               'subsector': i['subsector'],\
@@ -192,6 +192,48 @@ class TableBuilder(object):
     def get_headers_for_table(self):
         return [[ddt.slug, ddt.name] for ddt in self._headers]
 
+    def _fix_values(self, d):
+        def is_float(v):
+            try:
+                float(v)
+                return True
+            except:
+                return False
+        def is_boolean(v):
+            return v in [u"TRUE", u"FALSE"]
+        import datetime
+        for k, v in d.items():
+            if is_float(v):
+                d[k] = float(v)
+            elif is_boolean(v):
+                d[k] = v == u"TRUE"
+            elif isinstance(v, datetime.datetime):
+                pass
+            else:
+                # this is a string
+                d[k] = v.title().replace("_", " ")
+                
+
+    def _add_calculated_sector_indicators(self, d):
+        self._fix_values(d)
+        if self._sector == 'health':
+            pass
+        elif self._sector == 'education':
+            self._add_student_teacher_ratio(d)
+            self._add_sufficient_number_of_classrooms(d)
+        elif self._sector == 'water':
+            pass
+
+    def _add_student_teacher_ratio(self, d):
+        d['student_teacher_ratio'] = int(d['num_students_total'] / d['num_tchrs_total'])
+        d['student_teacher_ratio_ok'] = d['student_teacher_ratio'] <= 35
+
+    def _add_sufficient_number_of_classrooms(self, d):
+        d['ideal_number_of_classrooms'] = int(d['num_students_total'] / 35)
+        d['total_number_of_classrooms'] = d['num_classrms_good_cond'] + d['num_classrms_need_min_repairs'] + d['num_classrms_need_maj_repairs']
+        d['sufficient_number_of_classrooms'] = d['total_number_of_classrooms'] >= d['ideal_number_of_classrooms']
+        d['percentage_of_classrooms_in_good_condition'] = int(d['num_classrms_good_cond'] / d['total_number_of_classrooms'])
+
     def get_data_for_table(self):
         """
         Return a list of cells for inclusion in this table. Base these cells on the sector, headers,
@@ -215,6 +257,7 @@ class TableBuilder(object):
             times.sort()
             # get the latest data
             latest_data = data[times[-1]]
+            self._add_calculated_sector_indicators(latest_data)
             d = dict([(slug, latest_data[slug]) for slug in slugs])
             d.update(
                 {
@@ -248,7 +291,13 @@ class DataDictType(object):
         ['water_source_developed_by', 'Developed by'],
         ['water_source_used_today_yn', 'Used today'],
         ['water_source_physical_state', 'Physical State'],
-        ]
+        ['student_teacher_ratio', 'Student/Teacher Ratio'],
+        ['student_teacher_ratio_ok', 'Student/Teacher Ratio OK'],
+        ['ideal_number_of_classrooms', 'Ideal # of Classrooms'],
+        ['total_number_of_classrooms', 'Total # of Classrooms'],
+        ['sufficient_number_of_classrooms', 'Sufficient # of Classrooms'],
+        ['percentage_of_classrooms_in_good_condition', '% of Classrooms in Good Condition']       
+    ]
 
     def __init__(self, *args):
         for field, value in zip(self.FIELDS, args):
@@ -283,11 +332,16 @@ def lga_facilities_data(region_thing, context):
         ],
         'education': [
             'school_name',
-            'level_of_education',
-            'education_type',
-            'all_weather_road_yn',
+            # 'level_of_education',
+            # 'education_type',
             'power_sources_none',
             'water_sources_none',
+            'student_teacher_ratio',
+            'student_teacher_ratio_ok',
+            'ideal_number_of_classrooms',
+            'total_number_of_classrooms',
+            'sufficient_number_of_classrooms',
+            'percentage_of_classrooms_in_good_condition'
         ],
         'water': [
             'water_source_type',
