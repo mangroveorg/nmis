@@ -15,7 +15,7 @@
 		{% endfor %}
 	</div>
 	<script type="text/javascript" charset="utf-8">
-		var mdgData = {{indicator_list.grouped_list_json|safe}};
+		var mdgData = (function(_){return _})({{indicator_list.grouped_list_json|safe}});
 		function mdgDescription(gn){
 			var gN = +gn;
 			var goalText = [
@@ -63,9 +63,9 @@
 			return table;
 		}
 		widgets.push(function(){
-			$.each(mdgData, function(sectorSlug, dataList){
+			mdgData === undefined || $.each(mdgData, function(sectorSlug, dataList){
 				$('div#mdg-'+sectorSlug).append(createMdgTableFromArray(dataList))
-			})
+			});
 		});
 	</script>
 </div>
