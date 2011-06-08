@@ -135,7 +135,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
             	    d.mrkr.facilityUid = d.uid;
             	    d.mrkr.events.on({
             	        'click': function(evt){
-            	            $(evt.element).trigger('facility-click', {'uid': d.uid});
+            	            $(evt.element).trigger('facility-select', {'uid': d.uid});
             	        }
             	    });
             	    markers.addMarker(d.mrkr);
@@ -159,6 +159,6 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
                 });
             }
         }
-        showingSector !== undefined && filterPointsBySector(showingSector);
+        selectedSector !== undefined && filterPointsBySector(selectedSector);
     }
 });
