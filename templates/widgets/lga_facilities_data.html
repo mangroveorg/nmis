@@ -1,35 +1,137 @@
 <script type="text/javascript" charset="utf-8">
+
+	var printDebugStats = true;
+	var loadSampleData = true;
+	
 	widgets.push(function(){
-		
-		window.facilityData = (function(rawData){
-			var uidCounter = 0;
-			var list = {};
-			var groupedList = {};
-			var sectorNames = [];
-			if(typeof(rawData)==='undefined' || rawData.length===0) {
-				return {}
+/*
+
+The data has 2 main sections:
+ "facilitySectors" (a list of sectors which make up the tabs):
+	each sector is in this format:
+		{
+			"name": "A Verbose Sector Name!",
+			"slug": "unique_slug",
+			"columns": [
+				["slug", "Name!"]
+			]
+		}
+	
+ "facilityData" (a full list of all the facilities which will be rows in the table)
+	each facility should be in this format:
+		{
+			"uid": "facility_id21",
+			"facility_name": "The NAme of the Facility",
+			"column_slug": "42",
+			"latlng": [1.23, 4.56]
+		}
+
+*/
+		function warn() {console.warn(arguments); throw(arguments[0]);}
+		function happy() {console.log(arguments);}
+		function processPassedData(passedData){
+			var data, sectors, noLatLngs=0;
+			_sectorSlugList = [];
+			
+			passedData === undefined && warn("No data was passed to the page", passedData);
+			if(!passedData.sectors || !passedData.sectors.length) {
+				warn("data must have 'sectors' list.")
 			}
-			$.each(rawData, function(i, pt){
-				if(pt.uid===undefined) { pt.uid = 'uid'+i; }
-				if(!~sectorNames.indexOf(pt.sector)) {
-					sectorNames.push(pt.sector);
-					groupedList[pt.sector] = [];
-				}
-				groupedList[pt.sector].push(pt.uid);
-				list[pt.uid]=pt;
-			});
-			return {bySector: groupedList,
-					list: list};
-		})({{facility_data|safe}});
-		if(window.facilityData!==undefined && window.facilityData.list !==undefined) {
-			window.facilitySectors = (function(z){return z;})({{facility_sectors|safe}});
-			$(function(){
-				facilityDataLoaded();
-			})
-		} else {
+			(function validateSectors(s){
+				$(s).each(function(){
+					this.name === undefined && warn("Each sector needs a name.", this);
+					this.slug === undefined && warn("Each sector needs a slug.", this);
+					this.columns instanceof Array || warn("Sector columns must be an array.", this);
+					
+					(this.slug in _sectorSlugList) && warn("Slugs must not be used twice", this);
+					_sectorSlugList.push(this.slug);
+					
+					$(this.columns).each(function(i, val){
+						(val.length > 2) && warn("Columns must have at least 2 values defined", this);
+						var name = val[0];
+						var slug = val[1];
+						
+						name === undefined && warn("Each column needs a slug", this);
+						slug === undefined && warn("Each column needs a name", this);
+					});
+				});
+				sectors = s;
+			})(passedData.sectors)
+			zz = passedData.data;
+			passedData.data === undefined && warn("Data must be defined", this);
+			
+			(function validateData(d) {
+				d.length === undefined && warn("Data must be an array", this);
+				
+				$(d).each(function(i, row){
+					this.sector === undefined && warn("Each row must have a sector", this);
+					if(this.latlng === undefined) {
+						//some points don't have latlngs but should show up in tables.
+						noLatLngs++;
+					} else {
+						(this.latlng instanceof Array) || warn("LatLng must be an array", this);
+						(this.latlng.length === 2) || warn("Latlng must have length of 2", this);
+						
+					}
+					
+					(!!~_sectorSlugList.indexOf(this.sector)) || warn("Sector must be in the list of sector slugs:", {
+						sector: this.sector,
+						sectorSlugs: _sectorSlugList,
+						row: this
+					});
+				});
+			})(passedData.data);
+			
+			(function processData(rawData){
+				var uidCounter = 0;
+				var list = {};
+				var groupedList = {};
+				var sectorNames = [];
+				$.each(rawData, function(i, pt){
+					if(pt.uid===undefined) { pt.uid = 'uid'+i; }
+					if(!~sectorNames.indexOf(pt.sector)) {
+						sectorNames.push(pt.sector);
+						groupedList[pt.sector] = [];
+					}
+					groupedList[pt.sector].push(pt.uid);
+					list[pt.uid]=pt;
+				});
+				data = {
+					bySector: groupedList, //sector-grouped list of IDs, for the time being
+					list: list //the full list (this is actually an object where the keys are the unique IDs.)
+				};
+			})(passedData.data);
+			
+			printDebugStats && (function printTheDebugStats(){
+				console.log("" + sectors.length + " sectors were loaded.");
+				var placedPoints = 0;
+				$(sectors).each(function(){
+					if(data.bySector[this.slug] === undefined) {
+						console.log("!->: No data loaded for "+this.name);
+					} else {
+						var ct = data.bySector[this.slug].length;
+						placedPoints += ct;
+						console.log("   : "+this.slug+" has "+ct+" items.", this);
+					}
+				});
+				console.log(noLatLngs + " points had no coordinates")
+			})();
+			
+			window.facilityData = data;
+			window.facilitySectors = sectors;
+		}
+		
+		if(loadSampleData) {
 			$.getJSON("/static/facility_data.json").done(function(d){
-				window.facilitySectors = d.sectors;
-				window.facilityData = d.data;
+				console.log("Loading sample data...");
+				processPassedData(d);
+				$(function(){
+					facilityDataLoaded();
+				});
+			});
+		} else {
+			processPassedData({{facility_table_data|safe}});
+			$(function(){
 				facilityDataLoaded();
 			});
 		}
