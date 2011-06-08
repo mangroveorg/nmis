@@ -58,6 +58,9 @@
 <script type="text/javascript" charset="utf-8">
 var defaultSectorSlug = 'health';
 var facilityDataLoaded = function(){};
+
+var showingSector;
+
 widgets.push(function(){
 	facilityDataLoaded = function(){
 		function getKeys(x){
@@ -72,7 +75,13 @@ widgets.push(function(){
 		});
 		$('body').bind('facility-mouseover', function(evt, edata){var facility = facilityData.list[edata.uid];});
 		$('body').bind('facility-mouseout', function(evt, edata){var facility = facilityData.list[edata.uid];});
-		$('body').bind('sector-change', function(evt, edata){var sector = edata.sector;});
+		$('body').bind('sector-change', function(evt, edata){
+			if(showingSector !== edata.sector) {
+				showingSector = edata.sector;
+				ftabs.tabs('select', facilitySectorSlugs.indexOf(showingSector));
+				(typeof(filterPointsBySector)==='function') && filterPointsBySector(showingSector);
+			}
+		});
 		/* actions to be taken for the facility navigation table and image stuff.
 		*/
 		$('body').bind('facility-click', function(evt, edata){
@@ -80,11 +89,6 @@ widgets.push(function(){
 			$('.selected-facility').removeClass('selected-facility');
 			$(facility.tr).addClass('selected-facility');
 		});
-		$('body').bind('sector-change', function(evt, edata){
-			var sector = edata.sector;
-	//		populateImageDivForSector(sector);
-		});
-		
 		
 		var facilityTableWrap = $('#lga-facilities-table').html($('<div />', {'id': 'facility-tabs'}).html($('<ul />'))).append($('<div />', {'id':'image-nav'}));
 		var ftabs = $('div#facility-tabs', facilityTableWrap).css({'padding-bottom':18});
@@ -103,11 +107,12 @@ widgets.push(function(){
 			ftabs.append(createTableForSectorWithData(sector, facilityData));
 		});
 
-		$(facilityTableWrap).trigger('sector-change', {sector: defaultSectorSlug});
-
 		ftabs.tabs({select: function(evt, ui){
 			$(evt.target).trigger('sector-change', {sector: $(ui.panel).data('sector-slug')})
 		}});
+		
+		$(facilityTableWrap).trigger('sector-change', {sector: defaultSectorSlug});
+		
 		(function deleteThisWhenYouWantToDoItProperly(){
 			var stColors = {
 	  			'facilities-water': "blue",

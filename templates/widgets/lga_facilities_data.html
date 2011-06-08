@@ -1,7 +1,7 @@
 <script type="text/javascript" charset="utf-8">
 
 	var printDebugStats = true;
-	var loadSampleData = true;
+	var loadSampleData = false;
 	
 	widgets.push(function(){
 /*
@@ -31,7 +31,7 @@ The data has 2 main sections:
 		function happy() {console.log(arguments);}
 		function processPassedData(passedData){
 			var data, sectors, noLatLngs=0;
-			_sectorSlugList = [];
+			facilitySectorSlugs = [];
 			
 			passedData === undefined && warn("No data was passed to the page", passedData);
 			if(!passedData.sectors || !passedData.sectors.length) {
@@ -43,8 +43,8 @@ The data has 2 main sections:
 					this.slug === undefined && warn("Each sector needs a slug.", this);
 					this.columns instanceof Array || warn("Sector columns must be an array.", this);
 					
-					(this.slug in _sectorSlugList) && warn("Slugs must not be used twice", this);
-					_sectorSlugList.push(this.slug);
+					(this.slug in facilitySectorSlugs) && warn("Slugs must not be used twice", this);
+					facilitySectorSlugs.push(this.slug);
 					
 					$(this.columns).each(function(i, val){
 						(val.length > 2) && warn("Columns must have at least 2 values defined", this);
@@ -74,9 +74,9 @@ The data has 2 main sections:
 						
 					}
 					
-					(!!~_sectorSlugList.indexOf(this.sector)) || warn("Sector must be in the list of sector slugs:", {
+					(!!~facilitySectorSlugs.indexOf(this.sector)) || warn("Sector must be in the list of sector slugs:", {
 						sector: this.sector,
-						sectorSlugs: _sectorSlugList,
+						sectorSlugs: facilitySectorSlugs,
 						row: this
 					});
 				});

@@ -26,6 +26,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
       latLngs: false,
       boundingBox: false,
       mapHeight: 475,
+      transparentIconOpacity: 0,
       localTiles: false,
       layerSelector: '#layer-select',
       tileUrl: "http://tilestream.openmangrove.org:8888/",
@@ -102,6 +103,7 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
       })
   }
   if(!!opts.points) {
+      //this stuff _should_ be moved to a separate area of the code...
       var markers = new OpenLayers.Layer.Markers("Markers");
         var iconMakers = {};
         var flagColors = "blue green orange pink purple red yellow".split(" ");
@@ -140,6 +142,23 @@ var LaunchOpenLayers = (function (wrapId, _opts) {
             	    bounds.extend(oLl);
     	        } 
     	});
+    	var markerCount = 0;
         map.zoomToExtent(bounds);
+        window.filterPointsBySector = function(sector){
+            if(sector==='all') {
+                console.log("show all sectors");
+            } else {
+                $.each(opts.points, function(i, pt){
+                    if(pt.sector === sector) {
+                        //make opaque
+                        $(pt.mrkr.icon.imageDiv).show();
+                    } else {
+                        //make semi-transparent and low z-index
+                        $(pt.mrkr.icon.imageDiv).hide();
+                    }
+                });
+            }
+        }
+        showingSector !== undefined && filterPointsBySector(showingSector);
     }
 });
