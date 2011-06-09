@@ -84,11 +84,16 @@ function buildColumnDescriptionBox(columnData) {
 		boxWrap = $('<div />', {'id': 'column-description'}).appendTo('#facility-tabs');
 	}
 	cdTemplate.find('.description').text(columnData.description);
-	
+	function zz(number) {
+       return Math.floor(number*1000)/10
+    }
 	var countUl = cdTemplate.find('.counts');
 	if(columnData.counts !== undefined) {
+		var total = columnData.counts._total;
 		$.each(columnData.counts, function(k, val){
-			countUl.append($("<li />").text(k + ': '+ val))
+            if (k !== '_total') {
+				countUl.append($("<li />").text(k + ': '+ val + ' (' + zz((parseFloat(val)/parseFloat(total))) + '%)'))
+			}
 		});
 	} else {
 		countUl.hide();

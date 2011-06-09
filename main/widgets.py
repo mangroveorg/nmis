@@ -278,6 +278,7 @@ class TableBuilder(object):
         self._counts = {}
         for ddt in self._headers:
             self._counts[ddt.slug] = defaultdict(int)
+            self._counts[ddt.slug]['_total'] = len(self._data_for_table)
             for facility_dict in self._data_for_table:
                 self._counts[ddt.slug][facility_dict[ddt.slug]] += 1
 
@@ -294,26 +295,25 @@ class DataDictType(object):
 
     TYPES = [
         ['facility_name', 'Name', None],
-        ['facility_type', 'Type', None],
-        ['power_sources_none', 'No Power Source', "No Power Source was reported."],
-        ['facility_owner_manager', 'Owner/Manager', None],
-        ['all_weather_road_yn', 'All-weather Road', None],
-        ['health_facility_condition', 'Condition', None],
+        ['facility_type', 'Type', 'Type of health facility.'],
+        ['power_sources_none', 'No Power', "No power source (True = no power)."],
+        ['facility_owner_manager', 'Owner/Manager', 'Manager or owner of the health facility.'],
+        ['all_weather_road_yn', 'All-weather Road', 'All weather road access.'],
+        ['health_facility_condition', 'Condition', 'General condition of the health facility.'],
         ['school_name', 'Name', None],
-        ['level_of_education', 'Level of Education', "Level of education"],
-        ['education_type', 'Education Type', None],
-        ['all_weather_road_yn', 'All-weather Road', None],
-        ['water_sources_none', 'No Water Source', None],
-        ['water_source_type', 'Type', None],
-        ['lift', 'Lift', None],
-        ['water_source_developed_by', 'Developed by', None],
-        ['water_source_used_today_yn', 'Used today', None],
-        ['water_source_physical_state', 'Physical State', None],
-        ['student_teacher_ratio', 'Student/Teacher Ratio', None],
-        ['student_teacher_ratio_ok', 'Student/Teacher Ratio OK', None],
-        ['ideal_number_of_classrooms', 'Ideal # of Classrooms', None],
-        ['total_number_of_classrooms', 'Total # of Classrooms', None],
-        ['sufficient_number_of_classrooms', 'Sufficient # of Classrooms', None],
+        ['level_of_education', 'Level', "Level of education"],
+        ['education_type', 'Type', 'Type of education offered.'],
+        ['water_sources_none', 'No Water', 'No water (True = no water).'],
+        ['water_source_type', 'Type', 'Type of water source.'],
+        ['lift', 'Lift', 'Lift type.'],
+        ['water_source_developed_by', 'Developed by', 'Developer of the water source.'],
+        ['water_source_used_today_yn', 'Used today', 'Was this water source used today?'],
+        ['water_source_physical_state', 'State', 'Physical state of the water source.'],
+        ['student_teacher_ratio', 'S/T Ratio', None],
+        ['student_teacher_ratio_ok', 'S/T Ratio OK?', 'The student/teacher ratio is at or above the threshold (35).'],
+        ['ideal_number_of_classrooms', 'Ideal # classrooms', None],
+        ['total_number_of_classrooms', 'Total # classrooms', None],
+        ['sufficient_number_of_classrooms', 'Enough classrooms', 'The school has enough classrooms.'],
         ['percentage_of_classrooms_in_good_condition', '% of Classrooms in Good Condition', None],
     ]
 
@@ -343,7 +343,6 @@ def lga_facilities_data(region_thing, context):
     tables = {
         'health': [
             'facility_name',
-            'facility_type',
             'power_sources_none',
             'facility_owner_manager',
             'all_weather_road_yn',
