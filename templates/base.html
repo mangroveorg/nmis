@@ -61,6 +61,7 @@
     <script>DD_belatedPNG.fix("img, .png_bg");</script>
   <![endif]-->
   <script src="/static/js/src/script.js" type="text/javascript" charset="utf-8"></script>
+  <script src="/static/js/libs/jquery.scrollTo.js" type="text/javascript" charset="utf-8"></script>
 
 <script>
 function resizeFriendlyContent() {
@@ -106,7 +107,6 @@ $.getJSON('{% url lgas-list %}', function(data) {
 
 }); */
   </script>
-
   {% block scripts %}{% endblock %}
 </body>
 </html>

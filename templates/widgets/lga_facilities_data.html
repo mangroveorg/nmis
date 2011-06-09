@@ -27,7 +27,11 @@ The data has 2 main sections:
 		}
 
 */
-		function warn() {console.warn(arguments); throw(arguments[0]);}
+		function warn() {
+			if(console !== undefined && console.warn !== undefined) {
+				console.warn(arguments); throw(arguments[0]);
+			}
+		}
 		function happy() {console.log(arguments);}
 		function processPassedData(passedData){
 			var data, sectors, noLatLngs=0;
