@@ -235,7 +235,7 @@ class TableBuilder(object):
         d['ideal_number_of_classrooms'] = int(d['num_students_total'] / 35)
         d['total_number_of_classrooms'] = d['num_classrms_good_cond'] + d['num_classrms_need_min_repairs'] + d['num_classrms_need_maj_repairs']
         d['sufficient_number_of_classrooms'] = d['total_number_of_classrooms'] >= d['ideal_number_of_classrooms']
-        d['percentage_of_classrooms_in_good_condition'] = int(d['num_classrms_good_cond'] / max(d['total_number_of_classrooms'], 0.001))
+        d['percentage_of_classrooms_in_good_condition'] = int(d['num_classrms_good_cond'] / max(d['total_number_of_classrooms'], 0.001) * 100.0)
 
     def get_data_for_table(self):
         """
