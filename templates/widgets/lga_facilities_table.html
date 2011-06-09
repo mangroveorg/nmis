@@ -73,7 +73,35 @@ widgets.push(function(){
 				fdp.mrkr === undefined || $(fdp.mrkr.icon.imageDiv).hide();
 			});
 			$(facility.mrkr.icon.imageDiv).show();
-			$('<div />').text("Clicked on point " + facility.uid).dialog({
+			
+			var popup = $("<div />");
+			var sector = $(facilitySectors).filter(function(){return this.slug==facility.sector}).get(0);
+			console.log(facility);
+			(function buildDefinitionList(){
+				var tab = $("<table />").css({
+					'width': 400
+				});
+				var facilityImageThumbnailUrl = "/static/images/geosilk/flag_red.png";
+				var img = $("<img />").attr('src', facilityImageThumbnailUrl).prependTo(popup);
+				
+				var dl = $("<dl />");
+				$(sector.columns).each(function(i, col){
+					var tr = $("<tr />");
+					var colSlug = col[0];
+					var colName = col[1];
+					tr.append($("<td />").text(colName))
+					tr.append($("<td />").text(facility[colSlug]))
+					
+					var dt = $("<dt />").text(colName);
+					var dd = $("<dd />").text(facility[colSlug]);
+					dl.append(dt).append(dd);
+					tab.append(tr);
+				});
+				popup.append(tab);
+				//				popup.append(dl);
+			})();
+			
+			popup.dialog({
 				close: function(){
 					selectedSector === undefined || (typeof(filterPointsBySector)!=='function') ||filterPointsBySector(selectedSector);
 				}
