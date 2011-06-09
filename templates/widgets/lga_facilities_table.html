@@ -87,8 +87,8 @@ widgets.push(function(){
 				var dl = $("<dl />");
 				$(sector.columns).each(function(i, col){
 					var tr = $("<tr />");
-					var colSlug = col[0];
-					var colName = col[1];
+					var colSlug = col.slug;
+					var colName = col.name;
 					tr.append($("<td />").text(colName))
 					tr.append($("<td />").text(facility[colSlug]))
 					
@@ -184,7 +184,7 @@ widgets.push(function(){
 		var sectorData  = data.bySector[sector.slug] || data.bySector[sector.name];
 		if(sector.columns!==undefined && sector.columns.length>0 && sectorData!==undefined && sectorData.length>0) {
 			$.each(sector.columns, function(i, col){
-				thRow.append($("<th />", {'class':'col-'+col[0]}).text(col[1]))
+				thRow.append($("<th />", {'class':'col-'+col.slug}).text(col.name))
 				});
 			var tbod = $("<tbody />");
 			$.each(sectorData, function(i, fUid){
@@ -197,7 +197,7 @@ widgets.push(function(){
 	function createRowForFacilityWithColumns(fpoint, cols){
 		var tr = $("<tr />");
 		$.each(cols, function(i, col){
-			var colSlug = col[0];
+			var colSlug = col.slug;
 			tr.append($("<td />", {'class':'col-'+colSlug}).text(fpoint[colSlug] || '–'));
 			tr.data('facility-uid', fpoint.uid);
 		});

@@ -47,9 +47,8 @@ The data has 2 main sections:
 					facilitySectorSlugs.push(this.slug);
 					
 					$(this.columns).each(function(i, val){
-						(val.length > 2) && warn("Columns must have at least 2 values defined", this);
-						var name = val[0];
-						var slug = val[1];
+						var name = val.name;
+						var slug = val.slug;
 						
 						name === undefined && warn("Each column needs a slug", this);
 						slug === undefined && warn("Each column needs a name", this);
