@@ -293,7 +293,9 @@ widgets.push(function(){
 		var tr = $("<tr />");
 		$.each(cols, function(i, col){
 			var colSlug = col.slug;
-			tr.append($("<td />", {'class':'col-'+colSlug}).text(fpoint[colSlug] || '–'));
+			var value = fpoint[colSlug];
+			if(value===undefined) { value = '—'; }
+			tr.append($("<td />", {'class':'col-'+colSlug}).text(value));
 			tr.data('facility-uid', fpoint.uid);
 		});
 		tr.click(function(){$(this).trigger('facility-select', {
