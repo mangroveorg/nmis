@@ -225,14 +225,14 @@ class TableBuilder(object):
             pass
 
     def _add_student_teacher_ratio(self, d):
-        d['student_teacher_ratio'] = int(d['num_students_total'] / d['num_tchrs_total'])
+        d['student_teacher_ratio'] = int(d['num_students_total'] / max(d['num_tchrs_total'], 0.001))
         d['student_teacher_ratio_ok'] = d['student_teacher_ratio'] <= 35
 
     def _add_sufficient_number_of_classrooms(self, d):
         d['ideal_number_of_classrooms'] = int(d['num_students_total'] / 35)
         d['total_number_of_classrooms'] = d['num_classrms_good_cond'] + d['num_classrms_need_min_repairs'] + d['num_classrms_need_maj_repairs']
         d['sufficient_number_of_classrooms'] = d['total_number_of_classrooms'] >= d['ideal_number_of_classrooms']
-        d['percentage_of_classrooms_in_good_condition'] = int(d['num_classrms_good_cond'] / d['total_number_of_classrooms'])
+        d['percentage_of_classrooms_in_good_condition'] = int(d['num_classrms_good_cond'] / max(d['total_number_of_classrooms'], 0.001))
 
     def get_data_for_table(self):
         """
