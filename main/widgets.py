@@ -190,9 +190,12 @@ class TableBuilder(object):
         self._region_thing = region_thing
 
     def get_headers_for_table(self):
+        self._set_counts()
         return [{
             'slug': ddt.slug,
-            'name': ddt.name
+            'name': ddt.name,
+            'description': ddt.description,
+            'counts': self._counts[ddt.slug],
         } for ddt in self._headers]
 
     def _fix_values(self, d):
@@ -215,7 +218,6 @@ class TableBuilder(object):
             else:
                 # this is a string
                 d[k] = v.title().replace("_", " ")
-                
 
     def _add_calculated_sector_indicators(self, d):
         self._fix_values(d)
@@ -236,12 +238,10 @@ class TableBuilder(object):
         d['total_number_of_classrooms'] = d['num_classrms_good_cond'] + d['num_classrms_need_min_repairs'] + d['num_classrms_need_maj_repairs']
         d['sufficient_number_of_classrooms'] = d['total_number_of_classrooms'] >= d['ideal_number_of_classrooms']
         d['percentage_of_classrooms_in_good_condition'] = int(d['num_classrms_good_cond'] / max(d['total_number_of_classrooms'], 0.001) * 100.0)
-
-    def get_data_for_table(self):
-        """
-        Return a list of cells for inclusion in this table. Base these cells on the sector, headers,
-        and region thing of this table builder.
-        """
+        
+    def _set_data_for_table(self):
+        if hasattr(self, '_data_for_table'):
+            return
         dbm = get_db_manager(
             server=settings.MANGROVE_DATABASES['default']['SERVER'],
             database=settings.MANGROVE_DATABASES['default']['DATABASE'])
@@ -271,38 +271,54 @@ class TableBuilder(object):
                     }
                 )
             result.append(d)
-        return result
+        self._data_for_table = result
+        
+    def _set_counts(self):
+        self._set_data_for_table()
+        self._counts = {}
+        for ddt in self._headers:
+            self._counts[ddt.slug] = defaultdict(int)
+            for facility_dict in self._data_for_table:
+                self._counts[ddt.slug][facility_dict[ddt.slug]] += 1
+
+    def get_data_for_table(self):
+        """
+        Return a list of cells for inclusion in this table. Base these cells on the sector, headers,
+        and region thing of this table builder.
+        """
+        self._set_data_for_table()
+        return self._data_for_table
 
 class DataDictType(object):
     FIELDS = ['slug', 'name', 'description']
 
     TYPES = [
-        ['facility_name', 'Name', 'This is the facility name, bitch!'],
-        ['facility_type', 'Type'],
-        ['power_sources_none', 'No Power Source', "There ain't no power source at this god forsaken facility."],
-        ['facility_owner_manager', 'Owner/Manager'],
-        ['all_weather_road_yn', 'All-weather Road'],
-        ['health_facility_condition', 'Condition'],
-        ['school_name', 'Name'],
-        ['level_of_education', 'Level of Education'],
-        ['education_type', 'Education Type'],
-        ['all_weather_road_yn', 'All-weather Road'],
-        ['power_sources_none', 'No Power Source'],
-        ['water_sources_none', 'No Water Source'],
-        ['water_source_type', 'Type'],
-        ['lift', 'Lift'],
-        ['water_source_developed_by', 'Developed by'],
-        ['water_source_used_today_yn', 'Used today'],
-        ['water_source_physical_state', 'Physical State'],
-        ['student_teacher_ratio', 'Student/Teacher Ratio'],
-        ['student_teacher_ratio_ok', 'Student/Teacher Ratio OK'],
-        ['ideal_number_of_classrooms', 'Ideal # of Classrooms'],
-        ['total_number_of_classrooms', 'Total # of Classrooms'],
-        ['sufficient_number_of_classrooms', 'Sufficient # of Classrooms'],
-        ['percentage_of_classrooms_in_good_condition', '% of Classrooms in Good Condition']       
+        ['facility_name', 'Name', None],
+        ['facility_type', 'Type', None],
+        ['power_sources_none', 'No Power Source', "No Power Source was reported."],
+        ['facility_owner_manager', 'Owner/Manager', None],
+        ['all_weather_road_yn', 'All-weather Road', None],
+        ['health_facility_condition', 'Condition', None],
+        ['school_name', 'Name', None],
+        ['level_of_education', 'Level of Education', "Level of education"],
+        ['education_type', 'Education Type', None],
+        ['all_weather_road_yn', 'All-weather Road', None],
+        ['water_sources_none', 'No Water Source', None],
+        ['water_source_type', 'Type', None],
+        ['lift', 'Lift', None],
+        ['water_source_developed_by', 'Developed by', None],
+        ['water_source_used_today_yn', 'Used today', None],
+        ['water_source_physical_state', 'Physical State', None],
+        ['student_teacher_ratio', 'Student/Teacher Ratio', None],
+        ['student_teacher_ratio_ok', 'Student/Teacher Ratio OK', None],
+        ['ideal_number_of_classrooms', 'Ideal # of Classrooms', None],
+        ['total_number_of_classrooms', 'Total # of Classrooms', None],
+        ['sufficient_number_of_classrooms', 'Sufficient # of Classrooms', None],
+        ['percentage_of_classrooms_in_good_condition', '% of Classrooms in Good Condition', None],
     ]
 
     def __init__(self, *args):
+        assert(len(args)==3)
         for field, value in zip(self.FIELDS, args):
             setattr(self, field, value)
         # **kwargs

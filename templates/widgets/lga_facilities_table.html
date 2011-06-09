@@ -83,7 +83,7 @@ function buildColumnDescriptionBox(columnData) {
 	if(boxWrap.length===0) {
 		boxWrap = $('<div />', {'id': 'column-description'}).appendTo('#facility-tabs');
 	}
-	cdTemplate.find('.description').text("Description: " + columnData.description);
+	cdTemplate.find('.description').text(columnData.description);
 	
 	var countUl = cdTemplate.find('.counts');
 	if(columnData.counts !== undefined) {
@@ -191,8 +191,7 @@ widgets.push(function(){
 			var sector = edata.sector;
 			if(selectedColumn!==edata.column) {
 				$('body').trigger('column-unselect', {column:selectedColumn});
-				if(column.description !== undefined) {
-					
+				if(column.description !== undefined && column.description !== null) {
 					$('.selected-column', wrapElement).removeClass('selected-column');
 					(function highlightTheColumn(columnIndex){
 						var table = $('table.facility-list');
