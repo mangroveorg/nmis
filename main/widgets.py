@@ -190,7 +190,10 @@ class TableBuilder(object):
         self._region_thing = region_thing
 
     def get_headers_for_table(self):
-        return [[ddt.slug, ddt.name] for ddt in self._headers]
+        return [{
+            'slug': ddt.slug,
+            'name': ddt.name
+        } for ddt in self._headers]
 
     def _fix_values(self, d):
         def is_float(v):
