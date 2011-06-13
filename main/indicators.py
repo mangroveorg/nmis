@@ -123,4 +123,4 @@ class LgaIndicator(DataDictType):
             "aggregates": {self._data_type_slug: self._function_name},
             "aggregate_on": LocationAggregration(level=level),
             }
-        return self.data.aggregate_by_entity(**kwargs)
+        return self.data.aggregate(**kwargs)
