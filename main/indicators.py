@@ -1,6 +1,7 @@
 # vim: ai ts=4 sts=4 et sw=4 encoding=utf-8
 
 import operator
+from mangrove.datastore.data import LocationAggregration
 from mangrove.datastore.datadict import DataDictType
 
 
@@ -120,6 +121,6 @@ class LgaIndicator(DataDictType):
             "dbm": self._dbm,
             "entity_type": self._entity_type,
             "aggregates": {self._data_type_slug: self._function_name},
-            "aggregate_on": {'type': 'location', "level": level},
+            "aggregate_on": LocationAggregration(level=level),
             }
-        return self.data.fetch(**kwargs)
+        return self.data.aggregate(**kwargs)
