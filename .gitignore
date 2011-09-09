@@ -1,1 +1,4 @@
 tiles/tile_cache
+.idea
+*.pyc
+
